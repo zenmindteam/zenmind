@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import gsap from 'gsap';
 import { Sparkles } from 'lucide-react';
-import okVideo from '../../../asset/ok/ok.mp4';
+// Video asset removed; using placeholder
 
 type CTASectionProps = {
   onGetStarted: () => void;
@@ -55,7 +55,7 @@ export default function CTASection({ onGetStarted, onScheduleDemo }: CTASectionP
             <div className="relative min-h-[16rem] lg:min-h-full">
               <video
                 className="absolute inset-0 h-full w-full object-cover"
-                src={okVideo}
+                src=""
                 autoPlay
                 muted
                 loop
