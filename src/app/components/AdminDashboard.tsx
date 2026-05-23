@@ -146,7 +146,7 @@ useEffect(() => {
 
           <motion.aside initial={{ x: -280 }} animate={{ x: 0 }} exit={{ x: -280 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}
 
-            className="fixed left-0 top-0 h-full w-[260px] bg-white dark:bg-[#111111] border-r border-[#0d5d3a]/10 dark:border-white/10 flex flex-col z-40 md:hidden">
+            className="fixed left-0 top-0 h-full w-[260px] bg-white dark:bg-[#111111] border-r border-[#0d5d3a]/10 dark:border-white/10 flex flex-col z-40 md:hidden overflow-y-auto">
 
             <button onClick={() => setMobileOpen(false)} className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300">
 
@@ -168,7 +168,7 @@ useEffect(() => {
 
       <motion.aside animate={{ width: sidebarExpanded ? 260 : 72 }} transition={{ duration: 0.25 }}
 
-        className="relative flex-shrink-0 bg-white dark:bg-[#111111] border-r border-[#0d5d3a]/10 dark:border-white/10 flex-col h-full z-20 hidden md:flex overflow-hidden">
+        className="relative flex-shrink-0 bg-white dark:bg-[#111111] border-r border-[#0d5d3a]/10 dark:border-white/10 flex-col h-full z-20 hidden md:flex overflow-y-auto">
 
         <button onClick={() => setSidebarExpanded(s => !s)}
 

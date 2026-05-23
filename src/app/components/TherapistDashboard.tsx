@@ -496,6 +496,10 @@ export default function TherapistDashboard({ onLogout }: { onLogout: () => void 
                     <div className="space-y-5">
                       <Field label="Session Duration (minutes)" type="number" value={sessionTime} onChange={setSessionTime} placeholder="e.g. 50" />
                       <Field label="Cost per Session (₹)" type="number" value={sessionCost} onChange={setSessionCost} placeholder="e.g. 1200" />
+                      <button onClick={saveSchedule} disabled={savingSchedule}
+                        className="w-full mt-2 flex justify-center items-center gap-2 px-6 py-3 bg-[#0d5d3a] dark:bg-[#1a8a5a] text-white rounded-xl font-bold shadow-md shadow-[#0d5d3a]/20 hover:bg-[#0a4a2e] transition disabled:opacity-60 text-sm">
+                        <Save size={16} />{savingSchedule ? 'Saving...' : 'Save Configuration'}
+                      </button>
                     </div>
                   </div>
 
