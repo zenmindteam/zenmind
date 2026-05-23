@@ -55,7 +55,7 @@ export default function CTASection({ onGetStarted, onScheduleDemo }: CTASectionP
             <div className="relative min-h-[16rem] lg:min-h-full">
               <video
                 className="absolute inset-0 h-full w-full object-cover"
-                src=""
+                src="/asset/ok/ok.mp4"
                 autoPlay
                 muted
                 loop
