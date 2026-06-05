@@ -387,7 +387,7 @@ export default function WellnessProgramsUser({
                     <span className="text-xs font-bold text-[#4a7c5d] dark:text-gray-400 uppercase tracking-wide">Category</span>
                     <select value={form.category} onChange={e=>setForm({...form,category:e.target.value})}
                       className="mt-1 w-full bg-[#fbfdfb] dark:bg-[#1a1a1a] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#0d5d3a]/25 text-[#0a2617] dark:text-white">
-                      {CATS.map(c=><option key={c} value={c}>{CAT_EMOJI?.[c]||''} {c.replace('_',' ')}</option>)}
+                      {CATS.map(c=><option key={c} value={c}>{CATEGORY_META[c]?.icon||''} {c.replace('_',' ')}</option>)}
                     </select>
                   </label>
                   <label className="block">
