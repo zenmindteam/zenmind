@@ -64,7 +64,7 @@ router.get('/therapist-chats', authenticateAny, async (req, res) => {
   if (req.userType !== 'Therapist') return res.status(403).json({ error: 'Forbidden' });
 
   try {
-    const chats = await Chat.find({ therapist: req.therapist._id }).populate('user', 'name avatar isOnline lastSeen age gender phone').lean();
+    const chats = await Chat.find({ therapist: req.therapist._id, isHiddenForTherapist: { $ne: true } }).populate('user', 'name avatar isOnline lastSeen age gender phone').lean();
     res.json({ ok: true, chats });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -124,6 +124,18 @@ router.post('/:chatId/messages', authenticateAny, async (req, res) => {
     const isUser = req.userType === 'User' && String(chat.user) === String(req.user.id);
     const isTherapist = req.userType === 'Therapist' && String(chat.therapist) === String(req.therapist._id);
     if (!isUser && !isTherapist) return res.status(403).json({ error: 'Forbidden' });
+
+    if (isUser) {
+      const therapistDoc = await Therapist.findById(chat.therapist);
+      if (therapistDoc && therapistDoc.blockedUsers && therapistDoc.blockedUsers.includes(req.user.id)) {
+        return res.status(403).json({ error: 'You have been blocked by this therapist.' });
+      }
+      
+      if (chat.isHiddenForTherapist) {
+        chat.isHiddenForTherapist = false;
+        await chat.save();
+      }
+    }
 
     const { content } = req.body;
     if (!content) return res.status(400).json({ error: 'Message content is required' });
@@ -191,11 +203,64 @@ router.delete('/:chatId/clear', authenticateAny, async (req, res) => {
       chat.clearedByUserAt = new Date();
     } else if (isTherapist) {
       chat.clearedByTherapistAt = new Date();
+      chat.isHiddenForTherapist = true;
     } else {
       return res.status(403).json({ error: 'Forbidden' });
     }
 
     await chat.save();
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/chat/:chatId/block
+// Block user from sending further messages (Therapist only)
+router.post('/:chatId/block', authenticateAny, async (req, res) => {
+  try {
+    if (req.userType !== 'Therapist') return res.status(403).json({ error: 'Forbidden' });
+    
+    const chat = await Chat.findById(req.params.chatId);
+    if (!chat) return res.status(404).json({ error: 'Chat not found' });
+    
+    if (String(chat.therapist) !== String(req.therapist._id)) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    const therapistDoc = await Therapist.findById(req.therapist._id);
+    if (!therapistDoc.blockedUsers) therapistDoc.blockedUsers = [];
+    
+    if (!therapistDoc.blockedUsers.includes(chat.user)) {
+      therapistDoc.blockedUsers.push(chat.user);
+      await therapistDoc.save();
+    }
+
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/chat/:chatId/unblock
+// Unblock a previously blocked user
+router.post('/:chatId/unblock', authenticateAny, async (req, res) => {
+  try {
+    if (req.userType !== 'Therapist') return res.status(403).json({ error: 'Forbidden' });
+    
+    const chat = await Chat.findById(req.params.chatId);
+    if (!chat) return res.status(404).json({ error: 'Chat not found' });
+    
+    if (String(chat.therapist) !== String(req.therapist._id)) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    const therapistDoc = await Therapist.findById(req.therapist._id);
+    if (therapistDoc.blockedUsers) {
+      therapistDoc.blockedUsers = therapistDoc.blockedUsers.filter(u => String(u) !== String(chat.user));
+      await therapistDoc.save();
+    }
+
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ error: err.message });

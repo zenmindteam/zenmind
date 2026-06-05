@@ -179,23 +179,20 @@ export default function TherapistSupportDesk() {
       </AnimatePresence>
 
       {/* Header */}
-      <div className="flex-shrink-0 px-4 sm:px-6 pt-5 pb-3 border-b border-[#0d5d3a]/10 dark:border-white/10">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-xl font-black text-[#0a2617] dark:text-white" style={{ fontFamily: 'Syne,sans-serif' }}>Support & Reports</h1>
-          <button
-            onClick={() => activeTab === 'tickets' ? setShowTicketForm(true) : setShowReportForm(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0d5d3a] dark:bg-[#1a8a5a] text-white font-bold text-sm hover:bg-[#0a4a2e] transition shadow-md">
-            <Plus size={15}/> {activeTab === 'tickets' ? 'New Ticket' : 'New Report'}
-          </button>
-        </div>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#0d5d3a]/10 dark:border-white/10 pb-3 shrink-0 px-4 sm:px-6 pt-5">
         <div className="flex gap-1 p-1 bg-[#f0fbf4] dark:bg-[#0d1f14] rounded-2xl w-fit">
           {(['tickets','reports'] as const).map(t => (
             <button key={t} onClick={() => setActiveTab(t)}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition capitalize ${activeTab === t ? 'bg-[#0d5d3a] text-white shadow-sm' : 'text-[#4a7c5d] dark:text-gray-400 hover:bg-[#0d5d3a]/10'}`}>
-              {t === 'tickets' ? ' My Tickets' : ' Incident Reports'}
+              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition capitalize ${activeTab === t ? 'bg-[#0d5d3a] text-white shadow-sm' : 'text-[#4a7c5d] dark:text-gray-400 hover:bg-[#0d5d3a]/10'}`}>
+              {t === 'tickets' ? 'My Tickets' : 'Incident Reports'}
             </button>
           ))}
         </div>
+        <button
+          onClick={() => activeTab === 'tickets' ? setShowTicketForm(true) : setShowReportForm(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0d5d3a] dark:bg-[#1a8a5a] text-white font-bold text-xs hover:bg-[#0a4a2e] transition shadow-md shrink-0">
+          <Plus size={14}/> {activeTab === 'tickets' ? 'New Ticket' : 'New Report'}
+        </button>
       </div>
 
       {/* List */}

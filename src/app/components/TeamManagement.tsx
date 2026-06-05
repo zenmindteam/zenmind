@@ -117,13 +117,14 @@ export default function TeamManagement() {
   return (
     <div className="flex flex-col gap-5">
       {msg && <div className={`p-3 rounded-xl text-sm font-semibold ${msg.ok ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>{msg.text}</div>}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-black text-[#0a2617] dark:text-white" style={{ fontFamily: 'Syne, sans-serif' }}>Team Members</h2>
-          <p className="text-xs text-[#4a7c5d] dark:text-gray-400 mt-0.5">Manage the About Us page founder cards</p>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#0d5d3a]/10 dark:border-white/10 pb-3 shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="px-4 py-2 rounded-xl bg-[#f0fbf4] dark:bg-[#0d1f14] border border-[#0d5d3a]/10 dark:border-white/5 text-xs text-[#4a7c5d] dark:text-gray-400 font-medium flex items-center gap-2">
+            <Users size={14} className="text-[#0d5d3a] dark:text-[#10b981]" /> Manage the About Us page founder cards
+          </div>
         </div>
-        <button onClick={openNew} className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0d5d3a] dark:bg-[#1a8a5a] text-white font-black text-sm hover:bg-[#0a4a2e] transition shadow-md">
-          <Plus size={16} /> Add Member
+        <button onClick={openNew} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0d5d3a] dark:bg-[#1a8a5a] text-white font-bold text-xs hover:bg-[#0a4a2e] transition shadow-md shrink-0">
+          <Plus size={14} /> Add Member
         </button>
       </div>
 

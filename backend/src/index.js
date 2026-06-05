@@ -24,14 +24,38 @@ import Resource from './models/Resource.js';
 import { Circle, CircleMessage } from './models/Circle.js';
 import bcrypt from 'bcryptjs';
 
+import rateLimit from 'express-rate-limit';
+import mongoSanitize from 'express-mongo-sanitize';
+import xss from 'xss-clean';
+import hpp from 'hpp';
+
 const app = express();
 
 app.use(helmet({
-  contentSecurityPolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "http://localhost:*", "ws://localhost:*", "https:"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'", "https:"],
+      frameSrc: ["'self'", "https:"],
+    },
+  },
   crossOriginResourcePolicy: false,
   crossOriginEmbedderPolicy: false,
-  frameguard: false,
 }));
+
+// Global Rate Limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 1000, // limit each IP to 1000 requests per windowMs
+  message: { error: 'Too many requests from this IP, please try again in 15 minutes!' }
+});
+app.use('/api', limiter);
 
 const allowedOrigin = process.env.FRONTEND_URL;
 app.use(cors({
@@ -44,8 +68,18 @@ app.use(cors({
     : true, // dev fallback — allow everything
   credentials: true
 }));
+
 app.use(cookieParser());
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json({ limit: '5mb' })); // Reduced from 50mb to 5mb
+
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
+// Data sanitization against XSS
+app.use(xss());
+
+// Prevent parameter pollution
+app.use(hpp());
 
 import path from 'path';
 import { fileURLToPath } from 'url';

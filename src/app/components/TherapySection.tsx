@@ -1,7 +1,6 @@
 import { useRef, type MouseEvent } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { Calendar, Video, Clock, Award, ArrowRight } from 'lucide-react';
-import therapyVideo from '../../../asset/therapy.mp4';
 
 const benefits = [
   {
@@ -76,7 +75,7 @@ export default function TherapySection({ onBookSession }: { onBookSession?: () =
         >
           <video
             className="absolute inset-0 h-full w-full object-cover"
-            src={therapyVideo}
+            src="/asset/therapy.mp4"
             autoPlay
             muted
             loop

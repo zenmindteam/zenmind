@@ -204,13 +204,18 @@ export default function JobsManagement() {
     <div className="flex flex-col gap-5">
       {msg && <div className={`p-3 rounded-xl text-sm font-semibold ${msg.ok ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>{msg.text}</div>}
 
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h2 className="text-xl font-black text-[#0a2617] dark:text-white" style={{ fontFamily: 'Syne, sans-serif' }}>Job Postings</h2>
-          <p className="text-xs text-[#4a7c5d] dark:text-gray-400">{jobs.length} total · {jobs.filter(j => j.status === 'active').length} active</p>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#0d5d3a]/10 dark:border-white/10 pb-3 shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="px-4 py-2 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 text-xs font-bold text-green-800 dark:text-green-300 flex items-center gap-2">
+            <Briefcase size={14} /> 
+            {jobs.filter(j => j.status === 'active').length} active
+          </div>
+          <div className="px-4 py-2 rounded-xl bg-[#f0fbf4] dark:bg-[#0d1f14] border border-[#0d5d3a]/10 dark:border-white/5 text-xs text-[#4a7c5d] dark:text-gray-400 hidden sm:block font-medium">
+            {jobs.length} total postings
+          </div>
         </div>
-        <button onClick={openNew} className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0d5d3a] dark:bg-[#1a8a5a] text-white font-black text-sm hover:bg-[#0a4a2e] transition shadow-md">
-          <Plus size={16} /> Post New Job
+        <button onClick={openNew} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0d5d3a] dark:bg-[#1a8a5a] text-white text-xs font-bold hover:bg-[#0a4a2e] transition shadow-md shrink-0">
+          <Plus size={14} /> Post New Job
         </button>
       </div>
 

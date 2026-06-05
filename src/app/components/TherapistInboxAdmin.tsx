@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronLeft, CheckCircle, XCircle, Search, Clock, AlertTriangle, ShieldAlert, Send } from 'lucide-react';
+import { ChevronLeft, CheckCircle, XCircle, Search, Clock, AlertTriangle, ShieldAlert, Send, Trash2 } from 'lucide-react';
 import { apiFetch } from '../api/client';
 
 const STATUS_META: Record<string, { label: string; color: string }> = {
@@ -42,6 +42,10 @@ export default function TherapistInboxAdmin() {
   const [mode, setMode] = useState<'ticket' | 'report'>('ticket');
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const [saving, setSaving] = useState(false);
+
+  // Bulk Delete State
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [deleting, setDeleting] = useState(false);
 
   // Ticket edit state
   const [tStatus, setTStatus] = useState('');
@@ -111,6 +115,31 @@ export default function TherapistInboxAdmin() {
       setSelected(null); load();
     } catch (e: any) { toast(e.message, false); }
     finally { setSuspending(false); }
+  };
+
+  const toggleSelectAll = () => {
+    const list = tab === 'tickets' ? tickets : reports;
+    if (selectedItems.length === list.length) setSelectedItems([]);
+    else setSelectedItems(list.map(i => i._id));
+  };
+
+  const toggleSelect = (e: any, id: string) => {
+    e.stopPropagation();
+    setSelectedItems(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+  };
+
+  const bulkDelete = async () => {
+    if (!selectedItems.length) return;
+    if (!confirm(`Delete ${selectedItems.length} selected items?`)) return;
+    setDeleting(true);
+    try {
+      const endpoint = tab === 'tickets' ? '/admin/therapist-tickets/bulk-delete' : '/admin/therapist-reports/bulk-delete';
+      await apiFetch(endpoint, { method: 'POST', body: JSON.stringify({ ids: selectedItems }) });
+      toast('Deleted successfully');
+      setSelectedItems([]);
+      load();
+    } catch (e: any) { toast(e.message, false); }
+    finally { setDeleting(false); }
   };
 
   return (
@@ -248,15 +277,24 @@ export default function TherapistInboxAdmin() {
       </AnimatePresence>
 
       {/* Header */}
-      <div className="flex-shrink-0 px-4 sm:px-6 pt-5 pb-3 border-b border-[#0d5d3a]/10 dark:border-white/10">
-        <h1 className="text-xl font-black text-[#0a2617] dark:text-white mb-4" style={{ fontFamily: 'Syne,sans-serif' }}>Therapist Inbox</h1>
-        <div className="flex gap-1 p-1 bg-[#f0fbf4] dark:bg-[#0d1f14] rounded-2xl w-fit">
+      <div className="flex-shrink-0 px-4 sm:px-6 pt-5 pb-3 border-b border-[#0d5d3a]/10 dark:border-white/10 flex items-center justify-between">
+        <div className="flex items-center gap-1 p-1 bg-[#f0fbf4] dark:bg-[#0d1f14] rounded-2xl w-fit">
           {(['tickets','reports'] as const).map(t => (
-            <button key={t} onClick={() => setTab(t)}
+            <button key={t} onClick={() => { setTab(t); setSelectedItems([]); }}
               className={`px-4 py-2 rounded-xl text-sm font-bold transition ${tab === t ? 'bg-[#0d5d3a] text-white shadow-sm' : 'text-[#4a7c5d] dark:text-gray-400 hover:bg-[#0d5d3a]/10'}`}>
               {t === 'tickets' ? ` Support Tickets (${tickets.length})` : ` Reports (${reports.filter(r => r.urgency === 'critical').length > 0 ? ' ' : ''}${reports.length})`}
             </button>
           ))}
+        </div>
+        <div className="flex items-center gap-3">
+          {selectedItems.length > 0 && (
+            <button onClick={bulkDelete} disabled={deleting} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 font-bold text-sm hover:bg-red-100 dark:hover:bg-red-500/20 transition disabled:opacity-50">
+              <Trash2 size={16} /> {deleting ? 'Deleting...' : `Delete (${selectedItems.length})`}
+            </button>
+          )}
+          <button onClick={toggleSelectAll} className="px-4 py-2 rounded-xl border border-[#0d5d3a]/20 dark:border-white/10 text-sm font-bold text-[#0d5d3a] dark:text-[#10b981] hover:bg-[#0d5d3a]/5 transition">
+            {(tab === 'tickets' && selectedItems.length === tickets.length && tickets.length > 0) || (tab === 'reports' && selectedItems.length === reports.length && reports.length > 0) ? 'Deselect All' : 'Select All'}
+          </button>
         </div>
       </div>
 
@@ -271,15 +309,20 @@ export default function TherapistInboxAdmin() {
             <div className="space-y-3 max-w-2xl mx-auto">
               {tickets.map(t => (
                 <motion.div key={t._id} whileHover={{ y: -1 }} onClick={() => openTicket(t)}
-                  className="bg-white dark:bg-[#111] rounded-2xl p-4 border border-[#0d5d3a]/10 dark:border-white/10 shadow-sm cursor-pointer hover:border-[#0d5d3a]/30 transition">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <p className="font-bold text-[#0a2617] dark:text-white text-sm truncate">{t.subject}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{t.therapistName} · {CATEGORY_LABEL[t.category]} · {new Date(t.createdAt).toLocaleDateString()}</p>
-                    </div>
-                    <Badge status={t.status}/>
+                  className={`flex gap-3 bg-white dark:bg-[#111] rounded-2xl p-4 border shadow-sm cursor-pointer transition ${selectedItems.includes(t._id) ? 'border-[#0d5d3a] ring-1 ring-[#0d5d3a]' : 'border-[#0d5d3a]/10 dark:border-white/10 hover:border-[#0d5d3a]/30'}`}>
+                  <div className="pt-1">
+                    <input type="checkbox" checked={selectedItems.includes(t._id)} onChange={(e) => toggleSelect(e, t._id)} onClick={e => e.stopPropagation()} className="w-4 h-4 accent-[#0d5d3a] cursor-pointer" />
                   </div>
-                  <p className="text-xs text-gray-500 mt-2 line-clamp-1">{t.message}</p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="font-bold text-[#0a2617] dark:text-white text-sm truncate">{t.subject}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">{t.therapistName} · {CATEGORY_LABEL[t.category]} · {new Date(t.createdAt).toLocaleDateString()}</p>
+                      </div>
+                      <Badge status={t.status}/>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2 line-clamp-1">{t.message}</p>
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -291,9 +334,13 @@ export default function TherapistInboxAdmin() {
             <div className="space-y-3 max-w-2xl mx-auto">
               {reports.map(r => (
                 <motion.div key={r._id} whileHover={{ y: -1 }} onClick={() => openReport(r)}
-                  className={`bg-white dark:bg-[#111] rounded-2xl p-4 border shadow-sm cursor-pointer transition ${r.urgency === 'critical' ? 'border-red-300 dark:border-red-500/40 hover:border-red-400' : 'border-[#0d5d3a]/10 dark:border-white/10 hover:border-[#0d5d3a]/30'}`}>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
+                  className={`flex gap-3 bg-white dark:bg-[#111] rounded-2xl p-4 border shadow-sm cursor-pointer transition ${selectedItems.includes(r._id) ? 'border-[#0d5d3a] ring-1 ring-[#0d5d3a]' : r.urgency === 'critical' ? 'border-red-300 dark:border-red-500/40 hover:border-red-400' : 'border-[#0d5d3a]/10 dark:border-white/10 hover:border-[#0d5d3a]/30'}`}>
+                  <div className="pt-1">
+                    <input type="checkbox" checked={selectedItems.includes(r._id)} onChange={(e) => toggleSelect(e, r._id)} onClick={e => e.stopPropagation()} className="w-4 h-4 accent-[#0d5d3a] cursor-pointer" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
                       <p className="font-bold text-[#0a2617] dark:text-white text-sm capitalize flex items-center gap-1.5">
                         {r.urgency === 'critical' && <AlertTriangle size={13} className="text-red-500 shrink-0"/>}
                         {REPORT_LABEL[r.reportType] || r.reportType}
@@ -307,6 +354,7 @@ export default function TherapistInboxAdmin() {
                   </div>
                   <p className="text-xs text-gray-500 mt-2 line-clamp-1">{r.description}</p>
                   {r.involvedUserEmail && <p className="text-xs text-[#4a7c5d] mt-1">User: {r.involvedUserEmail}</p>}
+                  </div>
                 </motion.div>
               ))}
             </div>

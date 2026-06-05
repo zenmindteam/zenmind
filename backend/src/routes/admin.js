@@ -66,33 +66,39 @@ router.get('/me', requireAdmin, async (req, res) => {
 
 /* ── GET /admin/users ── */
 router.get('/users', requireAdmin, async (req, res) => {
-  // Auto-unsuspend any users whose suspension period has expired
-  await User.updateMany(
-    { isSuspended: true, suspendedUntil: { $lte: new Date() } },
-    { $set: { isSuspended: false, suspendedUntil: null } }
-  );
+  try {
+    // Auto-unsuspend any users whose suspension period has expired
+    await User.updateMany(
+      { isSuspended: true, suspendedUntil: { $lte: new Date() } },
+      { $set: { isSuspended: false, suspendedUntil: null } }
+    );
 
-  const users = await User.find({}, '-passwordHash').sort({ createdAt: -1 }).lean();
+    // Exclude avatar field to prevent huge payloads crashing the request
+    const users = await User.find({}, '-passwordHash -avatar').sort({ createdAt: -1 }).lean();
 
-  const totalUsers     = users.length;
-  const suspendedCount = users.filter(u => u.isSuspended).length;
+    const totalUsers     = users.length;
+    const suspendedCount = users.filter(u => u.isSuspended).length;
 
-  // Determine start of day in UTC to match stored timestamps
-  const utcStart = new Date();
-  utcStart.setUTCHours(0, 0, 0, 0);
-  // Use MongoDB aggregation for accurate count
-  const todaysMembers = await User.countDocuments({ createdAt: { $gte: utcStart } });
+    // Determine start of day in UTC to match stored timestamps
+    const utcStart = new Date();
+    utcStart.setUTCHours(0, 0, 0, 0);
+    // Use MongoDB aggregation for accurate count
+    const todaysMembers = await User.countDocuments({ createdAt: { $gte: utcStart } });
 
-  return res.json({
-    ok: true,
-    users,
-    stats: {
-      total: totalUsers,
-      suspended: suspendedCount,
-      today: todaysMembers,
-      active: totalUsers - suspendedCount
-    }
-  });
+    return res.json({
+      ok: true,
+      users,
+      stats: {
+        total: totalUsers,
+        suspended: suspendedCount,
+        today: todaysMembers,
+        active: totalUsers - suspendedCount
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    return res.status(500).json({ error: error.message || 'Internal server error' });
+  }
 });
 
 /* ── PUT /admin/users/:id/suspend ── */
@@ -469,6 +475,19 @@ router.patch('/therapist-tickets/:id', requireAdmin, async (req, res) => {
   }
 });
 
+/* POST /admin/therapist-tickets/bulk-delete */
+router.post('/therapist-tickets/bulk-delete', requireAdmin, async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids)) return res.status(400).json({ error: 'Invalid ids array' });
+    
+    await TherapistTicket.deleteMany({ _id: { $in: ids } });
+    return res.json({ ok: true });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 /* PATCH /admin/therapist-tickets/:id/apply-profile — directly update therapist profile fields */
 router.patch('/therapist-tickets/:id/apply-profile', requireAdmin, async (req, res) => {
   try {
@@ -522,6 +541,19 @@ router.patch('/therapist-reports/:id', requireAdmin, async (req, res) => {
     if (therapistNote !== undefined) report.therapistNote = therapistNote;
     await report.save();
     return res.json({ ok: true, report });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/* POST /admin/therapist-reports/bulk-delete */
+router.post('/therapist-reports/bulk-delete', requireAdmin, async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids)) return res.status(400).json({ error: 'Invalid ids array' });
+    
+    await TherapistReport.deleteMany({ _id: { $in: ids } });
+    return res.json({ ok: true });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

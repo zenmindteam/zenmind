@@ -27,6 +27,7 @@ export default function TherapistDashboard({ onLogout }: { onLogout: () => void 
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   // Profile state
   const [phone, setPhone] = useState('');
@@ -221,11 +222,11 @@ export default function TherapistDashboard({ onLogout }: { onLogout: () => void 
           {wide && <span className="font-bold text-lg text-[#0a2617] dark:text-white whitespace-nowrap" style={{ fontFamily: 'Syne, sans-serif' }}>Therapist</span>}
         </div>
         {wide && (
-          <div className="px-5 py-4 border-b border-[#0d5d3a]/5 dark:border-white/5 flex items-center gap-3 shrink-0">
+          <div className="px-5 py-3 border-b border-[#0d5d3a]/5 dark:border-white/5 flex items-center gap-3 shrink-0">
             <div className="relative shrink-0">
               {picPreview
-                ? <img src={picPreview} alt="P" className="w-12 h-12 rounded-full object-cover border-2 border-[#0d5d3a]/20" />
-                : <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0d5d3a] to-[#1a8a5a] flex items-center justify-center text-white text-xl font-bold">{therapist?.name?.charAt(0)}</div>
+                ? <img src={picPreview} alt="P" className="w-10 h-10 rounded-full object-cover border-2 border-[#0d5d3a]/20" />
+                : <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0d5d3a] to-[#1a8a5a] flex items-center justify-center text-white text-lg font-bold">{therapist?.name?.charAt(0)}</div>
               }
             </div>
             <div className="min-w-0">
@@ -234,22 +235,22 @@ export default function TherapistDashboard({ onLogout }: { onLogout: () => void 
             </div>
           </div>
         )}
-        <nav className="flex-1 py-4 px-3 flex flex-col gap-1 overflow-y-auto">
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden p-2 flex flex-col gap-1 custom-scrollbar">
           {navItems.map(({ key, label, icon }) => (
             <button key={key} onClick={() => { setTab(key); if (mobile) setMobileOpen(false); }}
-              className={`w-full flex items-center ${wide ? 'gap-3 px-4' : 'justify-center px-0'} py-3 rounded-xl font-semibold transition-all
+              className={`w-full flex items-center ${wide ? 'gap-2.5 px-3' : 'justify-center px-0'} py-2.5 rounded-2xl text-sm font-semibold transition-all
                 ${tab === key ? 'bg-[#0d5d3a] text-white shadow-md' : 'text-[#4a7c5d] dark:text-gray-400 hover:bg-[#f0fbf4] dark:hover:bg-white/5 hover:text-[#0d5d3a]'}`}
               title={!wide ? label : undefined}
             >
-              {icon}{wide && <span>{label}</span>}
+              {React.cloneElement(icon as React.ReactElement, { size: 16 })}{wide && <span>{label}</span>}
             </button>
           ))}
         </nav>
-        <div className="p-3 border-t border-[#0d5d3a]/10 dark:border-white/10 shrink-0">
-          <button onClick={onLogout}
-            className={`w-full flex items-center ${wide ? 'gap-3 px-4' : 'justify-center px-0'} py-3 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 font-medium transition-colors`}
+        <div className="p-2 border-t border-[#0d5d3a]/10 dark:border-white/10 shrink-0">
+          <button onClick={() => setShowLogoutConfirm(true)}
+            className={`w-full flex items-center ${wide ? 'gap-2.5 px-3' : 'justify-center px-0'} py-2.5 rounded-2xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 text-sm font-semibold transition-colors`}
           >
-            <LogOut size={20} className="shrink-0" />{wide && <span>Sign Out</span>}
+            <LogOut size={16} className="shrink-0" />{wide && <span>Sign Out</span>}
           </button>
         </div>
       </>
@@ -282,14 +283,15 @@ export default function TherapistDashboard({ onLogout }: { onLogout: () => void 
       </AnimatePresence>
 
       {/* Desktop sidebar */}
-      <motion.aside animate={{ width: collapsed ? 72 : 260 }} transition={{ duration: 0.25 }}
-        className="relative flex-shrink-0 bg-white dark:bg-[#111111] border-r border-[#0d5d3a]/10 dark:border-white/10 h-full z-20 hidden md:flex flex-col overflow-hidden">
-        <button onClick={() => setCollapsed(c => !c)}
-          className="absolute -right-3.5 top-6 bg-white dark:bg-[#1a1a1a] border border-[#0d5d3a]/15 dark:border-white/10 text-[#0a2617] dark:text-gray-300 p-1.5 rounded-full shadow-sm hover:bg-[#f0fbf4] dark:hover:bg-[#222] z-30">
-          {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+      <div className="hidden md:block flex-shrink-0 relative z-20" style={{ width: collapsed ? 72 : 260, transition: 'width 0.3s cubic-bezier(0.4,0,0.2,1)' }}>
+        <button onClick={() => setCollapsed(c => !c)} title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          className="absolute -right-3.5 top-6 z-30 w-7 h-7 bg-white dark:bg-[#1a1a1a] border border-[#0d5d3a]/15 dark:border-white/10 text-[#0a2617] dark:text-gray-300 rounded-full shadow-md flex items-center justify-center hover:bg-[#f0fbf4] dark:hover:bg-[#222222] hover:text-[#0d5d3a] dark:hover:text-white transition-colors">
+          {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
-        <SidebarContent />
-      </motion.aside>
+        <div className="bg-white dark:bg-[#111111] border-r border-[#0d5d3a]/10 dark:border-white/10 h-full flex flex-col overflow-hidden">
+          <SidebarContent />
+        </div>
+      </div>
 
       {/* Main */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
@@ -639,6 +641,52 @@ export default function TherapistDashboard({ onLogout }: { onLogout: () => void 
 
         </main>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      <AnimatePresence>
+        {showLogoutConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowLogoutConfirm(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className="bg-white dark:bg-[#111] rounded-3xl shadow-2xl border border-[#0d5d3a]/10 dark:border-white/10 p-8 max-w-sm w-full text-center"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="w-16 h-16 rounded-2xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center mx-auto mb-5">
+                <LogOut className="w-8 h-8 text-red-500" />
+              </div>
+
+              <h2 className="text-xl font-black text-[#0a2617] dark:text-white mb-2" style={{ fontFamily: 'Syne, sans-serif' }}>
+                Sign out of ZenMind?
+              </h2>
+              <p className="text-[#4a7c5d] dark:text-gray-400 text-sm leading-relaxed mb-7">
+                Are you sure you want to sign out of your therapist dashboard?
+              </p>
+
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={onLogout}
+                  className="w-full py-3.5 rounded-2xl bg-red-500 hover:bg-red-600 text-white font-black text-sm transition-colors shadow-lg shadow-red-500/20"
+                >
+                  Yes, Sign Out
+                </button>
+                <button
+                  onClick={() => setShowLogoutConfirm(false)}
+                  className="w-full py-3.5 rounded-2xl bg-[#f0fbf4] dark:bg-[#0d5d3a]/20 hover:bg-[#e8f5e9] dark:hover:bg-[#0d5d3a]/30 text-[#0d5d3a] dark:text-[#10b981] font-black text-sm transition-colors"
+                >
+                  Stay Signed In
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

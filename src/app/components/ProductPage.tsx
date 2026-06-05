@@ -496,7 +496,7 @@ export default function ProductPage({ page, onClose }: { page: string; onClose: 
                   <FileCode size={30} className="sm:hidden" />
                   <FileCode size={36} className="hidden sm:block" />
                 </div>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0a2617] dark:text-white mb-4 sm:mb-6" style={{ fontFamily: 'Syne, sans-serif' }}>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0a2617] dark:text-white mb-4 sm:mb-6 break-words" style={{ fontFamily: 'Syne, sans-serif' }}>
                   Documentation
                 </h2>
                 <div className="inline-block px-4 py-1.5 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 font-bold text-sm mb-4 sm:mb-6 uppercase tracking-widest">
@@ -520,7 +520,7 @@ export default function ProductPage({ page, onClose }: { page: string; onClose: 
                   <ShieldCheck size={30} className="sm:hidden" />
                   <ShieldCheck size={36} className="hidden sm:block" />
                 </div>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0a2617] dark:text-white mb-4 sm:mb-6" style={{ fontFamily: 'Syne, sans-serif' }}>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0a2617] dark:text-white mb-4 sm:mb-6 break-words" style={{ fontFamily: 'Syne, sans-serif' }}>
                   Safety Guidelines
                 </h2>
                 <div className="inline-block px-4 py-1.5 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 font-bold text-sm mb-4 sm:mb-6 uppercase tracking-widest">

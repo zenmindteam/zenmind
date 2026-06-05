@@ -58,17 +58,17 @@ export default function CareersPage({ onClose }: { onClose: () => void }) {
             </section>
 
             {/* Filters */}
-            <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+            <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8 relative">
+              <div className="sticky top-0 z-20 bg-white/90 dark:bg-[#050505]/90 backdrop-blur-md flex flex-col sm:flex-row gap-4 mb-8 py-4 -mx-4 px-4 sm:-mx-6 sm:px-6 border-b border-[#0d5d3a]/10 dark:border-white/5">
                 <div className="relative flex-1">
                   <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4a7c5d] dark:text-gray-400" />
                   <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search roles, locations..."
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl border border-[#0d5d3a]/20 dark:border-white/10 bg-white dark:bg-[#111111] text-[#0a2617] dark:text-white outline-none focus:ring-2 focus:ring-[#0d5d3a]/30 text-sm" />
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl border border-[#0d5d3a]/20 dark:border-white/10 bg-white dark:bg-[#111111] text-[#0a2617] dark:text-white outline-none focus:ring-2 focus:ring-[#0d5d3a]/30 text-sm shadow-sm" />
                 </div>
                 <div className="flex gap-2 flex-wrap">
                   {depts.map(d => (
                     <button key={d} onClick={() => setFilter(d)}
-                      className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${filter === d ? 'bg-[#0d5d3a] text-white shadow-md' : 'bg-white dark:bg-[#111111] border border-[#0d5d3a]/20 dark:border-white/10 text-[#4a7c5d] dark:text-gray-400 hover:border-[#0d5d3a]/40'}`}>
+                      className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm ${filter === d ? 'bg-[#0d5d3a] text-white shadow-md' : 'bg-white dark:bg-[#111111] border border-[#0d5d3a]/20 dark:border-white/10 text-[#4a7c5d] dark:text-gray-400 hover:border-[#0d5d3a]/40'}`}>
                       {d}
                     </button>
                   ))}

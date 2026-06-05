@@ -108,14 +108,15 @@ export default function ReadingListsTherapist() {
         </div>
       )}
 
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-black text-[#0a2617] dark:text-white" style={{fontFamily:'Syne,sans-serif'}}> My Reading Lists</h2>
-          <p className="text-sm text-[#4a7c5d] dark:text-gray-400 mt-0.5">Create curated lists for your patients · published lists go for admin review</p>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#0d5d3a]/10 dark:border-white/10 pb-3 shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="px-4 py-2 rounded-xl bg-[#f0fbf4] dark:bg-[#0d1f14] border border-[#0d5d3a]/10 dark:border-white/5 text-xs text-[#4a7c5d] dark:text-gray-400 font-medium flex items-center gap-2">
+            <BookOpen size={14} className="text-[#0d5d3a] dark:text-[#10b981]" /> Create curated lists for your patients · published lists go for admin review
+          </div>
         </div>
         <button onClick={() => { resetForm(); setShowForm(true); }}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0d5d3a] text-white font-bold text-sm hover:bg-[#0a4a2e] transition shadow-md">
-          <Plus size={16}/> New List
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0d5d3a] text-white font-bold text-xs hover:bg-[#0a4a2e] transition shadow-md shrink-0">
+          <Plus size={14}/> New List
         </button>
       </div>
 

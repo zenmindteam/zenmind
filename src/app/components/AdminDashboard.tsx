@@ -48,8 +48,8 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 });
 
   const [mobileOpen, setMobileOpen] = useState(false);
-
   const [adminUsername, setAdminUsername] = useState('Admin');
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
 
 
@@ -74,46 +74,30 @@ useEffect(() => {
 
 
   const SidebarContent = ({ mobile }: { mobile?: boolean }) => (
-
     <>
-
-      <div className={`p-5 flex items-center ${(!mobile && sidebarExpanded) || mobile ? 'gap-3' : 'justify-center'} h-[72px] border-b border-[#0d5d3a]/10 dark:border-white/10`}>
-
+      <div className={`p-5 flex items-center ${(!mobile && sidebarExpanded) || mobile ? 'gap-3' : 'justify-center'} h-[72px] border-b border-[#0d5d3a]/10 dark:border-white/10 shrink-0`}>
         <img src={logo} alt="Logo" className="w-9 h-9 rounded-full object-cover shrink-0" />
-
         {(mobile || sidebarExpanded) && (
-
           <span className="font-bold text-lg tracking-wide overflow-hidden whitespace-nowrap text-[#0a2617] dark:text-gray-100" style={{ fontFamily: 'Syne, sans-serif' }}>
-
             Admin Panel
-
           </span>
-
         )}
-
       </div>
-
-      <AdminSidebarNav
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 flex flex-col gap-1 custom-scrollbar">
+        <AdminSidebarNav
           tab={activeTab}
           navigateToTab={navTo}
-          collapsed={!sidebarExpanded}
+          collapsed={!sidebarExpanded && !mobile}
           setCollapsed={(c) => setSidebarExpanded(!c)}
         />
-
-      <div className="p-3 border-t border-[#0d5d3a]/10 dark:border-white/10">
-
-        <button onClick={onLogout} className={`w-full flex items-center ${(mobile || sidebarExpanded) ? 'gap-3 px-4' : 'justify-center px-0'} py-3 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 font-medium transition-colors`}>
-
-          <LogOut size={20} className="shrink-0" />
-
-          {(mobile || sidebarExpanded) && <span>Sign Out</span>}
-
-        </button>
-
       </div>
-
+      <div className="p-2 border-t border-[#0d5d3a]/10 dark:border-white/10 shrink-0">
+        <button onClick={() => setShowLogoutConfirm(true)} className={`w-full flex items-center ${(mobile || sidebarExpanded) ? 'gap-2.5 px-3' : 'justify-center px-0'} py-2.5 rounded-2xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 font-semibold text-sm transition-colors`}>
+          <LogOut size={16} className="shrink-0" />
+          {(mobile || sidebarExpanded) && <span>Sign Out</span>}
+        </button>
+      </div>
     </>
-
   );
 
 
@@ -166,21 +150,15 @@ useEffect(() => {
 
       {/* Desktop sidebar */}
 
-      <motion.aside animate={{ width: sidebarExpanded ? 260 : 72 }} transition={{ duration: 0.25 }}
-
-        className="relative flex-shrink-0 bg-white dark:bg-[#111111] border-r border-[#0d5d3a]/10 dark:border-white/10 flex-col h-full z-20 hidden md:flex overflow-y-auto">
-
+      <div className="hidden md:block flex-shrink-0 relative z-20" style={{ width: sidebarExpanded ? 260 : 72, transition: 'width 0.3s cubic-bezier(0.4,0,0.2,1)' }}>
         <button onClick={() => setSidebarExpanded(s => !s)}
-
-          className="absolute -right-3.5 top-6 bg-white dark:bg-[#1a1a1a] border border-[#0d5d3a]/15 dark:border-white/10 text-[#0a2617] dark:text-gray-300 p-1 rounded-full shadow-sm hover:bg-[#f0fbf4] dark:hover:bg-[#222222] hover:text-[#0d5d3a] dark:hover:text-white transition-colors z-30">
-
+          className="absolute -right-3.5 top-6 z-30 w-7 h-7 bg-white dark:bg-[#1a1a1a] border border-[#0d5d3a]/15 dark:border-white/10 text-[#0a2617] dark:text-gray-300 rounded-full shadow-md flex items-center justify-center hover:bg-[#f0fbf4] dark:hover:bg-[#222222] hover:text-[#0d5d3a] dark:hover:text-white transition-colors">
           {sidebarExpanded ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
-
         </button>
-
-        <SidebarContent />
-
-      </motion.aside>
+        <div className="bg-white dark:bg-[#111111] border-r border-[#0d5d3a]/10 dark:border-white/10 h-full flex flex-col overflow-hidden">
+          <SidebarContent />
+        </div>
+      </div>
 
 
 
@@ -284,6 +262,55 @@ useEffect(() => {
 
       </div>
 
+      {/* Logout Confirmation Modal */}
+      <AnimatePresence>
+        {showLogoutConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowLogoutConfirm(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className="bg-white dark:bg-[#111] rounded-3xl shadow-2xl border border-[#0d5d3a]/10 dark:border-white/10 p-8 max-w-sm w-full text-center"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Icon */}
+              <div className="w-16 h-16 rounded-2xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center mx-auto mb-5">
+                <LogOut className="w-8 h-8 text-red-500" />
+              </div>
+
+              <h2 className="text-xl font-black text-[#0a2617] dark:text-white mb-2" style={{ fontFamily: 'Syne, sans-serif' }}>
+                Sign out of Admin Panel?
+              </h2>
+              <p className="text-[#4a7c5d] dark:text-gray-400 text-sm leading-relaxed mb-7">
+                Are you sure you want to securely sign out of your session?
+              </p>
+
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={onLogout}
+                  className="w-full py-3.5 rounded-2xl bg-red-500 hover:bg-red-600 text-white font-black text-sm transition-colors shadow-lg shadow-red-500/20"
+                >
+                  Yes, Sign Out
+                </button>
+                <button
+                  onClick={() => setShowLogoutConfirm(false)}
+                  className="w-full py-3.5 rounded-2xl bg-[#f0fbf4] dark:bg-[#0d5d3a]/20 hover:bg-[#e8f5e9] dark:hover:bg-[#0d5d3a]/30 text-[#0d5d3a] dark:text-[#10b981] font-black text-sm transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
 
   );
@@ -293,23 +320,14 @@ useEffect(() => {
 
 
 function NavItem({ icon: Icon, label, active, onClick, expanded }: any) {
-
   return (
-
     <button onClick={onClick}
-
-      className={`w-full flex items-center ${expanded ? 'gap-3 px-4' : 'justify-center px-0'} py-3 rounded-xl font-semibold transition-all duration-200 ${active ? 'bg-[#0d5d3a] dark:bg-[#1a8a5a] text-white shadow-md shadow-[#0d5d3a]/20 dark:shadow-[#1a8a5a]/20' : 'text-[#4a7c5d] dark:text-gray-400 hover:bg-[#f0fbf4] dark:hover:bg-white/5 hover:text-[#0d5d3a] dark:hover:text-gray-200'}`}
-
+      className={`w-full flex items-center ${expanded ? 'gap-2.5 px-3' : 'justify-center px-0'} py-2.5 rounded-2xl text-sm font-semibold transition-all duration-200 ${active ? 'bg-[#0d5d3a] dark:bg-[#1a8a5a] text-white shadow-md' : 'text-[#4a7c5d] dark:text-gray-400 hover:bg-[#f0fbf4] dark:hover:bg-white/5 hover:text-[#0d5d3a] dark:hover:text-gray-200'}`}
       title={!expanded ? label : undefined}>
-
-      <Icon size={20} className="shrink-0" />
-
+      <Icon size={18} className="shrink-0" />
       {expanded && <span className="whitespace-nowrap overflow-hidden">{label}</span>}
-
     </button>
-
   );
-
 }
 
 
@@ -606,7 +624,7 @@ function UsersManagement() {
 
     const q = search.toLowerCase();
 
-    const matchSearch = u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.phone.includes(q);
+    const matchSearch = (u.name || '').toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q) || (u.phone || '').includes(q);
 
     const matchGender = genderFilter === 'all' || u.gender === genderFilter;
 
@@ -794,17 +812,17 @@ function UsersManagement() {
 
                   <div className="w-9 h-9 rounded-full bg-[#e8f3ec] dark:bg-[#10b981]/20 flex items-center justify-center text-[#0d5d3a] dark:text-[#10b981] font-bold text-sm flex-shrink-0">
 
-                    {u.name.substring(0, 2).toUpperCase()}
+                    {(u.name || 'U').substring(0, 2).toUpperCase()}
 
                   </div>
 
                   <div className="truncate">
 
-                    <div className="font-bold text-[#0a2617] dark:text-gray-100 text-sm truncate">{u.name}</div>
+                    <div className="font-bold text-[#0a2617] dark:text-gray-100 text-sm truncate">{u.name || 'Unknown Member'}</div>
 
-                    <div className="text-xs text-[#4a7c5d] dark:text-gray-400 truncate">{u.email}</div>
+                    <div className="text-xs text-[#4a7c5d] dark:text-gray-400 truncate">{u.email || 'No email'}</div>
 
-                    <div className="text-xs text-[#4a7c5d] dark:text-gray-400 truncate">{u.phone}</div>
+                    <div className="text-xs text-[#4a7c5d] dark:text-gray-400 truncate">{u.phone || 'No phone'}</div>
 
                   </div>
 
@@ -3463,24 +3481,11 @@ function PeerCirclesManagement() {
 
 
 
-      <div className="flex items-center justify-between">
-
-        <div>
-
-          <h2 className="text-xl font-black text-[#0a2617] dark:text-white" style={{fontFamily:'Syne,sans-serif'}}>Peer Support Circles</h2>
-
-          <p className="text-sm text-[#4a7c5d] dark:text-gray-400 mt-0.5">{circles.length} circles · create, enable/disable, moderate messages</p>
-
-        </div>
-
+      <div className="flex items-center justify-start border-b border-[#0d5d3a]/10 dark:border-white/10 pb-3 shrink-0">
         <button onClick={()=>setShowForm(s=>!s)}
-
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0d5d3a] dark:bg-[#1a8a5a] text-white font-bold text-sm hover:bg-[#0a4a2e] transition shadow-md">
-
           <Plus size={16}/> New Circle
-
         </button>
-
       </div>
 
 
@@ -3943,13 +3948,8 @@ function QuizManagement() {
   return (
 
     <div className="flex flex-col gap-6 max-w-3xl">
-
-      <div>
-
-        <h2 className="text-xl font-black text-[#0a2617] dark:text-white" style={{fontFamily:'Syne,sans-serif'}}>Quiz Questions</h2>
-
-        <p className="text-sm text-[#4a7c5d] dark:text-gray-400 mt-1">These are the 6 questions shown in the "Find My Therapist" AI quiz. Toggle any question off to skip it in the quiz flow for users.</p>
-
+      <div className="p-4 rounded-xl bg-[#f0fbf4] dark:bg-[#0d1f14] border border-[#0d5d3a]/10 dark:border-white/5 text-sm text-[#4a7c5d] dark:text-gray-400 font-medium">
+        These are the 6 questions shown in the "Find My Therapist" AI quiz. Toggle any question off to skip it in the quiz flow for users.
       </div>
 
 
@@ -4392,28 +4392,19 @@ function FlaggedContent() {
 
 
 
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-black text-[#0a2617] dark:text-white" style={{fontFamily:'Syne,sans-serif'}}>Flagged Content</h2>
-          <p className="text-sm text-[#4a7c5d] dark:text-gray-400 mt-0.5">
-            {loading ? 'Scanning…' : `${filtered.length} flagged message${filtered.length!==1?'s':''} detected across all circles`}
-          </p>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#0d5d3a]/10 dark:border-white/10 pb-3 shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="px-4 py-2 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-xs font-bold text-amber-800 dark:text-amber-300 flex items-center gap-2">
+            <AlertTriangle size={14} /> 
+            {loading ? 'Scanning…' : `${filtered.length} flagged messages`}
+          </div>
+          <div className="px-4 py-2 rounded-xl bg-[#f0fbf4] dark:bg-[#0d1f14] border border-[#0d5d3a]/10 dark:border-white/5 text-xs text-[#4a7c5d] dark:text-gray-400 hidden lg:block">
+            {BAD_WORDS.length} patterns scanned. Anonymous msgs can only be deleted.
+          </div>
         </div>
-        <button onClick={load} className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[#0d5d3a]/20 dark:border-white/10 text-sm font-bold text-[#0d5d3a] dark:text-[#10b981] hover:bg-[#0d5d3a]/5 transition">
-          <RefreshCw size={16} /> Rescan
+        <button onClick={load} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0d5d3a] dark:bg-[#1a8a5a] text-white text-xs font-bold hover:bg-[#0a4a2e] transition shadow-md shrink-0">
+          <RefreshCw size={14} /> Rescan
         </button>
-      </div>
-
-
-
-      {/* Info banner */}
-
-      <div className="flex items-start gap-3 p-4 rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-sm text-amber-800 dark:text-amber-300">
-
-        <AlertTriangle size={16} className="shrink-0 mt-0.5"/>
-
-        <p>Messages are scanned using a built-in bad-word filter ({BAD_WORDS.length} patterns). Anonymous messages can only have the message deleted — user actions require a known identity.</p>
-
       </div>
 
 

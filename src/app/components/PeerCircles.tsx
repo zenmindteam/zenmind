@@ -201,7 +201,8 @@ function CircleChatRoom({ circle, currentUserId, onBack, onJoin, joining }: {
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
             <textarea value={text} onChange={e => setText(e.target.value)} onKeyDown={handleKey}
               placeholder="Share how you feel… (Enter to send)" rows={1}
-              style={{ flex: 1, padding: '10px 14px', borderRadius: 16, border: '2px solid rgba(13,93,58,0.15)', background: 'white', fontSize: 13, outline: 'none', resize: 'none', maxHeight: 112, overflowY: 'auto', fontFamily: 'inherit' }}
+              className="bg-white dark:bg-[#111111] text-[#0a2617] dark:text-white placeholder-gray-400"
+              style={{ flex: 1, padding: '10px 14px', borderRadius: 16, border: '2px solid rgba(13,93,58,0.15)', fontSize: 13, outline: 'none', resize: 'none', maxHeight: 112, overflowY: 'auto', fontFamily: 'inherit' }}
               onInput={e => { const t = e.currentTarget; t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 112) + 'px'; }} />
             <button onClick={sendMessage} disabled={!text.trim() || sending}
               style={{ width: 40, height: 40, borderRadius: 12, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg,#0d5d3a,#1a8a5a)', color: 'white', boxShadow: '0 2px 8px rgba(13,93,58,0.3)', opacity: !text.trim() || sending ? 0.5 : 1 }}>
@@ -292,7 +293,8 @@ export default function PeerCircles({ userId }: { userId?: string }) {
             <Search className="w-3.5 h-3.5" style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
             <input value={circleSearch} onChange={e => setCircleSearch(e.target.value)}
               placeholder="Search circles…"
-              style={{ width: '100%', paddingLeft: 32, paddingRight: 12, paddingTop: 7, paddingBottom: 7, borderRadius: 20, border: '2px solid rgba(13,93,58,0.15)', background: 'white', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
+              className="bg-white dark:bg-[#111111] text-[#0a2617] dark:text-white placeholder-gray-400"
+              style={{ width: '100%', paddingLeft: 32, paddingRight: 12, paddingTop: 7, paddingBottom: 7, borderRadius: 20, border: '2px solid rgba(13,93,58,0.15)', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
           </div>
           <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
             {(['joined', 'browse'] as const).map(t => (

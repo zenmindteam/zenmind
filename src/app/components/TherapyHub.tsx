@@ -474,7 +474,8 @@ export default function TherapyHub({ onSessionBooked, onStartChat, userTier = 'f
           <div style={{ position: 'relative', flex: 1, minWidth: 140 }}>
             <Search size={15} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#4a7c5d' }} />
             <input type="text" placeholder="Search name or specialization…" value={search} onChange={e => setSearch(e.target.value)}
-              style={{ width: '100%', paddingLeft: 34, paddingRight: 32, paddingTop: 9, paddingBottom: 9, borderRadius: 20, border: '2px solid rgba(13,93,58,0.15)', background: 'white', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
+              className="bg-white dark:bg-[#111111] text-[#0a2617] dark:text-white placeholder-gray-400"
+              style={{ width: '100%', paddingLeft: 34, paddingRight: 32, paddingTop: 9, paddingBottom: 9, borderRadius: 20, border: '2px solid rgba(13,93,58,0.15)', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
             {search && <button onClick={() => setSearch('')} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af' }}><X size={13} /></button>}
           </div>
           {/* Specialization */}

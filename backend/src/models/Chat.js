@@ -19,6 +19,10 @@ const chatSchema = new mongoose.Schema({
     type: Date,
     default: null,
   },
+  isHiddenForTherapist: {
+    type: Boolean,
+    default: false,
+  },
 }, { timestamps: true });
 
 // Prevent duplicate chat rooms between the same user and therapist

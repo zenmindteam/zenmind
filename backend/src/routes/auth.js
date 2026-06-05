@@ -8,8 +8,17 @@ import { signJwt } from '../utils/jwt.js';
 import { sendOtpEmail, sendWelcomeEmail } from '../utils/mailer.js';
 import { requireAuth } from '../middleware/auth.js';
 import { cookieOpts } from '../utils/cookieOptions.js';
+import rateLimit from 'express-rate-limit';
 
 const router = Router();
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 20, // Strict limit for auth endpoints
+  message: { error: 'Too many authentication attempts, please try again later.' }
+});
+
+router.use(authLimiter);
 
 /* ────────────────────────────────────────────────
    REGISTER
@@ -62,7 +71,7 @@ router.post('/login', async (req, res) => {
 
   const user = await User.findOne({
     $or: [{ email: identifier.toLowerCase() }, { phone: identifier }]
-  });
+  }).select('-avatar');
   if (!user) return res.status(401).json({ error: 'Invalid credentials' });
 
   if (user.isSuspended) {

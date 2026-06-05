@@ -39,7 +39,10 @@ const therapistSchema = new mongoose.Schema({
   
   // Status tracking
   isOnline: { type: Boolean, default: false },
-  lastSeen: { type: Date, default: Date.now }
+  lastSeen: { type: Date, default: Date.now },
+
+  // Blocked users
+  blockedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 }, { timestamps: true });
 
 therapistSchema.pre('save', async function (next) {

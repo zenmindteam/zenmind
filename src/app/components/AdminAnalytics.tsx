@@ -126,13 +126,7 @@ export default function AdminAnalytics() {
   return (
     <div className="space-y-8 pb-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-black text-[#0a2617] dark:text-gray-100" style={{ fontFamily: 'Syne, sans-serif' }}>
-            Platform Analytics
-          </h1>
-          <p className="text-xs text-[#4a7c5d] dark:text-gray-400 mt-0.5">Live data — all times IST</p>
-        </div>
+      <div className="flex items-center justify-end mb-2">
         <button
           onClick={() => load(true)}
           disabled={refreshing}

@@ -59,30 +59,24 @@ export default function ReadingListsAdmin() {
         </div>
       )}
 
-      {/* Header + stats */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-black text-[#0a2617] dark:text-white" style={{fontFamily:'Syne,sans-serif'}}> Reading Lists Review</h2>
-          <p className="text-sm text-[#4a7c5d] dark:text-gray-400 mt-0.5">Approve or reject therapist-submitted reading lists</p>
+      {/* Header (Filters + stats) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#0d5d3a]/10 dark:border-white/10 pb-3 shrink-0">
+        <div className="flex gap-2">
+          {(['pending','approved','all'] as const).map(f => (
+            <button key={f} onClick={()=>setFilter(f)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold capitalize transition border ${filter===f?'border-[#0d5d3a] bg-[#0d5d3a] text-white shadow-sm':'border-transparent bg-[#f0fbf4] dark:bg-[#0d1f14] text-[#4a7c5d] dark:text-gray-400 hover:bg-[#0d5d3a]/10'}`}>
+              {f}
+            </button>
+          ))}
         </div>
         <div className="flex gap-3">
-          <div className="px-4 py-2 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 text-sm font-bold border border-amber-200 dark:border-amber-500/20">
+          <div className="px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 text-xs font-bold border border-amber-200 dark:border-amber-500/20">
              {stats.pending} pending
           </div>
-          <div className="px-4 py-2 rounded-xl bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 text-sm font-bold border border-green-200 dark:border-green-500/20">
+          <div className="px-3 py-1.5 rounded-xl bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 text-xs font-bold border border-green-200 dark:border-green-500/20">
              {stats.approved} approved
           </div>
         </div>
-      </div>
-
-      {/* Filter tabs */}
-      <div className="flex gap-2 border-b border-[#0d5d3a]/10 dark:border-white/10 pb-1">
-        {(['pending','approved','all'] as const).map(f => (
-          <button key={f} onClick={()=>setFilter(f)}
-            className={`px-4 py-2 rounded-t-lg text-sm font-bold capitalize transition border-b-2 ${filter===f?'border-[#0d5d3a] text-[#0d5d3a] dark:text-[#10b981]':'border-transparent text-gray-400 hover:text-[#0d5d3a]'}`}>
-            {f}
-          </button>
-        ))}
       </div>
 
       {loading ? (

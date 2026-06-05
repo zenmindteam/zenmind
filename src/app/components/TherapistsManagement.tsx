@@ -202,60 +202,52 @@ export default function TherapistsManagement() {
   }, [therapists, search, specFilter, sessionFilter, cityFilter]);
 
   return (
-    <div className="flex flex-col gap-6 h-[calc(100vh-140px)]">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-[#0a2617] dark:text-gray-100" style={{ fontFamily: 'Syne, sans-serif' }}>Therapists Directory</h2>
-          <p className="text-sm text-[#4a7c5d] dark:text-gray-400">Manage all registered therapists and their medical details.</p>
-        </div>
-        <button onClick={openAdd} className="bg-[#0d5d3a] dark:bg-[#1a8a5a] text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-[#0a4a2e] transition shadow-md shadow-[#0d5d3a]/20">
-          <Plus size={18} /> Add Therapist
-        </button>
-      </div>
-
+    <div className="flex flex-col gap-4 h-[calc(100vh-140px)]">
       {error && (
-        <div className="p-4 bg-red-50 text-red-700 border border-red-200 rounded-xl font-bold">
+        <div className="p-3 bg-red-50 text-red-700 border border-red-200 rounded-lg text-xs font-bold shrink-0">
           {error}
         </div>
       )}
 
-      {/* Filters row */}
-      <div className="flex flex-col gap-3">
-        <div className="relative w-full">
-          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#4a7c5d] dark:text-gray-400" />
+      {/* Filters row (fixed at top) */}
+      <div className="flex flex-wrap items-center gap-2 shrink-0 border-b border-[#0d5d3a]/10 dark:border-white/10 pb-3">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4a7c5d] dark:text-gray-400" />
           <input type="text" placeholder="Search by name or specialization..." value={search} onChange={e => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-[#111111] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-[#0d5d3a]/25 dark:focus:ring-[#1a8a5a]/40 shadow-sm font-medium text-sm text-[#0a2617] dark:text-white" />
+            className="w-full pl-8 pr-3 py-1.5 bg-white dark:bg-[#111111] border border-[#0d5d3a]/15 dark:border-white/10 rounded-lg outline-none focus:ring-2 focus:ring-[#0d5d3a]/25 dark:focus:ring-[#1a8a5a]/40 shadow-sm font-medium text-xs text-[#0a2617] dark:text-white" />
         </div>
-        <div className="grid grid-cols-2 md:flex md:flex-row gap-2 md:gap-3">
-          <div className="relative">
-            <Filter size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4a7c5d] dark:text-gray-400 pointer-events-none hidden sm:block" />
-            <select value={specFilter} onChange={e => setSpecFilter(e.target.value)}
-              className="w-full sm:pl-8 pr-8 py-2.5 px-3 bg-white dark:bg-[#111111] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl text-[11px] sm:text-sm font-semibold text-[#0a2617] dark:text-white outline-none focus:ring-2 focus:ring-[#0d5d3a]/25 shadow-sm cursor-pointer appearance-none md:min-w-[190px]">
-              {specs.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-            <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4a7c5d] pointer-events-none" />
-          </div>
-
-          <div className="relative">
-            <select value={sessionFilter} onChange={e => setSessionFilter(e.target.value)}
-              className="w-full pr-8 py-2.5 px-3 bg-white dark:bg-[#111111] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl text-[11px] sm:text-sm font-semibold text-[#0a2617] dark:text-white outline-none focus:ring-2 focus:ring-[#0d5d3a]/25 shadow-sm cursor-pointer appearance-none">
-              <option value="All Sessions">All Sessions</option>
-              <option value="Online">Online</option>
-              <option value="Offline">Offline</option>
-            </select>
-            <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4a7c5d] pointer-events-none" />
-          </div>
-
-          {sessionFilter === 'Offline' && (
-            <div className="relative">
-              <select value={cityFilter} onChange={e => setCityFilter(e.target.value)}
-                className="w-full pr-8 py-2.5 px-3 bg-white dark:bg-[#111111] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl text-[11px] sm:text-sm font-semibold text-[#0a2617] dark:text-white outline-none focus:ring-2 focus:ring-[#0d5d3a]/25 shadow-sm cursor-pointer appearance-none">
-                {cities.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-              <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4a7c5d] pointer-events-none" />
-            </div>
-          )}
+        
+        <div className="relative shrink-0">
+          <select value={specFilter} onChange={e => setSpecFilter(e.target.value)}
+            className="pl-3 pr-7 py-1.5 bg-white dark:bg-[#111111] border border-[#0d5d3a]/15 dark:border-white/10 rounded-lg text-xs font-semibold text-[#0a2617] dark:text-white outline-none focus:ring-2 focus:ring-[#0d5d3a]/25 shadow-sm cursor-pointer appearance-none max-w-[150px] truncate">
+            {specs.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+          <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#4a7c5d] pointer-events-none" />
         </div>
+
+        <div className="relative shrink-0">
+          <select value={sessionFilter} onChange={e => setSessionFilter(e.target.value)}
+            className="pl-3 pr-7 py-1.5 bg-white dark:bg-[#111111] border border-[#0d5d3a]/15 dark:border-white/10 rounded-lg text-xs font-semibold text-[#0a2617] dark:text-white outline-none focus:ring-2 focus:ring-[#0d5d3a]/25 shadow-sm cursor-pointer appearance-none">
+            <option value="All Sessions">All Sessions</option>
+            <option value="Online">Online</option>
+            <option value="Offline">Offline</option>
+          </select>
+          <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#4a7c5d] pointer-events-none" />
+        </div>
+
+        {sessionFilter === 'Offline' && (
+          <div className="relative shrink-0">
+            <select value={cityFilter} onChange={e => setCityFilter(e.target.value)}
+              className="pl-3 pr-7 py-1.5 bg-white dark:bg-[#111111] border border-[#0d5d3a]/15 dark:border-white/10 rounded-lg text-xs font-semibold text-[#0a2617] dark:text-white outline-none focus:ring-2 focus:ring-[#0d5d3a]/25 shadow-sm cursor-pointer appearance-none">
+              {cities.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#4a7c5d] pointer-events-none" />
+          </div>
+        )}
+
+        <button onClick={openAdd} className="shrink-0 bg-[#0d5d3a] dark:bg-[#1a8a5a] text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 hover:bg-[#0a4a2e] transition shadow-sm">
+          <Plus size={14} /> Add Therapist
+        </button>
       </div>
 
       <div className="bg-white dark:bg-[#111111] rounded-3xl border border-[#0d5d3a]/10 dark:border-white/10 shadow-sm overflow-hidden flex-1 flex flex-col">
@@ -273,17 +265,17 @@ export default function TherapistsManagement() {
             ) : (
               <div className="overflow-y-auto flex-1 divide-y divide-[#0d5d3a]/5 dark:divide-white/5">
                 {filtered.map(t => (
-                  <div key={t._id} className="grid grid-cols-12 gap-2 px-6 py-4 items-center hover:bg-[#fbfdfb] dark:hover:bg-[#1a1a1a] transition-colors">
-                    <div className="col-span-4 flex items-center gap-3 overflow-hidden">
+                  <div key={t._id} className="grid grid-cols-12 gap-4 px-6 py-6 items-center hover:bg-[#fbfdfb] dark:hover:bg-[#1a1a1a] transition-colors">
+                    <div className="col-span-4 flex items-center gap-4 overflow-hidden">
                       {t.profilePicture ? (
-                        <img src={getImgSrc(t.profilePicture)} alt={t.name} className="w-12 h-12 rounded-full object-cover shrink-0 border border-[#0d5d3a]/20" />
+                        <img src={getImgSrc(t.profilePicture)} alt={t.name} className="w-16 h-16 rounded-full object-cover shrink-0 border border-[#0d5d3a]/20" />
                       ) : (
-                        <div className="w-12 h-12 rounded-full bg-[#0d5d3a]/10 flex items-center justify-center text-[#0d5d3a] font-bold shrink-0">{t.name.charAt(0)}</div>
+                        <div className="w-16 h-16 rounded-full bg-[#0d5d3a]/10 flex items-center justify-center text-[#0d5d3a] text-lg font-bold shrink-0">{t.name.charAt(0)}</div>
                       )}
                       <div className="truncate">
-                        <div className="font-bold text-[#0a2617] dark:text-white text-sm truncate">{t.name}</div>
-                        <div className="text-xs text-[#4a7c5d] dark:text-gray-400 truncate">{t.email}</div>
-                        <div className="text-xs text-[#4a7c5d] dark:text-gray-400 truncate">{t.phone}</div>
+                        <div className="font-bold text-[#0a2617] dark:text-white text-base truncate">{t.name}</div>
+                        <div className="text-sm text-[#4a7c5d] dark:text-gray-400 truncate">{t.email}</div>
+                        <div className="text-sm text-[#4a7c5d] dark:text-gray-400 truncate">{t.phone}</div>
                       </div>
                     </div>
                     
