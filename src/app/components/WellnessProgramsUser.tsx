@@ -514,7 +514,7 @@ export default function WellnessProgramsUser({
           </div>
         )}
 
-        <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2 bg-[#0d5d3a] dark:bg-[#1a8a5a] text-white rounded-xl font-bold text-sm hover:bg-[#0a4a2e] transition shadow-md shrink-0 ml-auto">
+        <button onClick={() => setShowForm(true)} className="flex items-center gap-2 px-4 py-2 bg-[#0d5d3a] dark:bg-[#1a8a5a] text-white rounded-xl font-bold text-sm hover:bg-[#0a4a2e] transition shadow-md shrink-0 ml-auto">
           <Plus size={16}/> Create Custom
         </button>
       </div>
