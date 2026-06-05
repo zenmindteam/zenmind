@@ -40,13 +40,21 @@ router.post('/admin', requireAdmin, async (req, res) => {
     if (!title?.trim()) return res.status(400).json({ error: 'Title is required.' });
     if (!durationDays || durationDays < 1) return res.status(400).json({ error: 'Duration must be at least 1 day.' });
 
+    const cleanSteps = (Array.isArray(steps) ? steps : []).map((s, i) => ({
+      dayNumber: s.dayNumber || (i + 1),
+      title: s.title?.trim() || `Day ${i + 1}`,
+      content: s.content?.trim() || 'Follow your daily wellness routine.',
+      exerciseType: s.exerciseType || 'other',
+      durationMinutes: Number(s.durationMinutes) || 10
+    }));
+
     const program = await WellnessProgram.create({
       title: title.trim(),
       description: description?.trim() || '',
       category: category || 'other',
       difficulty: difficulty || 'beginner',
-      durationDays: Number(durationDays),
-      steps: Array.isArray(steps) ? steps : [],
+      durationDays: Math.max(1, cleanSteps.length),
+      steps: cleanSteps,
       isPublished: isPublished !== false,
       coverGradientFrom: coverGradientFrom || '#0d5d3a',
       coverGradientTo: coverGradientTo || '#1a8a5a',
@@ -63,9 +71,22 @@ router.put('/admin/:id', requireAdmin, async (req, res) => {
     const program = await WellnessProgram.findById(req.params.id);
     if (!program) return res.status(404).json({ error: 'Program not found.' });
 
-    const fields = ['title', 'description', 'category', 'difficulty', 'durationDays', 'steps', 'isPublished', 'coverGradientFrom', 'coverGradientTo'];
+    const fields = ['title', 'description', 'category', 'difficulty', 'durationDays', 'isPublished', 'coverGradientFrom', 'coverGradientTo'];
     fields.forEach(f => { if (req.body[f] !== undefined) program[f] = req.body[f]; });
     if (req.body.title) program.title = req.body.title.trim();
+
+    if (req.body.steps && Array.isArray(req.body.steps)) {
+      program.steps = req.body.steps.map((s, i) => ({
+        dayNumber: s.dayNumber || (i + 1),
+        title: s.title?.trim() || `Day ${i + 1}`,
+        content: s.content?.trim() || 'Follow your daily wellness routine.',
+        exerciseType: s.exerciseType || 'other',
+        durationMinutes: Number(s.durationMinutes) || 10
+      }));
+      program.durationDays = Math.max(1, program.steps.length);
+    } else if (req.body.durationDays) {
+      program.durationDays = Math.max(1, Number(req.body.durationDays));
+    }
 
     await program.save();
     res.json({ ok: true, program });
@@ -113,13 +134,21 @@ router.post('/custom', requireAuth, async (req, res) => {
     const User = (await import('../models/User.js')).default;
     const user = await User.findById(req.user.id).select('name').lean();
 
+    const cleanSteps = (Array.isArray(steps) ? steps : []).map((s, i) => ({
+      dayNumber: s.dayNumber || (i + 1),
+      title: s.title?.trim() || `Day ${i + 1}`,
+      content: s.content?.trim() || 'Follow your daily wellness routine.',
+      exerciseType: s.exerciseType || 'other',
+      durationMinutes: Number(s.durationMinutes) || 10
+    }));
+
     const program = await WellnessProgram.create({
       title: title.trim(),
       description: description?.trim() || '',
       category: category || 'other',
       difficulty: difficulty || 'beginner',
-      durationDays: Number(durationDays),
-      steps: Array.isArray(steps) ? steps : [],
+      durationDays: Math.max(1, cleanSteps.length),
+      steps: cleanSteps,
       isPublished: true, // Auto publish custom programs
       isCustom: true,
       createdBy: req.user.id,

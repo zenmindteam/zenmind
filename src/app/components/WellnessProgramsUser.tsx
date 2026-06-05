@@ -399,8 +399,9 @@ export default function WellnessProgramsUser({
                   </label>
                   <label className="block">
                     <span className="text-xs font-bold text-[#4a7c5d] dark:text-gray-400 uppercase tracking-wide">Duration (days)</span>
-                    <input type="number" min={1} max={90} value={form.durationDays} onChange={e=>setForm({...form,durationDays:Number(e.target.value)})}
-                      className="mt-1 w-full bg-[#fbfdfb] dark:bg-[#1a1a1a] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#0d5d3a]/25 text-[#0a2617] dark:text-white"/>
+                    <div className="mt-1 w-full bg-gray-100 dark:bg-[#111111] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-gray-500 font-bold cursor-not-allowed">
+                      {form.steps.length} {form.steps.length === 1 ? 'day' : 'days'} (Based on steps added below)
+                    </div>
                   </label>
                   <label className="block">
                     <span className="text-xs font-bold text-[#4a7c5d] dark:text-gray-400 uppercase tracking-wide">Visibility</span>
