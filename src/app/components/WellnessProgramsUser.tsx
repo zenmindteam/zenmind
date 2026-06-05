@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { BookOpen, Play, CheckCircle, Clock, ChevronRight, X, Star, Zap, TrendingUp, Search, ArrowLeft, Check, Lock, Moon } from 'lucide-react';
+import { BookOpen, Play, CheckCircle, Clock, ChevronRight, X, Star, Zap, TrendingUp, Search, ArrowLeft, Check, Lock, Moon, Globe, Plus, Save } from 'lucide-react';
 import { apiFetch } from '../api/client';
 
 /** Returns today's date string in IST as YYYY-MM-DD */
@@ -10,19 +10,15 @@ const todayIST = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/
 const nextDayUnlocked = (completedAt: Date | string | undefined): boolean => {
   if (!completedAt) return false;
   const completed = new Date(completedAt);
-  // Get the IST date string of when day was completed
   const completedDateIST = completed.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
-  // Compare with today's IST date
   return todayIST() > completedDateIST;
 };
 
-/** Countdown to next midnight IST */
 function useCountdown() {
   const [timeLeft, setTimeLeft] = useState('');
   useEffect(() => {
     const tick = () => {
       const now = new Date();
-      // Next midnight IST: get current IST time, find next midnight
       const istOffset = 5.5 * 60 * 60 * 1000;
       const istNow = new Date(now.getTime() + istOffset);
       const istMidnight = new Date(Date.UTC(
@@ -43,19 +39,34 @@ function useCountdown() {
 }
 
 const CATEGORY_META: Record<string, { label: string; icon: string; color: string }> = {
-  anxiety:     { label: 'Anxiety',     icon: '', color: '#7c3aed' },
-  stress:      { label: 'Stress',      icon: '', color: '#b45309' },
-  sleep:       { label: 'Sleep',       icon: '', color: '#1e40af' },
-  self_esteem: { label: 'Self-Esteem', icon: '', color: '#be123c' },
-  mindfulness: { label: 'Mindfulness', icon: '', color: '#0d5d3a' },
-  motivation:  { label: 'Motivation',  icon: '', color: '#065f46' },
-  other:       { label: 'Other',       icon: '', color: '#374151' },
+  anxiety:     { label: 'Anxiety',     icon: '🌿', color: '#7c3aed' },
+  stress:      { label: 'Stress',      icon: '🌊', color: '#b45309' },
+  sleep:       { label: 'Sleep',       icon: '🌙', color: '#1e40af' },
+  self_esteem: { label: 'Self-Esteem', icon: '✨', color: '#be123c' },
+  mindfulness: { label: 'Mindfulness', icon: '🧘', color: '#0d5d3a' },
+  motivation:  { label: 'Motivation',  icon: '🚀', color: '#065f46' },
+  other:       { label: 'Other',       icon: '🌱', color: '#374151' },
 };
 
 const EXERCISE_ICONS: Record<string, string> = {
-  breathing: '️', journaling: '', meditation: '', movement: '',
-  reading: '', reflection: '🪞', other: '',
+  breathing: '🌬️', journaling: '✍️', meditation: '🧘', movement: '🏃',
+  reading: '📚', reflection: '🪞', other: '🌱',
 };
+
+const CATS = ['anxiety','stress','sleep','self_esteem','mindfulness','motivation','other'];
+const DIFFS = ['beginner','intermediate','advanced'];
+const EX_TYPES = ['breathing','journaling','meditation','movement','reading','reflection','other'];
+const GRADIENTS = [
+  ['#7c3aed','#a78bfa'],['#1e40af','#6366f1'],['#0d5d3a','#10b981'],
+  ['#b45309','#f59e0b'],['#be123c','#fb7185'],['#065f46','#34d399'],
+  ['#374151','#6b7280'],['#0369a1','#38bdf8'],
+];
+
+const emptyStep = () => ({ dayNumber: 1, title: '', content: '', exerciseType: 'reflection', durationMinutes: 10 });
+const emptyForm = () => ({
+  title:'', description:'', category:'anxiety', difficulty:'beginner',
+  durationDays:7, visibility:'private', coverGradientFrom:'#0d5d3a', coverGradientTo:'#10b981', steps:[emptyStep()],
+});
 
 export default function WellnessProgramsUser({
   onDetailOpen,
@@ -67,9 +78,10 @@ export default function WellnessProgramsUser({
   closeDetailSignal?: number;
 }) {
   const [programs, setPrograms]         = useState<any[]>([]);
+  const [publicPrograms, setPublicPrograms] = useState<any[]>([]);
   const [myEnrollments, setMyEnrollments] = useState<any[]>([]);
   const [loading, setLoading]           = useState(true);
-  const [tab, setTab]                   = useState<'browse' | 'my'>('browse');
+  const [tab, setTab]                   = useState<'browse' | 'my' | 'public'>('browse');
   const countdown = useCountdown();
   const [search, setSearch]             = useState('');
   const [catFilter, setCatFilter]       = useState('all');
@@ -79,22 +91,23 @@ export default function WellnessProgramsUser({
   const [completingDay, setCompletingDay] = useState<number | null>(null);
   const [msg, setMsg]                   = useState<{ text: string; ok: boolean } | null>(null);
 
-  // Notify parent when detail opens/closes
-  useEffect(() => { if (selected) onDetailOpen?.(); else onDetailClose?.(); }, [selected]);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState<any>(emptyForm());
+  const [saving, setSaving] = useState(false);
 
-  // Handle external close signal (from back-button handler in Dashboard)
-  useEffect(() => {
-    if (closeDetailSignal && closeDetailSignal > 0) setSelected(null);
-  }, [closeDetailSignal]);
+  useEffect(() => { if (selected) onDetailOpen?.(); else onDetailClose?.(); }, [selected]);
+  useEffect(() => { if (closeDetailSignal && closeDetailSignal > 0) setSelected(null); }, [closeDetailSignal]);
 
   const load = async () => {
     try {
-      const [pRes, eRes] = await Promise.all([
+      const [pRes, eRes, pubRes] = await Promise.all([
         apiFetch<any>('/wellness-programs'),
         apiFetch<any>('/wellness-programs/user/my-programs'),
+        apiFetch<any>('/wellness-programs/public'),
       ]);
       setPrograms(pRes.programs || []);
       setMyEnrollments(eRes.enrollments || []);
+      setPublicPrograms(pubRes.programs || []);
     } catch (e: any) {
       setMsg({ text: e.message || 'Failed to load programs', ok: false });
     } finally {
@@ -102,31 +115,24 @@ export default function WellnessProgramsUser({
     }
   };
 
-  useEffect(() => {
-    load();
-  }, []);
+  useEffect(() => { load(); }, []);
 
-  // Default to 'my' tab if user has active enrollments
-  useEffect(() => {
-    if (myEnrollments.some((e: any) => !e.isCompleted)) setTab('my');
-  }, [myEnrollments]);
-
+  const displayedPrograms = tab === 'public' ? publicPrograms : programs;
   const filtered = useMemo(() => {
-    return programs.filter(p => {
+    return displayedPrograms.filter(p => {
       const q = search.toLowerCase();
       const matchS = !search || p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q);
       const matchC = catFilter === 'all' || p.category === catFilter;
       const matchD = diffFilter === 'all' || p.difficulty === diffFilter;
       return matchS && matchC && matchD;
     });
-  }, [programs, search, catFilter, diffFilter]);
+  }, [displayedPrograms, search, catFilter, diffFilter]);
 
   const handleEnroll = async (programId: string) => {
     setEnrolling(true);
     try {
       await apiFetch(`/wellness-programs/${programId}/enroll`, { method: 'POST' });
       await load();
-      // Refresh selected with enrollment info
       const detail = await apiFetch<any>(`/wellness-programs/${programId}`);
       setSelected({ ...detail.program, enrollment: detail.enrollment });
       setMsg({ text: ' Enrolled successfully! Your journey begins today.', ok: true });
@@ -169,6 +175,27 @@ export default function WellnessProgramsUser({
     }
   };
 
+  const handleSaveCustom = async () => {
+    if (!form.title.trim()) { setMsg({text: 'Title is required.', ok: false}); return; }
+    setSaving(true);
+    try {
+      await apiFetch('/wellness-programs/custom', { method: 'POST', body: JSON.stringify(form) });
+      setMsg({ text: 'Custom program created successfully!', ok: true });
+      setTimeout(() => setMsg(null), 3000);
+      setShowForm(false);
+      setTab('my');
+      load();
+    } catch(e:any) { setMsg({ text: e.message || 'Failed to save', ok: false }); }
+    finally { setSaving(false); }
+  };
+
+  const setStep = (idx:number, field:string, val:any) => {
+    setForm((f:any) => { const steps=[...f.steps]; steps[idx]={...steps[idx],[field]:val}; return {...f,steps}; });
+  };
+  const addStep = () => setForm((f:any) => ({ ...f, steps:[...f.steps, {...emptyStep(), dayNumber:f.steps.length+1}] }));
+  const removeStep = (idx:number) => setForm((f:any) => ({ ...f, steps:f.steps.filter((_:any,i:number)=>i!==idx) }));
+
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -180,7 +207,6 @@ export default function WellnessProgramsUser({
     );
   }
 
-  /* ── DETAIL VIEW ── */
   if (selected) {
     const enr = selected.enrollment;
     const completedSet = new Set<number>(enr?.completedDays || []);
@@ -209,9 +235,14 @@ export default function WellnessProgramsUser({
                 <span className="text-[120px]">{meta.icon}</span>
               </div>
               <div className="relative z-10">
-                <span className="text-xs font-black uppercase tracking-widest bg-white/20 px-3 py-1 rounded-full">
+                <span className="text-xs font-black uppercase tracking-widest bg-white/20 px-3 py-1 rounded-full mr-2">
                   {meta.label} · {selected.difficulty}
                 </span>
+                {selected.isCustom && (
+                   <span className="text-xs font-black uppercase tracking-widest bg-white/20 px-3 py-1 rounded-full">
+                     By {selected.authorName || 'User'}
+                   </span>
+                )}
                 <h1 className="text-2xl sm:text-3xl font-black mt-3 mb-2" style={{ fontFamily: 'Syne, sans-serif' }}>{selected.title}</h1>
                 <p className="text-white/80 text-sm leading-relaxed mb-4 max-w-lg">{selected.description}</p>
                 <div className="flex flex-wrap gap-4 text-sm font-bold text-white/90">
@@ -221,7 +252,7 @@ export default function WellnessProgramsUser({
               </div>
             </div>
 
-            {/* Progress bar (if enrolled) */}
+            {/* Progress bar */}
             {enr && (
               <div className="bg-white dark:bg-[#111111] rounded-2xl p-5 mb-6 border border-[#0d5d3a]/10 dark:border-white/5">
                 <div className="flex justify-between items-center mb-2">
@@ -245,7 +276,7 @@ export default function WellnessProgramsUser({
                 onClick={() => handleEnroll(selected._id)} disabled={enrolling}
                 className="w-full py-4 rounded-2xl font-black text-white text-lg mb-6 shadow-xl disabled:opacity-60 transition"
                 style={{ background: `linear-gradient(135deg, ${selected.coverGradientFrom}, ${selected.coverGradientTo})` }}>
-                {enrolling ? 'Enrolling...' : ' Start This Program — Free'}
+                {enrolling ? 'Enrolling...' : ' Start This Program'}
               </motion.button>
             )}
 
@@ -259,7 +290,6 @@ export default function WellnessProgramsUser({
                 const isCurrent = enr && !enr.isCompleted && step.dayNumber === enr.currentDay;
                 const locked = !enr || (step.dayNumber > enr.currentDay && !done);
 
-                // Day-gating: has prev day been completed today? If so, this day is waiting for midnight
                 const prevDayCompletedDate = enr?.dayCompletedDates?.[String(step.dayNumber - 1)];
                 const waitingForMidnight = isCurrent && step.dayNumber > 1 && prevDayCompletedDate && !nextDayUnlocked(prevDayCompletedDate);
 
@@ -322,128 +352,246 @@ export default function WellnessProgramsUser({
     );
   }
 
-  /* ── LIST VIEW ── */
   const activeEnrollments = myEnrollments.filter(e => !e.isCompleted);
   const doneEnrollments = myEnrollments.filter(e => e.isCompleted);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full relative">
+      {/* Create Modal */}
+      <AnimatePresence>
+        {showForm && (
+          <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+            className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-start justify-center p-4 overflow-y-auto">
+            <motion.div initial={{scale:0.95,opacity:0,y:20}} animate={{scale:1,opacity:1,y:0}} exit={{scale:0.95,opacity:0,y:20}}
+              className="bg-white dark:bg-[#111111] rounded-3xl shadow-2xl w-full max-w-2xl my-8 border border-[#0d5d3a]/10 dark:border-white/10">
+              <div className="flex items-center justify-between p-6 border-b border-[#0d5d3a]/10 dark:border-white/10">
+                <h3 className="text-xl font-black text-[#0a2617] dark:text-white" style={{fontFamily:'Syne,sans-serif'}}>
+                  New Custom Program
+                </h3>
+                <button onClick={()=>setShowForm(false)} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition"><X size={18}/></button>
+              </div>
+
+              <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <label className="sm:col-span-2 block">
+                    <span className="text-xs font-bold text-[#4a7c5d] dark:text-gray-400 uppercase tracking-wide">Title *</span>
+                    <input value={form.title} onChange={e=>setForm({...form,title:e.target.value})} placeholder="e.g. 7-Day Personal Routine"
+                      className="mt-1 w-full bg-[#fbfdfb] dark:bg-[#1a1a1a] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#0d5d3a]/25 text-[#0a2617] dark:text-white"/>
+                  </label>
+                  <label className="sm:col-span-2 block">
+                    <span className="text-xs font-bold text-[#4a7c5d] dark:text-gray-400 uppercase tracking-wide">Description</span>
+                    <textarea value={form.description} onChange={e=>setForm({...form,description:e.target.value})} rows={3} placeholder="Describe the goal..."
+                      className="mt-1 w-full bg-[#fbfdfb] dark:bg-[#1a1a1a] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#0d5d3a]/25 text-[#0a2617] dark:text-white resize-none"/>
+                  </label>
+                  <label className="block">
+                    <span className="text-xs font-bold text-[#4a7c5d] dark:text-gray-400 uppercase tracking-wide">Category</span>
+                    <select value={form.category} onChange={e=>setForm({...form,category:e.target.value})}
+                      className="mt-1 w-full bg-[#fbfdfb] dark:bg-[#1a1a1a] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#0d5d3a]/25 text-[#0a2617] dark:text-white">
+                      {CATS.map(c=><option key={c} value={c}>{CAT_EMOJI?.[c]||''} {c.replace('_',' ')}</option>)}
+                    </select>
+                  </label>
+                  <label className="block">
+                    <span className="text-xs font-bold text-[#4a7c5d] dark:text-gray-400 uppercase tracking-wide">Difficulty</span>
+                    <select value={form.difficulty} onChange={e=>setForm({...form,difficulty:e.target.value})}
+                      className="mt-1 w-full bg-[#fbfdfb] dark:bg-[#1a1a1a] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#0d5d3a]/25 text-[#0a2617] dark:text-white">
+                      {DIFFS.map(d=><option key={d} value={d}>{d}</option>)}
+                    </select>
+                  </label>
+                  <label className="block">
+                    <span className="text-xs font-bold text-[#4a7c5d] dark:text-gray-400 uppercase tracking-wide">Duration (days)</span>
+                    <input type="number" min={1} max={90} value={form.durationDays} onChange={e=>setForm({...form,durationDays:Number(e.target.value)})}
+                      className="mt-1 w-full bg-[#fbfdfb] dark:bg-[#1a1a1a] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#0d5d3a]/25 text-[#0a2617] dark:text-white"/>
+                  </label>
+                  <label className="block">
+                    <span className="text-xs font-bold text-[#4a7c5d] dark:text-gray-400 uppercase tracking-wide">Visibility</span>
+                    <select value={form.visibility} onChange={e=>setForm({...form,visibility:e.target.value})}
+                      className="mt-1 w-full bg-[#fbfdfb] dark:bg-[#1a1a1a] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#0d5d3a]/25 text-[#0a2617] dark:text-white">
+                      <option value="private">Private (Only Me)</option>
+                      <option value="public">Public (Share with community)</option>
+                    </select>
+                  </label>
+                </div>
+
+                <div>
+                  <span className="text-xs font-bold text-[#4a7c5d] dark:text-gray-400 uppercase tracking-wide">Cover Gradient</span>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {GRADIENTS.map(([from,to])=>(
+                      <button key={from} onClick={()=>setForm({...form,coverGradientFrom:from,coverGradientTo:to})}
+                        className={`w-10 h-10 rounded-xl transition-all ${form.coverGradientFrom===from?'ring-2 ring-offset-2 ring-[#0a2617] dark:ring-white scale-110':''}`}
+                        style={{background:`linear-gradient(135deg,${from},${to})`}}/>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-bold text-[#4a7c5d] dark:text-gray-400 uppercase tracking-wide">Daily Steps ({form.steps.length})</span>
+                    <button onClick={addStep} className="flex items-center gap-1 text-xs font-bold text-[#0d5d3a] dark:text-[#10b981] hover:underline"><Plus size={12}/>Add Day</button>
+                  </div>
+                  <div className="space-y-3">
+                    {form.steps.map((step:any,idx:number)=>(
+                      <div key={idx} className="bg-[#fbfdfb] dark:bg-[#1a1a1a] rounded-xl border border-[#0d5d3a]/10 dark:border-white/5 p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-xs font-black text-[#0d5d3a] dark:text-[#10b981]">Day {idx+1}</span>
+                          {form.steps.length>1 && (
+                            <button onClick={()=>removeStep(idx)} className="text-red-400 hover:text-red-600 p-1"><X size={13}/></button>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <input value={step.title} onChange={e=>setStep(idx,'title',e.target.value)} placeholder="Step title"
+                            className="bg-white dark:bg-[#111111] border border-[#0d5d3a]/10 dark:border-white/10 rounded-lg px-3 py-2 text-sm outline-none text-[#0a2617] dark:text-white"/>
+                          <select value={step.exerciseType} onChange={e=>setStep(idx,'exerciseType',e.target.value)}
+                            className="bg-white dark:bg-[#111111] border border-[#0d5d3a]/10 dark:border-white/10 rounded-lg px-3 py-2 text-sm outline-none text-[#0a2617] dark:text-white">
+                            {EX_TYPES.map(t=><option key={t} value={t}>{t}</option>)}
+                          </select>
+                          <textarea value={step.content} onChange={e=>setStep(idx,'content',e.target.value)} placeholder="Instructions for this day..." rows={3}
+                            className="sm:col-span-2 bg-white dark:bg-[#111111] border border-[#0d5d3a]/10 dark:border-white/10 rounded-lg px-3 py-2 text-sm outline-none text-[#0a2617] dark:text-white resize-none"/>
+                          <div className="flex items-center gap-2">
+                            <Clock size={12} className="text-gray-400"/>
+                            <input type="number" min={1} value={step.durationMinutes} onChange={e=>setStep(idx,'durationMinutes',Number(e.target.value))}
+                              className="w-20 bg-white dark:bg-[#111111] border border-[#0d5d3a]/10 dark:border-white/10 rounded-lg px-2 py-2 text-sm outline-none text-[#0a2617] dark:text-white"/>
+                            <span className="text-xs text-gray-400">minutes</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 p-6 border-t border-[#0d5d3a]/10 dark:border-white/10">
+                <button onClick={()=>setShowForm(false)} className="flex-1 py-3 rounded-xl border border-gray-200 dark:border-white/10 text-[#0a2617] dark:text-white font-bold hover:bg-gray-50 dark:hover:bg-white/5 transition">Cancel</button>
+                <button onClick={handleSaveCustom} disabled={saving} className="flex-1 py-3 rounded-xl bg-[#0d5d3a] dark:bg-[#1a8a5a] text-white font-bold hover:bg-[#0a4a2e] transition shadow-md disabled:opacity-60 flex items-center justify-center gap-2">
+                  <Save size={15}/> {saving?'Saving...':'Create Program'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {msg && (
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-          className={`mx-4 sm:mx-6 mt-4 p-3 rounded-2xl font-semibold flex items-center gap-2 text-sm ${msg.ok ? 'bg-green-50 dark:bg-[#10b981]/10 text-green-700 dark:text-[#10b981] border border-green-200 dark:border-[#10b981]/20' : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/20'}`}>
+          className={`absolute top-24 left-1/2 -translate-x-1/2 z-50 p-3 rounded-2xl font-semibold flex items-center gap-2 text-sm shadow-xl max-w-sm w-full ${msg.ok ? 'bg-green-50 dark:bg-[#10b981]/10 text-green-700 dark:text-[#10b981] border border-green-200 dark:border-[#10b981]/20' : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/20'}`}>
           {msg.ok ? <CheckCircle size={15} /> : null} {msg.text}
           <button onClick={() => setMsg(null)} className="ml-auto opacity-60 hover:opacity-100"><X size={13} /></button>
         </motion.div>
       )}
 
       {/* ── STICKY CONTROLS ── */}
-      <div className="zen-controls-bar flex-wrap items-center justify-center gap-3 p-4 sm:p-0 sm:pb-4" style={{ flexDirection: 'row' }}>
-        {(['browse', 'my'] as const).map(t => (
+      <div className="flex items-center gap-3 p-4 sm:px-6 sm:py-4 border-b border-[#0d5d3a]/10 dark:border-white/5 overflow-x-auto whitespace-nowrap hide-scrollbar sticky top-0 z-20 bg-[#f7fbf8]/90 dark:bg-[#050505]/90 backdrop-blur-md w-full">
+        {(['browse', 'public', 'my'] as const).map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`zen-tab-pill justify-center ${tab === t ? 'active' : ''}`}>
-            {t === 'browse' ? <><Search size={12} /> Browse All</> : <><BookOpen size={12} /> My Programs ({myEnrollments.length})</>}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all shrink-0 ${tab === t ? 'bg-[#0d5d3a] text-white shadow-md' : 'bg-white dark:bg-[#111111] border border-[#0d5d3a]/20 dark:border-white/10 text-[#4a7c5d] dark:text-gray-400 hover:border-[#0d5d3a]/40'}`}>
+            {t === 'browse' ? <><Search size={14} /> Browse All</> : t === 'my' ? <><BookOpen size={14} /> My Programs</> : <><Globe size={14}/> Public Programs</>}
           </button>
         ))}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 20, background: 'rgba(13,93,58,0.07)', border: '1.5px solid rgba(13,93,58,0.15)', fontSize: 11 }}>
-          <Zap size={12} style={{ color: '#0d5d3a' }} />
-          <span style={{ fontWeight: 700, color: '#0a2617', whiteSpace: 'nowrap' }}>{programs.length} Available</span>
+        
+        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#0d5d3a]/5 dark:bg-[#111111] border border-[#0d5d3a]/15 dark:border-white/10 text-xs font-bold text-[#0a2617] dark:text-white shrink-0">
+          <Zap size={14} className="text-[#0d5d3a] dark:text-[#10b981]" /> {displayedPrograms.length} Available
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 20, background: 'rgba(16,185,129,0.07)', border: '1.5px solid rgba(16,185,129,0.18)', fontSize: 11 }}>
-          <TrendingUp size={12} style={{ color: '#10b981' }} />
-          <span style={{ fontWeight: 700, color: '#0a2617', whiteSpace: 'nowrap' }}>{myEnrollments.length} Enrolled</span>
+        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#0d5d3a]/5 dark:bg-[#111111] border border-[#0d5d3a]/15 dark:border-white/10 text-xs font-bold text-[#0a2617] dark:text-white shrink-0">
+          <TrendingUp size={14} className="text-[#0d5d3a] dark:text-[#10b981]" /> {myEnrollments.length} Enrolled
         </div>
-      </div>
 
-      {/* ── SCROLLABLE CONTENT ── */}
-      <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-5 pb-20">
-      {tab === 'browse' && (
-        <>
-          {/* Filters */}
-          <div className="flex flex-col sm:flex-row gap-3 mb-6">
-            <div className="relative flex-1 sm:max-w-xs w-full">
+        {(tab === 'browse' || tab === 'public') && (
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="relative w-48">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4a7c5d] dark:text-gray-400" />
-              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search programs..."
-                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-[#111111] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-[#0d5d3a]/25 text-sm text-[#0a2617] dark:text-white" />
+              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search..."
+                className="w-full pl-9 pr-3 py-2 bg-white dark:bg-[#111111] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl outline-none focus:ring-2 focus:ring-[#0d5d3a]/25 text-sm text-[#0a2617] dark:text-white" />
             </div>
             <select value={catFilter} onChange={e => setCatFilter(e.target.value)}
-              className="w-full sm:w-auto px-4 py-2.5 bg-white dark:bg-[#111111] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl outline-none text-sm font-semibold text-[#0a2617] dark:text-white cursor-pointer">
+              className="px-3 py-2 bg-white dark:bg-[#111111] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl outline-none text-sm font-semibold text-[#0a2617] dark:text-white cursor-pointer">
               <option value="all">All Categories</option>
               {Object.entries(CATEGORY_META).map(([k, v]) => <option key={k} value={k}>{v.icon} {v.label}</option>)}
             </select>
             <select value={diffFilter} onChange={e => setDiffFilter(e.target.value)}
-              className="w-full sm:w-auto px-4 py-2.5 bg-white dark:bg-[#111111] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl outline-none text-sm font-semibold text-[#0a2617] dark:text-white cursor-pointer">
+              className="px-3 py-2 bg-white dark:bg-[#111111] border border-[#0d5d3a]/15 dark:border-white/10 rounded-xl outline-none text-sm font-semibold text-[#0a2617] dark:text-white cursor-pointer">
               <option value="all">All Levels</option>
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
+              {DIFFS.map(d=><option key={d} value={d} className="capitalize">{d}</option>)}
             </select>
           </div>
+        )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-            {filtered.map(p => {
-              const meta = CATEGORY_META[p.category] || CATEGORY_META.other;
-              const enr = p.enrollment;
-              const pct = enr ? Math.round(((enr.completedDays?.length || 0) / p.durationDays) * 100) : 0;
-              return (
-                <motion.div key={p._id}
-                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                  onClick={() => openProgram(p)}
-                  className="bg-white dark:bg-[#111111] rounded-3xl border border-[#0d5d3a]/10 dark:border-white/10 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col overflow-hidden"
-                >
-                  {/* Gradient header strip */}
-                  <div style={{ height: 6, background: `linear-gradient(90deg, ${p.coverGradientFrom}, ${p.coverGradientTo})` }} />
-                  <div className="p-5 flex flex-col flex-1">
-                    <div className="flex items-start justify-between mb-3">
-                      <span style={{ fontSize: 30 }}>{meta.icon}</span>
-                      {enr && (
-                        <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${
-                          enr.isCompleted
-                            ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
-                            : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400'
-                        }`}>
-                          {enr.isCompleted ? ' Done' : 'In Progress'}
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="font-bold text-[#0a2617] dark:text-white text-sm leading-snug mb-2"
-                      style={{ fontFamily: 'Syne, sans-serif' }}>{p.title}</h3>
-                    <p className="text-xs text-[#4a7c5d] dark:text-gray-400 leading-relaxed mb-3 flex-1 line-clamp-2">{p.description}</p>
+        <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2 bg-[#0d5d3a] dark:bg-[#1a8a5a] text-white rounded-xl font-bold text-sm hover:bg-[#0a4a2e] transition shadow-md shrink-0 ml-auto">
+          <Plus size={16}/> Create Custom
+        </button>
+      </div>
+
+      {/* ── SCROLLABLE CONTENT ── */}
+      <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-5 pb-20">
+      {(tab === 'browse' || tab === 'public') && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+          {filtered.map(p => {
+            const meta = CATEGORY_META[p.category] || CATEGORY_META.other;
+            const enr = p.enrollment;
+            const pct = enr ? Math.round(((enr.completedDays?.length || 0) / p.durationDays) * 100) : 0;
+            return (
+              <motion.div key={p._id}
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                onClick={() => openProgram(p)}
+                className="bg-white dark:bg-[#111111] rounded-3xl border border-[#0d5d3a]/10 dark:border-white/10 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col overflow-hidden"
+              >
+                <div style={{ height: 6, background: `linear-gradient(90deg, ${p.coverGradientFrom}, ${p.coverGradientTo})` }} />
+                <div className="p-5 flex flex-col flex-1">
+                  <div className="flex items-start justify-between mb-3">
+                    <span style={{ fontSize: 30 }}>{meta.icon}</span>
                     {enr && (
-                      <div className="mb-3">
-                        <div className="h-1.5 bg-[#0d5d3a]/10 dark:bg-white/10 rounded-full overflow-hidden">
-                          <div style={{ width: `${pct}%`, background: `linear-gradient(90deg,${p.coverGradientFrom},${p.coverGradientTo})` }}
-                            className="h-full rounded-full transition-all duration-700" />
-                        </div>
-                        <div className="text-[10px] text-[#4a7c5d] dark:text-gray-500 mt-1">{pct}% complete</div>
-                      </div>
+                      <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${
+                        enr.isCompleted
+                          ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
+                          : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400'
+                      }`}>
+                        {enr.isCompleted ? ' Done' : 'In Progress'}
+                      </span>
                     )}
-                    <div className="flex items-center justify-between mt-auto">
-                      <div className="flex gap-3 text-[10px] text-[#4a7c5d] dark:text-gray-400 font-medium">
-                        <span className="flex items-center gap-1"><Clock size={10} /> {p.durationDays}d</span>
-                        <span className="capitalize">{p.difficulty}</span>
-                        <span>{p.enrollmentCount || 0} enrolled</span>
-                      </div>
-                      <ChevronRight size={14} className="text-[#0d5d3a] dark:text-[#10b981]" />
-                    </div>
                   </div>
-                </motion.div>
-              );
-            })}
-            {filtered.length === 0 && (
-              <div className="col-span-full py-16 text-center">
-                <div className="text-4xl mb-3"></div>
-                <div className="font-bold text-[#4a7c5d] dark:text-gray-400">No programs match your filters.</div>
-              </div>
-            )}
-          </div>
-        </>
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="font-bold text-[#0a2617] dark:text-white text-sm leading-snug"
+                      style={{ fontFamily: 'Syne, sans-serif' }}>{p.title}</h3>
+                  </div>
+                  {p.isCustom && (
+                    <span className="text-[10px] font-black uppercase text-gray-500 dark:text-gray-400 mb-2 block tracking-wider">
+                      By {p.authorName || 'Community'}
+                    </span>
+                  )}
+                  <p className="text-xs text-[#4a7c5d] dark:text-gray-400 leading-relaxed mb-3 flex-1 line-clamp-2">{p.description}</p>
+                  {enr && (
+                    <div className="mb-3">
+                      <div className="h-1.5 bg-[#0d5d3a]/10 dark:bg-white/10 rounded-full overflow-hidden">
+                        <div style={{ width: `${pct}%`, background: `linear-gradient(90deg,${p.coverGradientFrom},${p.coverGradientTo})` }}
+                          className="h-full rounded-full transition-all duration-700" />
+                      </div>
+                      <div className="text-[10px] text-[#4a7c5d] dark:text-gray-500 mt-1">{pct}% complete</div>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between mt-auto">
+                    <div className="flex gap-3 text-[10px] text-[#4a7c5d] dark:text-gray-400 font-medium">
+                      <span className="flex items-center gap-1"><Clock size={10} /> {p.durationDays}d</span>
+                      <span className="capitalize">{p.difficulty}</span>
+                      <span>{p.enrollmentCount || 0} enrolled</span>
+                    </div>
+                    <ChevronRight size={14} className="text-[#0d5d3a] dark:text-[#10b981]" />
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+          {filtered.length === 0 && (
+            <div className="col-span-full py-16 text-center">
+              <div className="text-4xl mb-3">🌱</div>
+              <div className="font-bold text-[#4a7c5d] dark:text-gray-400">No programs match your filters.</div>
+            </div>
+          )}
+        </div>
       )}
 
       {tab === 'my' && (
         <div className="space-y-6">
           {myEnrollments.length === 0 ? (
             <div className="text-center py-16 bg-white dark:bg-[#111111] rounded-3xl border border-[#0d5d3a]/10 dark:border-white/5">
-              <div className="text-5xl mb-4"></div>
+              <div className="text-5xl mb-4">✨</div>
               <div className="font-bold text-[#0a2617] dark:text-white mb-2">No programs started yet</div>
               <div className="text-sm text-[#4a7c5d] dark:text-gray-400 mb-4">Browse our library and start your wellness journey today.</div>
               <button onClick={() => setTab('browse')} className="px-6 py-2.5 bg-[#0d5d3a] dark:bg-[#1a8a5a] text-white rounded-xl font-bold text-sm hover:bg-[#0a4a2e] transition">

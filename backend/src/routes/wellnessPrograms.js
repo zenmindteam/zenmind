@@ -99,14 +99,98 @@ router.patch('/admin/:id/toggle', requireAdmin, async (req, res) => {
 });
 
 /* ══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    USER BROWSE ROUTES — / and /:id (wildcard — must be LAST)
 ══════════════════════════════════════════════════════════ */
 
-/** GET  /  — all published programs with enrollment status */
+/** POST /custom  — user creates a custom program */
+router.post('/custom', requireAuth, async (req, res) => {
+  try {
+    const { title, description, category, difficulty, durationDays, steps, visibility } = req.body;
+    if (!title?.trim()) return res.status(400).json({ error: 'Title is required.' });
+    if (!durationDays || durationDays < 1) return res.status(400).json({ error: 'Duration must be at least 1 day.' });
+
+    const User = (await import('../models/User.js')).default;
+    const user = await User.findById(req.user.id).select('name').lean();
+
+    const program = await WellnessProgram.create({
+      title: title.trim(),
+      description: description?.trim() || '',
+      category: category || 'other',
+      difficulty: difficulty || 'beginner',
+      durationDays: Number(durationDays),
+      steps: Array.isArray(steps) ? steps : [],
+      isPublished: true, // Auto publish custom programs
+      isCustom: true,
+      createdBy: req.user.id,
+      authorName: user?.name || 'Anonymous User',
+      visibility: visibility === 'public' ? 'public' : 'private',
+      coverGradientFrom: '#0f172a',
+      coverGradientTo: '#1e293b'
+    });
+
+    // Auto-enroll the creator immediately for free
+    const enrollment = await ProgramEnrollment.create({
+      userId: req.user.id,
+      programId: program._id,
+      currentDay: 1,
+      completedDays: [],
+    });
+    program.enrollmentCount = 1;
+    await program.save();
+
+    res.status(201).json({ ok: true, program, enrollment });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/** GET  /my-custom  — user's created custom programs */
+router.get('/my-custom', requireAuth, async (req, res) => {
+  try {
+    const programs = await WellnessProgram.find({ createdBy: req.user.id }).sort({ createdAt: -1 }).lean();
+    res.json({ ok: true, programs });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/** GET  /public  — public custom programs from users */
+router.get('/public', requireAuth, async (req, res) => {
+  try {
+    const { category, difficulty, search } = req.query;
+    const q = { isPublished: true, isCustom: true, visibility: 'public' };
+    if (category && category !== 'all') q.category = category;
+    if (difficulty && difficulty !== 'all') q.difficulty = difficulty;
+    if (search) {
+      const re = new RegExp(search, 'i');
+      q.$or = [{ title: re }, { description: re }];
+    }
+
+    const programs = await WellnessProgram.find(q)
+      .select('-steps')
+      .sort({ enrollmentCount: -1, createdAt: -1 })
+      .lean();
+
+    const enrollments = await ProgramEnrollment.find({
+      userId: req.user.id,
+      programId: { $in: programs.map(p => p._id) },
+    }).lean();
+
+    const enrollMap = {};
+    enrollments.forEach(e => { enrollMap[String(e.programId)] = e; });
+
+    res.json({ ok: true, programs: programs.map(p => ({ ...p, enrollment: enrollMap[String(p._id)] || null })) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/** GET  /  — all published programs with enrollment status (official programs) */
 router.get('/', requireAuth, async (req, res) => {
   try {
     const { category, difficulty, search } = req.query;
-    const q = { isPublished: true };
+    const q = { isPublished: true, isCustom: false };
     if (category && category !== 'all') q.category = category;
     if (difficulty && difficulty !== 'all') q.difficulty = difficulty;
     if (search) {
@@ -164,16 +248,28 @@ router.post('/:id/enroll', requireAuth, async (req, res) => {
     const user = await User.findById(req.user.id).select('subscriptionTier').lean();
     const tier = user?.subscriptionTier || 'free';
     
-    if (tier === 'free') {
-       return res.status(403).json({ error: 'Free tier does not include Wellness Programs. Please upgrade!' });
-    }
-    
-    const enrollmentCount = await ProgramEnrollment.countDocuments({ userId: req.user.id });
-    if (tier === 'silver' && enrollmentCount >= 2) {
-       return res.status(403).json({ error: 'Silver tier allows up to 2 programs. Upgrade to Gold for up to 10!' });
-    }
-    if (tier === 'gold' && enrollmentCount >= 10) {
-       return res.status(403).json({ error: 'Gold tier allows up to 10 programs. Upgrade to Platinum for unlimited!' });
+    // Custom program logic
+    if (program.isCustom) {
+      if (String(program.createdBy) === String(req.user.id)) {
+        // Owner can always enroll for free
+      } else if (program.visibility === 'public') {
+        if (tier === 'free') {
+          return res.status(403).json({ error: 'Free tier cannot enroll in public custom programs. Please upgrade to at least Silver!' });
+        }
+      }
+    } else {
+      // Official program logic
+      if (tier === 'free') {
+         return res.status(403).json({ error: 'Free tier does not include Wellness Programs. Please upgrade!' });
+      }
+      
+      const enrollmentCount = await ProgramEnrollment.countDocuments({ userId: req.user.id });
+      if (tier === 'silver' && enrollmentCount >= 2) {
+         return res.status(403).json({ error: 'Silver tier allows up to 2 programs. Upgrade to Gold for up to 10!' });
+      }
+      if (tier === 'gold' && enrollmentCount >= 10) {
+         return res.status(403).json({ error: 'Gold tier allows up to 10 programs. Upgrade to Platinum for unlimited!' });
+      }
     }
 
     const enrollment = await ProgramEnrollment.create({

@@ -35,6 +35,10 @@ const wellnessProgramSchema = new mongoose.Schema(
     isPublished:       { type: Boolean, default: true },
     coverGradientFrom: { type: String, default: '#0d5d3a' },
     coverGradientTo:   { type: String, default: '#1a8a5a' },
+    isCustom:          { type: Boolean, default: false },
+    createdBy:         { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+    visibility:        { type: String, enum: ['public', 'private'], default: 'private' },
+    authorName:        { type: String },
   },
   { timestamps: true }
 );
