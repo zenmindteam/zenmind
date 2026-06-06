@@ -85,12 +85,12 @@ const SupportForm = ({ type, title, subtitle }: { type: 'contact' | 'report'; ti
           <label>
             <span style={labelStyle}>Full Name</span>
             <input required type="text" value={form.name} onChange={e => setForm({...form, name: e.target.value})}
-              placeholder="Jane Doe" style={inputStyle} onFocus={e => (e.target.style.borderColor = '#2d8cf0')} onBlur={e => (e.target.style.borderColor = '#fefefe')} />
+              placeholder="Your Name" style={inputStyle} onFocus={e => (e.target.style.borderColor = '#2d8cf0')} onBlur={e => (e.target.style.borderColor = '#fefefe')} />
           </label>
           <label>
             <span style={labelStyle}>Email Address</span>
             <input required type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})}
-              placeholder="jane@example.com" style={inputStyle} onFocus={e => (e.target.style.borderColor = '#2d8cf0')} onBlur={e => (e.target.style.borderColor = '#fefefe')} />
+              placeholder="youremail@example.com" style={inputStyle} onFocus={e => (e.target.style.borderColor = '#2d8cf0')} onBlur={e => (e.target.style.borderColor = '#fefefe')} />
           </label>
         </div>
 

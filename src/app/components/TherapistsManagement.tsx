@@ -384,7 +384,7 @@ export default function TherapistsManagement() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <label className="block">
                   <span className="text-sm font-bold text-[#0a2617] dark:text-gray-300 mb-1 block">Full Name (with Title)</span>
-                  <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-[#fbfdfb] dark:bg-[#1a1a1a] border border-[#0d5d3a]/20 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-[#0d5d3a] text-[#0a2617] dark:text-white" placeholder="Dr. Jane Doe" />
+                  <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-[#fbfdfb] dark:bg-[#1a1a1a] border border-[#0d5d3a]/20 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-[#0d5d3a] text-[#0a2617] dark:text-white" placeholder="Dr. Your Name" />
                 </label>
                 <label className="block">
                   <span className="text-sm font-bold text-[#0a2617] dark:text-gray-300 mb-1 block">Email Address</span>

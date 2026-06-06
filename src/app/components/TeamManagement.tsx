@@ -93,7 +93,7 @@ export default function TeamManagement() {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <label className="block"><span className="text-xs font-bold text-[#4a7c5d] dark:text-gray-400 mb-1 block">Full Name *</span><input {...f('name')} required className={inputCls} placeholder="John Doe" /></label>
+          <label className="block"><span className="text-xs font-bold text-[#4a7c5d] dark:text-gray-400 mb-1 block">Full Name *</span><input {...f('name')} required className={inputCls} placeholder="Your Name" /></label>
           <label className="block"><span className="text-xs font-bold text-[#4a7c5d] dark:text-gray-400 mb-1 block">Role / Title *</span><input {...f('role')} required className={inputCls} placeholder="Co-founder & CEO" /></label>
         </div>
         <label className="block"><span className="text-xs font-bold text-[#4a7c5d] dark:text-gray-400 mb-1 block">Bio</span><textarea {...f('bio')} rows={3} className={inputCls + ' resize-none'} placeholder="Short bio..." /></label>

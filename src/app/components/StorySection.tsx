@@ -187,7 +187,7 @@ const AddStoryForm = ({ onAdd }: { onAdd: (s: any) => void }) => {
               <label className="zen-story-form-label">First Name or Initial</label>
               <input required type="text" value={form.author}
                 onChange={e => setForm({...form, author: e.target.value})}
-                placeholder="e.g. Alex, 16"
+                placeholder="e.g. Name, Age"
                 className="zen-story-form-input" />
             </div>
             <div className="zen-story-form-group" style={{ width: 130 }}>

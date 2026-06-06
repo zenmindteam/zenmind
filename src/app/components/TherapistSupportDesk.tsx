@@ -322,7 +322,7 @@ export default function TherapistSupportDesk() {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className={labelCls}>User Name (optional)</label>
-                    <input value={rUserName} onChange={e => setRUserName(e.target.value)} placeholder="John Doe" className={inputCls}/>
+                    <input value={rUserName} onChange={e => setRUserName(e.target.value)} placeholder="Your Name" className={inputCls}/>
                   </div>
                   <div>
                     <label className={labelCls}>User Email (optional)</label>
