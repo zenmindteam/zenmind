@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { X, Send, Sparkles, Phone, Mail, ArrowDownLeft, ShieldCheck, HeartHandshake, Globe2, Clock, CheckCircle } from "lucide-react";
+import { motion } from "motion/react";
+import { X, Send, Sparkles, Phone, Mail, ArrowDownLeft, ShieldCheck, Globe2, Clock, CheckCircle } from "lucide-react";
 import Globe from "./ui/globe";
 import { Navbar as LandingNavbar } from "./landing/Navbar";
 import { Footer as LandingFooter } from "./landing/Footer";
@@ -17,10 +17,9 @@ interface ContactPageProps {
 
 const defaultGlobeConfig = {
   positions: [
-    { top: "50%", left: "75%", scale: 1.3 },   // Hero: Right side, balanced
-    { top: "25%", left: "50%", scale: 0.9 },   // Global Presence: Top side
-    { top: "50%", left: "25%", scale: 1.4 },   // Contact Form: Left side
-    { top: "50%", left: "50%", scale: 1.8 },   // Crisis & Future: Center, large backdrop
+    { top: "45%", left: "75%", scale: 1.3 },   // Hero: Right side
+    { top: "50%", left: "50%", scale: 1.1 },   // Form section: Center backdrop
+    { top: "50%", left: "25%", scale: 1.5 },   // Crisis section: Left side
   ]
 };
 
@@ -164,338 +163,344 @@ export default function ContactPage({
     }
   };
 
-  const sections = [
-    {
-      id: "hero",
-      badge: "Contact",
-      title: "Let's Make Mental Health",
-      subtitle: "Easier to Talk About.",
-      description: "Whether you're a college student, mental-health professional, organization, or simply curious about ZenMind — we'd love to hear from you."
-    },
-    {
-      id: "presence",
-      badge: "Global Presence",
-      title: "24/7 Digital Sanctuary",
-      subtitle: "Connected Worldwide, Rooted in Care.",
-      description: "Our encrypted network supports adolescents, therapists, and organizations across India and global digital communities 24 hours a day, 7 days a week."
-    },
-    {
-      id: "form",
-      badge: "Send Message",
-      title: "Start a Conversation",
-      subtitle: "Direct Route to ZenMind Admin Desk",
-      description: "Fill out the contact form below. Your query will be delivered directly to the ZenMind Administration desk for real-time review and response."
-    },
-    {
-      id: "crisis",
-      badge: "Emergency Lines",
-      title: "24/7 Immediate Crisis Support",
-      subtitle: "You Are Never Alone",
-      description: "Trained counsellors and national mental health helplines are available right now. If you or someone you know needs urgent help, reach out immediately."
+  const handleCompanyNavigation = (link: string) => {
+    if (link === 'Contact Us' && containerRef.current) {
+      containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      onCompanyLinkClick?.(link);
     }
-  ];
+  };
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] bg-[#f8fdf9] text-[#0a2617] font-sans overflow-hidden flex flex-col"
+      ref={containerRef}
+      data-lenis-prevent
+      className="fixed inset-0 z-[200] bg-[#0a2617] text-[#fffdf5] overflow-y-auto font-sans-main scrollbar-none [&::-webkit-scrollbar]:hidden no-scrollbar select-none"
     >
-      {/* ── TOP NAVBAR ── */}
-      <header className="sticky top-0 z-50 bg-[#f8fdf9]/90 backdrop-blur-md border-b border-[#0d5d3a]/15 h-16 flex items-center justify-between px-4 sm:px-8">
-        <div className="flex items-center gap-3 cursor-pointer" onClick={onClose}>
-          <div className="w-8 h-8 rounded-full bg-[#0d5d3a] flex items-center justify-center text-white font-bold">
-            <Globe2 className="w-4 h-4 text-[#fde68a]" />
-          </div>
-          <span className="font-bold text-xl tracking-tight text-[#0d5d3a]" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
-            ZenMind
-          </span>
-          <span className="hidden sm:inline-block text-xs font-extrabold text-[#78350f] bg-[#fef3c7] border border-[#fde68a] px-2.5 py-0.5 rounded-full">
-            Contact Sanctuary
-          </span>
-        </div>
+      {/* ── LANDING NAVBAR ── */}
+      <LandingNavbar
+        scrollContainerRef={containerRef}
+        delayReappearMs={1500}
+        onGetStarted={onGetStarted}
+        onAdminLoginTrigger={onAdminLoginTrigger}
+        onTherapistLoginTrigger={onTherapistLoginTrigger}
+        onCompanyLinkClick={handleCompanyNavigation}
+        onResourcesLinkClick={onResourcesLinkClick}
+        onProductLinkClick={onProductLinkClick}
+      />
 
-        <button
-          type="button"
-          onClick={onClose}
-          className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#0d5d3a]/20 text-[#0d5d3a] hover:bg-[#e6f4ea] font-bold text-xs uppercase tracking-wider transition-all shadow-xs"
-        >
-          <X className="w-4 h-4" />
-          <span>Close</span>
-        </button>
-      </header>
-
-      {/* Progress Bar */}
-      <div className="fixed top-16 left-0 w-full h-1 bg-[#0d5d3a]/10 z-50">
-        <div
-          className="h-full bg-gradient-to-r from-[#0d5d3a] via-[#d97706] to-[#fde68a] transition-all duration-150"
-          style={{ width: `${scrollProgress * 100}%` }}
-        />
-      </div>
-
-      {/* Right Navigation Dots */}
-      <div className="hidden sm:flex fixed right-4 lg:right-8 top-1/2 -translate-y-1/2 z-40 flex-col gap-4">
-        {sections.map((sec, index) => (
-          <button
-            key={sec.id}
-            type="button"
-            onClick={() => {
-              sectionRefs.current[index]?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className={`group relative flex items-center justify-end p-2 transition-all`}
-          >
-            <span className={`absolute right-8 px-3 py-1 rounded-full text-xs font-extrabold whitespace-nowrap bg-white border border-[#0d5d3a]/20 shadow-md text-[#0d5d3a] transition-all ${activeSection === index ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2 pointer-events-none'}`}>
-              {sec.badge}
-            </span>
-            <div className={`w-3 h-3 rounded-full border-2 transition-all ${activeSection === index ? 'bg-[#d97706] border-[#d97706] scale-125 shadow-md' : 'border-[#0d5d3a]/40 bg-white hover:bg-[#e6f4ea]'}`} />
-          </button>
-        ))}
-      </div>
+      {/* Floating Close Button top right */}
+      <button
+        type="button"
+        onClick={onClose}
+        className="fixed top-5 right-6 z-[210] flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg cursor-pointer"
+        title="Close Contact Page"
+      >
+        <X className="w-4 h-4 text-[#ffebc4]" />
+        <span>Close</span>
+      </button>
 
       {/* ── INTERACTIVE 3D SCROLL GLOBE ── */}
       <div
         className="fixed z-10 pointer-events-none transition-all duration-[1200ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
         style={{
           transform: globeTransform,
-          filter: `opacity(${activeSection === 3 ? 0.35 : 0.85})`,
+          filter: `opacity(${activeSection === 2 ? 0.3 : 0.75})`,
         }}
       >
         <Globe />
       </div>
 
-      {/* ── SCROLLABLE SECTIONS CONTAINER ── */}
-      <div ref={containerRef} className="flex-1 overflow-y-auto overflow-x-hidden relative z-20">
-        
-        {/* Section 0: Hero */}
-        <section
-          ref={el => (sectionRefs.current[0] = el)}
-          className="min-h-screen flex flex-col justify-center px-6 sm:px-12 lg:px-20 max-w-5xl mx-auto py-20"
-        >
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#fef3c7] border border-[#fde68a] text-xs font-bold text-[#78350f] mb-6 w-max">
-            <Sparkles className="w-4 h-4 text-[#d97706]" />
-            <span>Welcome to ZenMind Contact Sanctuary</span>
-          </div>
-
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-[#0d5d3a] tracking-tight leading-[1.08] mb-6" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
-            Let's Make Mental Health<br />
-            <span className="text-[#d97706]">Easier to Talk About.</span>
-          </h1>
-
-          <p className="text-base sm:text-xl text-[#0a2617]/80 font-semibold max-w-2xl leading-relaxed mb-8">
-            Whether you're a college student, mental-health professional, organization, or simply curious about ZenMind — we'd love to hear from you.
-          </p>
-
-          <div className="flex flex-wrap gap-4">
-            <button
-              type="button"
-              onClick={() => sectionRefs.current[2]?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-8 py-4 rounded-full bg-[#0d5d3a] hover:bg-[#084229] text-white font-extrabold text-xs uppercase tracking-wider shadow-lg transition-all"
+      {/* ── HERO SECTION: Editorial Header ── */}
+      <section
+        ref={el => (sectionRefs.current[0] = el)}
+        className="relative pt-32 sm:pt-40 md:pt-48 pb-20 sm:pb-28 bg-[#0a2617] overflow-hidden border-b border-white/10 z-20"
+      >
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+          <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+            
+            {/* Left Headline */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="lg:col-span-7"
             >
-              Fill Contact Form →
-            </button>
-            <button
-              type="button"
-              onClick={() => sectionRefs.current[3]?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-8 py-4 rounded-full border-2 border-[#0d5d3a]/20 bg-white hover:bg-[#e6f4ea] text-[#0d5d3a] font-extrabold text-xs uppercase tracking-wider transition-all"
-            >
-              24/7 Crisis Helplines
-            </button>
-          </div>
-        </section>
-
-        {/* Section 1: Global Presence */}
-        <section
-          ref={el => (sectionRefs.current[1] = el)}
-          className="min-h-screen flex flex-col justify-center px-6 sm:px-12 lg:px-20 max-w-5xl mx-auto py-20"
-        >
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#e6f4ea] border border-[#0d5d3a]/20 text-xs font-bold text-[#0d5d3a] mb-6 w-max">
-            <Globe2 className="w-4 h-4 text-[#0d5d3a]" />
-            <span>Global Reach & Privacy</span>
-          </div>
-
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-[#0d5d3a] tracking-tight leading-tight mb-6" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
-            Connected Worldwide,<br />
-            Rooted in Compassion.
-          </h2>
-
-          <p className="text-base sm:text-lg text-[#0a2617]/80 font-semibold max-w-2xl leading-relaxed mb-10">
-            Our encrypted network supports adolescents, therapists, and organizations across India and global digital communities 24 hours a day, 7 days a week.
-          </p>
-
-          <div className="grid sm:grid-cols-3 gap-4 max-w-4xl">
-            <div className="bg-white p-6 rounded-3xl border-2 border-[#0d5d3a]/15 shadow-md space-y-2">
-              <div className="w-10 h-10 rounded-2xl bg-[#fef3c7] text-[#78350f] flex items-center justify-center font-bold">
-                <Clock className="w-5 h-5 text-[#d97706]" />
-              </div>
-              <h3 className="font-extrabold text-[#0d5d3a] text-base">24/7 AI Companion</h3>
-              <p className="text-xs text-gray-600 font-medium leading-relaxed">Instant emotional support available anytime in English, Hindi, and Hinglish.</p>
-            </div>
-
-            <div className="bg-white p-6 rounded-3xl border-2 border-[#0d5d3a]/15 shadow-md space-y-2">
-              <div className="w-10 h-10 rounded-2xl bg-[#e6f4ea] text-[#0d5d3a] flex items-center justify-center font-bold">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <h3 className="font-extrabold text-[#0d5d3a] text-base">Encrypted Communications</h3>
-              <p className="text-xs text-gray-600 font-medium leading-relaxed">End-to-end encrypted messaging and clinical video consultation rooms.</p>
-            </div>
-
-            <div className="bg-white p-6 rounded-3xl border-2 border-[#0d5d3a]/15 shadow-md space-y-2">
-              <div className="w-10 h-10 rounded-2xl bg-[#fef3c7] text-[#78350f] flex items-center justify-center font-bold">
-                <Send className="w-5 h-5 text-[#d97706]" />
-              </div>
-              <h3 className="font-extrabold text-[#0d5d3a] text-base">Direct Admin Routing</h3>
-              <p className="text-xs text-gray-600 font-medium leading-relaxed">Contact queries land directly in our Super Admin dashboard for swift support.</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Section 2: Contact Form Card Section */}
-        <section
-          ref={el => (sectionRefs.current[2] = el)}
-          className="min-h-screen flex flex-col justify-center px-6 sm:px-12 lg:px-20 max-w-5xl mx-auto py-20"
-        >
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#fef3c7] border border-[#fde68a] text-xs font-bold text-[#78350f] mb-6 w-max">
-            <Sparkles className="w-4 h-4 text-[#d97706]" />
-            <span>Send Direct Message</span>
-          </div>
-
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-[#0d5d3a] tracking-tight leading-tight mb-4" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
-            Start a Conversation
-          </h2>
-          <p className="text-sm sm:text-base text-[#0a2617]/80 font-semibold max-w-xl leading-relaxed mb-8">
-            Every query is routed directly to the ZenMind Administration Desk for real-time review and response.
-          </p>
-
-          {/* Form Card (Matches Footer/Landing Page Component) */}
-          <div className="bg-white rounded-3xl p-6 sm:p-10 border-2 border-[#0d5d3a]/15 shadow-2xl max-w-2xl">
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <div>
-                <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Full Name*</label>
-                <input
-                  type="text"
-                  placeholder="Harshit Sharma"
-                  required
-                  value={formData.name}
-                  onChange={e => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] placeholder:text-[#0d5d3a]/40 border-2 border-[#0d5d3a]/15 focus:border-[#d97706] focus:ring-2 focus:ring-[#d97706]/20 outline-none transition-all"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Email Address*</label>
-                  <input
-                    type="email"
-                    placeholder="name@example.com"
-                    required
-                    value={formData.email}
-                    onChange={e => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] placeholder:text-[#0d5d3a]/40 border-2 border-[#0d5d3a]/15 focus:border-[#d97706] focus:ring-2 focus:ring-[#d97706]/20 outline-none transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Mobile Number</label>
-                  <input
-                    type="tel"
-                    placeholder="+91 98765 43210"
-                    value={formData.phone}
-                    onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] placeholder:text-[#0d5d3a]/40 border-2 border-[#0d5d3a]/15 focus:border-[#d97706] focus:ring-2 focus:ring-[#d97706]/20 outline-none transition-all"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Subject</label>
-                <select
-                  value={formData.subject}
-                  onChange={e => setFormData({ ...formData, subject: e.target.value })}
-                  className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] border-2 border-[#0d5d3a]/15 focus:border-[#d97706] focus:ring-2 focus:ring-[#d97706]/20 outline-none cursor-pointer"
+              <span className="text-[#ffebc4] text-xs font-sans tracking-[0.2em] uppercase font-bold block mb-4">
+                ✦ CONTACT ZENMIND SANCTUARY
+              </span>
+              <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[76px] text-[#fffdf5] font-normal leading-[0.98] tracking-tight mb-8">
+                Let&apos;s Make Mental Health<br />
+                <span className="text-[#d97706] font-bold">Easier to Talk About.</span>
+              </h1>
+              <p className="text-lg sm:text-xl text-[#fffdf5]/85 font-normal leading-relaxed max-w-2xl mb-8">
+                Whether you&apos;re a college student, mental-health professional, organization, or simply curious about ZenMind — we&apos;d love to hear from you.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <button
+                  type="button"
+                  onClick={() => sectionRefs.current[1]?.scrollIntoView({ behavior: 'smooth' })}
+                  className="px-8 py-4 rounded-full bg-[#d97706] hover:bg-[#b45309] text-white font-extrabold text-xs uppercase tracking-wider shadow-lg transition-all cursor-pointer"
                 >
-                  <option value="General Inquiry">General Inquiry</option>
-                  <option value="Therapy Support">Therapy Support</option>
-                  <option value="Partnership Request">Partnership Request</option>
-                  <option value="Technical Issue">Technical Issue</option>
-                  <option value="Feedback">Feedback & Suggestions</option>
-                </select>
+                  Fill Contact Form ↓
+                </button>
+                <button
+                  type="button"
+                  onClick={() => sectionRefs.current[2]?.scrollIntoView({ behavior: 'smooth' })}
+                  className="px-8 py-4 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 text-white font-extrabold text-xs uppercase tracking-wider transition-all cursor-pointer"
+                >
+                  24/7 Crisis Helplines
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Right Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="lg:col-span-5 bg-white/5 border border-white/15 p-8 rounded-3xl backdrop-blur-md space-y-6"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#d97706] flex items-center justify-center text-white font-bold">
+                  <Globe2 className="w-5 h-5 text-[#fde68a]" />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-[#ffebc4] uppercase tracking-wider">Global Reach</div>
+                  <div className="text-base font-bold text-white">24/7 Digital Sanctuary</div>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Message*</label>
-                <textarea
-                  placeholder="Tell us how we can assist you..."
-                  rows={4}
-                  required
-                  value={formData.message}
-                  onChange={e => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] placeholder:text-[#0d5d3a]/40 border-2 border-[#0d5d3a]/15 focus:border-[#d97706] focus:ring-2 focus:ring-[#d97706]/20 outline-none transition-all resize-y min-h-[120px]"
-                />
+              <p className="text-sm text-[#fffdf5]/80 leading-relaxed font-normal">
+                Our platform operates round-the-clock across India and international digital communities, routing inquiries directly to our Super Admin desk.
+              </p>
+
+              <div className="pt-4 border-t border-white/10 flex flex-col gap-3 text-xs text-[#ffebc4] font-semibold">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-[#10b981]" />
+                  <span>Real-time Admin Dashboard Integration</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-[#10b981]" />
+                  <span>End-to-End Encrypted Communications</span>
+                </div>
+              </div>
+            </motion.div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ── SECTION 2: EXACT LANDING PAGE CONTACT CARD UI (GetInTouchSection) ── */}
+      <section
+        ref={el => (sectionRefs.current[1] = el)}
+        className="relative w-full bg-[#0a2617] py-16 sm:py-24 z-20"
+      >
+        <div className="w-full bg-[#0a2617]">
+          <div
+            id="contact-form-section"
+            className="relative w-full bg-[#f8fdf9] text-[#0a2617] rounded-[2.5rem] lg:rounded-[3.5rem] z-20 pt-10 pb-16 sm:pb-24 overflow-hidden border-2 border-[#0d5d3a]/15 shadow-2xl"
+          >
+            {/* Decorative Arrow Top Right */}
+            <div className="absolute top-6 right-6 sm:right-10 lg:right-12 text-[#0a2617]">
+              <ArrowDownLeft className="w-6 h-6 sm:w-8 sm:h-8 stroke-[1.5]" />
+            </div>
+
+            <div className="w-full px-6 sm:px-10 md:px-14 lg:px-16">
+              {/* Top Row: Heading + Subtitle */}
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10 sm:mb-14 md:mb-16">
+                <h2
+                  className="font-sans-main text-4xl sm:text-5xl md:text-6xl lg:text-[60px] xl:text-[70px] font-normal leading-[1.05] tracking-tight text-[#0a2617] -ml-1 mt-1 max-w-2xl text-left"
+                >
+                  Let&apos;s Make Mental Health<br />Easier to Talk About.
+                </h2>
+                <p
+                  className="font-sans text-xs sm:text-sm md:text-base text-[#0a2617]/80 max-w-xs md:max-w-md text-left leading-relaxed"
+                >
+                  Whether you&apos;re a college, mental-health professional, organization, or simply curious about Zeni — we&apos;d love to hear from you.
+                </p>
               </div>
 
-              <button
-                type="submit"
-                disabled={busy}
-                className="mt-2 w-full bg-[#0d5d3a] hover:bg-[#084229] text-[#fffdf5] font-sans text-xs sm:text-sm tracking-[0.15em] uppercase font-extrabold py-4 rounded-full transition-all duration-300 shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-              >
-                <Send className="w-4 h-4 text-[#fde68a]" />
-                <span>{submitted ? "Message Sent to Admin! ✓" : busy ? "Sending..." : "Submit Query to Admin →"}</span>
-              </button>
-            </form>
-          </div>
-        </section>
+              {/* Form + Image Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-start">
+                
+                {/* Left: Form Card */}
+                <div>
+                  {/* Star + Label */}
+                  <div className="flex items-center gap-2 mb-6">
+                    <img
+                      src="/star-black.svg"
+                      alt=""
+                      className="w-3.5 h-3.5"
+                    />
+                    <p className="font-sans text-xs sm:text-sm tracking-[0.1em] uppercase font-medium text-[#0a2617]">
+                      Fill out the form
+                    </p>
+                  </div>
 
-        {/* Section 3: Emergency & Crisis Helplines */}
-        <section
-          ref={el => (sectionRefs.current[3] = el)}
-          className="min-h-screen flex flex-col justify-center px-6 sm:px-12 lg:px-20 max-w-5xl mx-auto py-20"
-        >
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 border border-red-200 text-xs font-bold text-red-700 mb-6 w-max">
-            <Phone className="w-4 h-4 text-red-600" />
-            <span>Emergency Support Helplines</span>
-          </div>
+                  {/* Form Fields */}
+                  <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+                    <input
+                      type="text"
+                      placeholder="Full Name*"
+                      required
+                      value={formData.name}
+                      onChange={e => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full bg-[#0a2617]/[0.05] rounded-xl px-5 py-4 font-sans text-sm text-[#0a2617] placeholder:text-[#0a2617]/50 focus:outline-none focus:ring-1 focus:ring-[#0a2617]/20 transition-all border-0"
+                    />
+                    <input
+                      type="email"
+                      placeholder="Email*"
+                      required
+                      value={formData.email}
+                      onChange={e => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full bg-[#0a2617]/[0.05] rounded-xl px-5 py-4 font-sans text-sm text-[#0a2617] placeholder:text-[#0a2617]/50 focus:outline-none focus:ring-1 focus:ring-[#0a2617]/20 transition-all border-0"
+                    />
+                    <input
+                      type="tel"
+                      placeholder="Mobile Number"
+                      value={formData.phone}
+                      onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full bg-[#0a2617]/[0.05] rounded-xl px-5 py-4 font-sans text-sm text-[#0a2617] placeholder:text-[#0a2617]/50 focus:outline-none focus:ring-1 focus:ring-[#0a2617]/20 transition-all border-0"
+                    />
+                    <select
+                      value={formData.subject}
+                      onChange={e => setFormData({ ...formData, subject: e.target.value })}
+                      className="w-full bg-[#0a2617]/[0.05] rounded-xl px-5 py-4 font-sans text-sm text-[#0a2617] focus:outline-none focus:ring-1 focus:ring-[#0a2617]/20 transition-all border-0 cursor-pointer"
+                    >
+                      <option value="General Inquiry">General Inquiry</option>
+                      <option value="Therapy Support">Therapy Support</option>
+                      <option value="Partnership Request">Partnership Request</option>
+                      <option value="Technical Issue">Technical Issue</option>
+                      <option value="Feedback">Feedback & Suggestions</option>
+                    </select>
+                    <textarea
+                      placeholder="Message*"
+                      rows={5}
+                      required
+                      value={formData.message}
+                      onChange={e => setFormData({ ...formData, message: e.target.value })}
+                      className="w-full bg-[#0a2617]/[0.05] rounded-xl px-5 py-4 font-sans text-sm text-[#0a2617] placeholder:text-[#0a2617]/50 focus:outline-none focus:ring-1 focus:ring-[#0a2617]/20 transition-all min-h-[140px] md:min-h-[180px] resize-y border-0"
+                    />
+                    <button
+                      type="submit"
+                      disabled={busy}
+                      className="mt-2 w-full bg-[#0a2617] text-[#fffdf5] font-sans text-xs sm:text-sm tracking-[0.15em] uppercase font-bold py-4 rounded-xl hover:bg-[#3a2e27] transition-colors duration-300 border-0 cursor-pointer disabled:opacity-50"
+                    >
+                      {submitted ? "Message Sent! ✓" : busy ? "Sending..." : "Start a Conversation →"}
+                    </button>
+                  </form>
+                </div>
 
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-[#0d5d3a] tracking-tight leading-tight mb-4" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
-            In Need of Immediate Help?
+                {/* Right: Glassmorphism Image Card */}
+                <div
+                  style={{
+                    backdropFilter: 'blur(15px)',
+                    WebkitBackdropFilter: 'blur(15px)',
+                    boxShadow: `
+                      inset 0 0 20px rgba(255, 255, 255, 0.18),
+                      inset 0 0 5px rgba(255, 255, 255, 0.28),
+                      0 12px 30px rgba(0, 0, 0, 0.45)
+                    `,
+                    border: '1px solid rgba(255, 255, 255, 0.16)',
+                  }}
+                  className="relative w-full aspect-[4/3] md:aspect-[690/520] rounded-2xl overflow-hidden shadow-2xl"
+                >
+                  <img
+                    src="/peoples-image.webp"
+                    alt="Happy People"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a2617]/90 via-[#0a2617]/40 to-transparent p-6 sm:p-8 flex flex-col justify-end text-white">
+                    <div className="bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-2xl space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-[#d97706] text-white flex items-center justify-center font-bold">
+                          <Mail className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-[#fde68a]">Email Support</div>
+                          <div className="text-sm font-bold text-white">support@zenmind.in</div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-[#0d5d3a] text-white flex items-center justify-center font-bold">
+                          <Phone className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-[#fde68a]">Toll-Free Helpline</div>
+                          <div className="text-sm font-bold text-white">1800-599-0019 (24/7)</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── SECTION 3: CRISIS HELPLINES ── */}
+      <section
+        ref={el => (sectionRefs.current[2] = el)}
+        className="relative py-20 px-6 sm:px-10 lg:px-16 max-w-7xl mx-auto z-20"
+      >
+        <div className="mb-12 text-center sm:text-left">
+          <span className="text-[#ffebc4] text-xs font-sans tracking-[0.2em] uppercase font-bold block mb-3">
+            ✦ EMERGENCY CRISIS LINES
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-normal text-white tracking-tight mb-4">
+            In Need of Urgent Help?
           </h2>
-          <p className="text-sm sm:text-base text-[#0a2617]/80 font-semibold max-w-xl leading-relaxed mb-8">
-            ZenMind is a digital support sanctuary. If you are in immediate danger or emotional crisis, please reach out to national emergency helplines.
+          <p className="text-sm sm:text-base text-[#fffdf5]/80 max-w-xl font-normal">
+            ZenMind is a supportive platform. If you or someone you know is in immediate crisis, tap any number to call trained counsellors directly.
           </p>
+        </div>
 
-          <div className="grid sm:grid-cols-2 gap-4 max-w-3xl">
-            <a href="tel:18005990019" className="bg-white p-5 rounded-3xl border-2 border-[#0d5d3a]/15 shadow-md flex items-start gap-4 hover:border-[#d97706] transition-all">
-              <div className="w-10 h-10 rounded-2xl bg-[#fef3c7] text-[#78350f] flex items-center justify-center font-bold shrink-0">
-                <Phone className="w-5 h-5 text-[#d97706]" />
-              </div>
-              <div>
-                <div className="text-xs font-extrabold text-[#78350f] uppercase">Kiran – Govt of India</div>
-                <div className="text-base font-extrabold text-[#0d5d3a]">1800-599-0019</div>
-                <div className="text-xs text-gray-500 font-medium">24/7 Toll-Free · 13 Indian languages</div>
-              </div>
-            </a>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <a href="tel:18005990019" className="bg-white/5 border border-white/15 p-6 rounded-2xl backdrop-blur-md hover:border-[#d97706] transition-all">
+            <Phone className="w-6 h-6 text-[#d97706] mb-3" />
+            <div className="text-xs font-bold text-[#ffebc4] uppercase">Kiran – Govt of India</div>
+            <div className="text-lg font-bold text-white mt-1">1800-599-0019</div>
+            <div className="text-xs text-white/60 mt-1">24/7 · Toll-Free · 13 Languages</div>
+          </a>
 
-            <a href="tel:9152987821" className="bg-white p-5 rounded-3xl border-2 border-[#0d5d3a]/15 shadow-md flex items-start gap-4 hover:border-[#d97706] transition-all">
-              <div className="w-10 h-10 rounded-2xl bg-[#e6f4ea] text-[#0d5d3a] flex items-center justify-center font-bold shrink-0">
-                <Phone className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="text-xs font-extrabold text-[#0d5d3a] uppercase">iCall – TISS</div>
-                <div className="text-base font-extrabold text-[#0d5d3a]">9152987821</div>
-                <div className="text-xs text-gray-500 font-medium">Mon–Sat, 8am–10pm · Free counselling</div>
-              </div>
-            </a>
-          </div>
-        </section>
+          <a href="tel:9152987821" className="bg-white/5 border border-white/15 p-6 rounded-2xl backdrop-blur-md hover:border-[#10b981] transition-all">
+            <Phone className="w-6 h-6 text-[#10b981] mb-3" />
+            <div className="text-xs font-bold text-[#ffebc4] uppercase">iCall – TISS</div>
+            <div className="text-lg font-bold text-white mt-1">9152987821</div>
+            <div className="text-xs text-white/60 mt-1">Mon–Sat, 8am–10pm · Free</div>
+          </a>
 
-        {/* Footer */}
-        <LandingFooter
-          onProductLinkClick={onProductLinkClick}
-          onCompanyLinkClick={onCompanyLinkClick}
-          onResourcesLinkClick={onResourcesLinkClick}
-          onTherapistLoginTrigger={onTherapistLoginTrigger}
-          onGetStarted={onGetStarted}
-        />
-      </div>
+          <a href="tel:18602662345" className="bg-white/5 border border-white/15 p-6 rounded-2xl backdrop-blur-md hover:border-[#d97706] transition-all">
+            <Phone className="w-6 h-6 text-[#d97706] mb-3" />
+            <div className="text-xs font-bold text-[#ffebc4] uppercase">Vandrevala Foundation</div>
+            <div className="text-lg font-bold text-white mt-1">1860-2662-345</div>
+            <div className="text-xs text-white/60 mt-1">24/7 · Mental Health & Crisis</div>
+          </a>
+
+          <a href="tel:08046110007" className="bg-white/5 border border-white/15 p-6 rounded-2xl backdrop-blur-md hover:border-[#10b981] transition-all">
+            <Phone className="w-6 h-6 text-[#10b981] mb-3" />
+            <div className="text-xs font-bold text-[#ffebc4] uppercase">NIMHANS Helpline</div>
+            <div className="text-lg font-bold text-white mt-1">080-46110007</div>
+            <div className="text-xs text-white/60 mt-1">National Institute Bangalore</div>
+          </a>
+        </div>
+      </section>
+
+      {/* ── LANDING FOOTER ── */}
+      <LandingFooter
+        onProductLinkClick={onProductLinkClick}
+        onCompanyLinkClick={handleCompanyNavigation}
+        onResourcesLinkClick={onResourcesLinkClick}
+        onTherapistLoginTrigger={onTherapistLoginTrigger}
+        onGetStarted={onGetStarted}
+      />
     </motion.div>
   );
 }
