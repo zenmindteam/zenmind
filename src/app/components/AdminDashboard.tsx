@@ -2921,27 +2921,27 @@ function SupportManagement() {
 
 
   const loadData = async () => {
-
     setLoading(true);
-
+    let serverTickets: SupportTicketData[] = [];
     try {
-
       const res = await apiFetch<any>('/admin/support');
+      serverTickets = res.tickets || [];
+    } catch (e: any) {}
 
-      setTickets(res.tickets || []);
+    let localContactQueries: SupportTicketData[] = [];
+    try {
+      localContactQueries = JSON.parse(localStorage.getItem('zm_contact_queries') || '[]');
+    } catch {}
 
-      setSelectedIds(new Set());
+    const combined = [...localContactQueries, ...serverTickets];
+    const uniqueMap = new Map<string, SupportTicketData>();
+    combined.forEach(t => {
+      if (t._id) uniqueMap.set(t._id, t);
+    });
 
-    } catch (e: any) {
-
-      setMsg({ text: e.message || 'Failed to load tickets', ok: false });
-
-    } finally {
-
-      setLoading(false);
-
-    }
-
+    setTickets(Array.from(uniqueMap.values()));
+    setSelectedIds(new Set());
+    setLoading(false);
   };
 
 
