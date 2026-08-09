@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   LogOut, Calendar, User, ChevronLeft, ChevronRight, PanelLeftOpen, PanelLeftClose, Menu, X,
   Camera, MapPin, Phone, Lock, Plus, Trash2, Clock, CheckCircle,
-  Shield, GraduationCap, Stethoscope, Edit3, Save, Info, MessageCircle, ShieldAlert
+  Shield, GraduationCap, Stethoscope, Edit3, Save, Info, MessageCircle, ShieldAlert,
+  Search, SlidersHorizontal, Grid, HelpCircle, Bell, Settings, BarChart2
 } from 'lucide-react';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
@@ -217,25 +218,29 @@ export default function TherapistDashboard({ onLogout }: { onLogout: () => void 
     const wide = mobile || !collapsed;
     return (
       <>
-        <div className={`flex items-center ${wide ? 'gap-3 px-5' : 'justify-center px-0'} h-16 border-b border-[#0d5d3a]/15 shrink-0 bg-[#f4faf7]`}>
-          <img src={logo} alt="ZenMind" className="w-8 h-8 rounded-full object-cover shrink-0" />
-          {wide && <span className="font-bold text-lg text-[#0d5d3a]" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>Therapist Desk</span>}
+        {/* Floating Google "+ Create Slot" Action Button */}
+        <div className="p-3 mb-1">
+          <button
+            type="button"
+            onClick={() => { setTab('schedule'); if (mobile) setMobileOpen(false); }}
+            className={`flex items-center gap-3 bg-white text-[#0d5d3a] hover:bg-[#fef8ec] shadow-md hover:shadow-lg border-2 border-[#d97706]/40 rounded-2xl transition-all duration-200 ${
+              wide ? 'px-5 py-3.5 w-full' : 'w-12 h-12 justify-center p-0 mx-auto'
+            }`}
+            title="Create Availability Slot"
+          >
+            <div className="w-6 h-6 rounded-full bg-[#d97706] text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+              <Plus className="w-4 h-4 stroke-[3]" />
+            </div>
+            {wide && (
+              <span className="font-bold text-sm tracking-wide text-[#0d5d3a]">
+                Create Slot
+              </span>
+            )}
+          </button>
         </div>
-        {wide && (
-          <div className="px-5 py-3.5 border-b border-[#0d5d3a]/10 flex items-center gap-3 shrink-0 bg-white">
-            <div className="relative shrink-0">
-              {picPreview
-                ? <img src={picPreview} alt="P" className="w-10 h-10 rounded-full object-cover ring-2 ring-[#d97706]" />
-                : <div className="w-10 h-10 rounded-full bg-[#0d5d3a] flex items-center justify-center text-white text-lg font-bold ring-2 ring-[#d97706]">{therapist?.name?.charAt(0)}</div>
-              }
-            </div>
-            <div className="min-w-0">
-              <div className="font-bold text-[#0d5d3a] text-sm truncate">{therapist?.name}</div>
-              <div className="text-xs text-[#d97706] font-extrabold truncate">{therapist?.specialization}</div>
-            </div>
-          </div>
-        )}
-        <nav className="flex-1 overflow-y-auto overflow-x-hidden p-3 flex flex-col gap-1.5 custom-scrollbar bg-[#f4faf7]">
+
+        {/* Navigation Items */}
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-1 flex flex-col gap-1.5 custom-scrollbar bg-[#f4faf7]">
           {navItems.map(({ key, label, icon }) => (
             <button key={key} onClick={() => { setTab(key); if (mobile) setMobileOpen(false); }}
               className={`w-full flex items-center ${wide ? 'gap-3 px-4' : 'justify-center px-0'} py-2.5 rounded-full text-xs font-bold transition-all
@@ -246,6 +251,22 @@ export default function TherapistDashboard({ onLogout }: { onLogout: () => void 
             </button>
           ))}
         </nav>
+
+        {/* Gold & Emerald Status Widget */}
+        {wide && (
+          <div className="mx-3 my-2 p-3 bg-gradient-to-br from-[#fef3c7] to-[#ffffff] rounded-2xl border-2 border-[#d97706]/30 flex flex-col gap-1.5 shadow-xs">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-extrabold text-[#78350f]">Clinical Status</span>
+              <span className="text-[10px] font-bold text-[#0d5d3a] bg-[#e6f4ea] px-2 py-0.5 rounded-full border border-[#0d5d3a]/20">
+                Active
+              </span>
+            </div>
+            <span className="text-[11px] font-medium text-[#92400e]">
+              Verified Therapist Account
+            </span>
+          </div>
+        )}
+
         <div className="p-3 border-t border-[#0d5d3a]/15 shrink-0 bg-[#f4faf7]">
           <button onClick={() => setShowLogoutConfirm(true)}
             className={`w-full flex items-center ${wide ? 'gap-3 px-4' : 'justify-center px-0'} py-2.5 rounded-full text-red-600 hover:bg-red-50 text-xs font-bold transition-colors`}
@@ -258,78 +279,171 @@ export default function TherapistDashboard({ onLogout }: { onLogout: () => void 
   };
 
   return (
-    <div className="flex h-screen w-full bg-[#f4faf7] overflow-hidden text-[#0a2617]">
+    <div className="h-screen w-screen overflow-hidden flex flex-col bg-[#f4faf7] text-[#0a2617] font-sans">
 
-      {/* Mobile overlay */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 z-30 md:hidden" onClick={() => setMobileOpen(false)} />
-        )}
-      </AnimatePresence>
-
-      {/* Mobile drawer */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.aside initial={{ x: -280 }} animate={{ x: 0 }} exit={{ x: -280 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed left-0 top-0 h-full w-[260px] bg-white border-r border-[#0d5d3a]/15 flex flex-col z-40 md:hidden">
-            <button onClick={() => setMobileOpen(false)} className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-gray-100">
-              <X size={18} className="text-[#0d5d3a]" />
-            </button>
-            <SidebarContent mobile />
-          </motion.aside>
-        )}
-      </AnimatePresence>
-
-      {/* Desktop sidebar */}
-      <div className="hidden md:block flex-shrink-0 relative z-20" style={{ width: collapsed ? 72 : 260, transition: 'width 0.3s cubic-bezier(0.4,0,0.2,1)' }}>
-        <button onClick={() => setCollapsed(c => !c)} title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="absolute -right-3.5 top-5 z-30 w-7 h-7 bg-white border border-[#0d5d3a]/20 text-[#0d5d3a] rounded-full shadow-md flex items-center justify-center hover:bg-[#e6f4ea] transition-colors">
-          {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-        </button>
-        <div className="bg-[#f4faf7] border-r border-[#0d5d3a]/15 h-full flex flex-col overflow-hidden">
-          <SidebarContent />
-        </div>
-      </div>
-
-      {/* Main Workspace Grid */}
-      <div className="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
+      {/* ── GOOGLE WORKSPACE TOP HEADER BAR (GREEN, WHITE, GOLD) ── */}
+      <header className="h-16 flex-shrink-0 flex items-center justify-between px-4 bg-[#f4faf7] border-b border-[#0d5d3a]/15 z-20">
         
-        {/* Google Top Header Bar */}
-        <header className="h-16 shrink-0 bg-[#f4faf7] border-b border-[#0d5d3a]/15 flex items-center justify-between px-4 sm:px-6 z-10">
-          <div className="flex items-center gap-3">
-            <button onClick={() => setMobileOpen(true)} className="md:hidden p-2 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a]">
-              <Menu size={18} />
+        {/* Left: Hamburger + Logo */}
+        <div className="flex items-center gap-3 min-w-[220px]">
+          <button
+            type="button"
+            onClick={() => setCollapsed(c => !c)}
+            className="p-2.5 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a] transition-colors"
+            title="Toggle Menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+
+          <div className="flex items-center gap-2 cursor-pointer select-none" onClick={() => setTab('profile')}>
+            <img src={logo} alt="ZenMind" className="w-8 h-8 object-contain" />
+            <span className="font-bold text-xl tracking-tight text-[#0d5d3a]" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
+              ZenMind
+            </span>
+            <span className="hidden sm:inline-block text-xs font-extrabold text-[#78350f] bg-[#fef3c7] border border-[#fde68a] px-2.5 py-0.5 rounded-full">
+              Therapist Desk
+            </span>
+          </div>
+        </div>
+
+        {/* Center: Google Search Pill */}
+        <div className="flex-1 max-w-2xl px-4 hidden md:block">
+          <div className="relative flex items-center w-full bg-white hover:bg-[#fef8ec] focus-within:bg-white border-2 border-[#0d5d3a]/15 focus-within:border-[#d97706] focus-within:ring-2 focus-within:ring-[#d97706]/20 rounded-full px-4 py-2 shadow-xs transition-all duration-200">
+            <Search className="w-4 h-4 text-[#0d5d3a] mr-3 flex-shrink-0" />
+            <input
+              type="text"
+              placeholder="Search therapist appointments, clients, schedule, or notes..."
+              className="w-full bg-transparent text-sm text-[#0a2617] placeholder:text-[#0d5d3a]/50 font-medium focus:outline-none"
+            />
+            <button type="button" className="p-1 rounded-full hover:bg-[#fef3c7] text-[#d97706]">
+              <SlidersHorizontal className="w-4 h-4" />
             </button>
-            <div>
-              <h1 className="font-extrabold text-base sm:text-lg text-[#0d5d3a] leading-tight">
-                {tab === 'profile'  ? 'Therapist Profile & Details' :
-                 tab === 'schedule' ? 'Availability & Session Slot Manager' :
-                 tab === 'sessions' ? 'Booked Client Appointments' :
-                 tab === 'chats'    ? 'Client Communication Desk' :
-                 tab === 'reading'  ? 'Therapist Reading Lists & Resources' :
-                 'Support & Clinical Incident Reports'}
-              </h1>
-              <p className="text-xs font-semibold text-[#d97706]">ZenMind Verified Clinical Portal</p>
+          </div>
+        </div>
+
+        {/* Right: Quick Action Controls */}
+        <div className="flex items-center gap-1.5 sm:gap-3">
+          <button
+            type="button"
+            onClick={() => setTab('reading')}
+            className="p-2.5 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a] transition-colors hidden sm:flex items-center justify-center"
+            title="Clinical Resources"
+          >
+            <Grid className="w-5 h-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setTab('support')}
+            className="p-2.5 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a] transition-colors hidden sm:flex items-center justify-center"
+            title="Help & Support"
+          >
+            <HelpCircle className="w-5 h-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setTab('profile')}
+            className="p-2.5 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a] transition-colors hidden sm:flex items-center justify-center"
+            title="Settings"
+          >
+            <Settings className="w-5 h-5" />
+          </button>
+
+          {/* Therapist Avatar Circle */}
+          <div className="relative ml-1">
+            <button
+              type="button"
+              onClick={() => setTab('profile')}
+              className="flex items-center focus:outline-none"
+              title={therapist?.name || 'Therapist Profile'}
+            >
+              {picPreview ? (
+                <img
+                  src={picPreview}
+                  alt="Profile"
+                  className="w-9 h-9 rounded-full object-cover ring-2 ring-[#d97706] shadow-xs"
+                />
+              ) : (
+                <div className="w-9 h-9 rounded-full bg-[#0d5d3a] text-white font-bold text-xs flex items-center justify-center shadow-xs ring-2 ring-[#d97706]">
+                  {therapist?.name?.charAt(0) || 'T'}
+                </div>
+              )}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* ── WORKSPACE BODY GRID ── */}
+      <div className="flex-1 flex overflow-hidden relative">
+
+        {/* Mobile overlay */}
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/40 z-30 md:hidden" onClick={() => setMobileOpen(false)} />
+          )}
+        </AnimatePresence>
+
+        {/* Mobile drawer */}
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.aside initial={{ x: -280 }} animate={{ x: 0 }} exit={{ x: -280 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              className="fixed left-0 top-0 h-full w-[260px] bg-white border-r border-[#0d5d3a]/15 flex flex-col z-40 md:hidden">
+              <button onClick={() => setMobileOpen(false)} className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-gray-100">
+                <X size={18} className="text-[#0d5d3a]" />
+              </button>
+              <SidebarContent mobile />
+            </motion.aside>
+          )}
+        </AnimatePresence>
+
+        {/* Desktop Left Google Sidebar */}
+        <aside className="hidden md:flex flex-col flex-shrink-0 bg-[#f4faf7] p-3 transition-all duration-300 overflow-y-auto border-r border-[#0d5d3a]/10"
+          style={{ width: collapsed ? 72 : 260 }}>
+          <SidebarContent />
+        </aside>
+
+        {/* ── GOOGLE MAIN CANVAS CONTAINER (ROUNDED CARD CANVAS) ── */}
+        <main className="flex-1 flex flex-col min-w-0 bg-white rounded-3xl border-2 border-[#0d5d3a]/15 shadow-sm overflow-hidden m-2 sm:m-3 transition-all duration-200">
+          
+          {/* Canvas Header */}
+          <div className="px-5 py-3.5 border-b border-[#0d5d3a]/10 flex items-center justify-between flex-shrink-0 bg-white">
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="text-xl leading-none">🩺</span>
+              <div className="min-w-0">
+                <h1 className="text-lg font-extrabold text-[#0d5d3a] truncate tracking-tight">
+                  {tab === 'profile'  ? 'Therapist Profile & Details' :
+                   tab === 'schedule' ? 'Availability & Session Slot Manager' :
+                   tab === 'sessions' ? 'Booked Client Appointments' :
+                   tab === 'chats'    ? 'Client Communication Desk' :
+                   tab === 'reading'  ? 'Therapist Reading Lists & Resources' :
+                   'Support & Clinical Incident Reports'}
+                </h1>
+                <p className="text-xs font-semibold text-[#d97706] truncate hidden sm:block">
+                  ZenMind Verified Clinical Portal
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setMobileOpen(true)}
+                className="md:hidden p-2 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a]"
+              >
+                <Menu size={18} />
+              </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="hidden sm:inline-flex text-xs font-extrabold text-[#78350f] bg-[#fef3c7] border border-[#fde68a] px-3 py-1 rounded-full shadow-2xs">
-              Clinical Desk Active
-            </span>
-          </div>
-        </header>
-
-        {/* Main Canvas Card Container */}
-        <main className="flex-1 bg-white rounded-3xl border-2 border-[#0d5d3a]/15 shadow-sm overflow-hidden m-2 sm:m-3 flex flex-col min-h-0">
           <div className="flex-1 overflow-y-auto">
           {/* Toast */}
           <AnimatePresence>
             {msg && (
               <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                className={`mx-4 sm:mx-8 mt-4 p-3 rounded-xl font-semibold flex items-center gap-2 text-sm ${msg.ok ? 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/20' : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/20'}`}>
+                className={`mx-4 sm:mx-8 mt-4 p-3 rounded-xl font-semibold flex items-center gap-2 text-sm ${msg.ok ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
                 <CheckCircle size={16} />{msg.text}
               </motion.div>
             )}
@@ -657,6 +771,74 @@ export default function TherapistDashboard({ onLogout }: { onLogout: () => void 
           )}
           </div>
         </main>
+
+        {/* ── GOOGLE WORKSPACE RIGHT COMPANION TOOLBAR ── */}
+        <aside className="hidden lg:flex flex-col items-center gap-4 py-4 w-14 flex-shrink-0 bg-[#f4faf7] border-l border-[#0d5d3a]/15">
+          <button
+            type="button"
+            onClick={() => setTab('profile')}
+            className={`p-3 rounded-2xl transition-all duration-200 ${
+              tab === 'profile'
+                ? 'bg-[#0d5d3a] text-white shadow-md border-r-2 border-[#d97706]'
+                : 'text-[#0d5d3a] hover:bg-[#e6f4ea]'
+            }`}
+            title="My Profile"
+          >
+            <User className="w-5 h-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setTab('schedule')}
+            className={`p-3 rounded-2xl transition-all duration-200 ${
+              tab === 'schedule'
+                ? 'bg-[#d97706] text-white shadow-md'
+                : 'text-[#d97706] hover:bg-[#fef3c7]'
+            }`}
+            title="Schedule Manager"
+          >
+            <Calendar className="w-5 h-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setTab('sessions')}
+            className={`p-3 rounded-2xl transition-all duration-200 ${
+              tab === 'sessions'
+                ? 'bg-[#0d5d3a] text-white shadow-md border-r-2 border-[#d97706]'
+                : 'text-[#0d5d3a] hover:bg-[#e6f4ea]'
+            }`}
+            title="Booked Appointments"
+          >
+            <CheckCircle className="w-5 h-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setTab('chats')}
+            className={`p-3 rounded-2xl transition-all duration-200 ${
+              tab === 'chats'
+                ? 'bg-[#d97706] text-white shadow-md'
+                : 'text-[#d97706] hover:bg-[#fef3c7]'
+            }`}
+            title="Client Chats"
+          >
+            <MessageCircle className="w-5 h-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setTab('support')}
+            className={`p-3 rounded-2xl transition-all duration-200 ${
+              tab === 'support'
+                ? 'bg-[#0d5d3a] text-white shadow-md border-r-2 border-[#d97706]'
+                : 'text-[#0d5d3a] hover:bg-[#e6f4ea]'
+            }`}
+            title="Support & Incident Reports"
+          >
+            <ShieldAlert className="w-5 h-5" />
+          </button>
+        </aside>
       </div>
 
       {/* Logout Confirmation Modal */}
