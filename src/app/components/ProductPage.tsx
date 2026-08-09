@@ -1,573 +1,724 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  ChevronLeft, Sparkles, BrainCircuit, HeartHandshake, ShieldCheck, 
-  Calendar, FileText, Lock, Clock, IndianRupee, HelpCircle, ChevronDown, Activity, Users, Shield, Send, AlertTriangle, FileCode, CheckCircle, ShoppingBag, PenLine
+  Sparkles, BrainCircuit, ShieldCheck, MessageSquare, HeartHandshake, Lock, 
+  UserCheck, ArrowRight, ChevronDown, Activity, Users, ShoppingBag, 
+  Calendar, CheckCircle, RefreshCw, Layers, Shield, Zap, Search, Send, Clock, IndianRupee, HelpCircle, FileCode, AlertTriangle
 } from 'lucide-react';
+import FeaturesPage from './FeaturesPage';
+import { Navbar as LandingNavbar } from './landing/Navbar';
+import { Footer as LandingFooter } from './landing/Footer';
 import { apiFetch } from '../api/client';
 
-const FAQItem = ({ q, a }: { q: string; a: string }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  return (
-    <div className="border-b border-gray-200 dark:border-white/10 last:border-0">
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full py-4 flex justify-between items-center text-left group gap-4"
-      >
-        <span className={`text-base sm:text-lg font-bold transition-colors ${isOpen ? 'text-[#0d5d3a] dark:text-[#10b981]' : 'text-[#0a2617] dark:text-white group-hover:text-[#0d5d3a] dark:group-hover:text-[#10b981]'}`}>
-          {q}
-        </span>
-        <div className={`w-8 h-8 flex-shrink-0 rounded-full flex items-center justify-center transition-colors ${isOpen ? 'bg-[#e6f4ea] dark:bg-[#10b981]/20' : 'bg-gray-100 dark:bg-white/5 group-hover:bg-gray-200 dark:group-hover:bg-white/10'}`}>
-          <ChevronDown size={18} className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180 text-[#0d5d3a] dark:text-[#10b981]' : 'text-gray-500 dark:text-gray-400'}`} />
-        </div>
-      </button>
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div 
-            initial={{ height: 0, opacity: 0 }} 
-            animate={{ height: 'auto', opacity: 1 }} 
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden"
-          >
-            <p className="pb-5 pt-2 text-[#4a7c5d] dark:text-gray-400 leading-relaxed text-sm sm:text-base max-w-4xl">
-              {a}
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
+interface ProductPageProps {
+  page: string;
+  onClose: () => void;
+  onGetStarted?: () => void;
+  onAdminLoginTrigger?: () => void;
+  onTherapistLoginTrigger?: () => void;
+  onCompanyLinkClick?: (link: string) => void;
+  onResourcesLinkClick?: (link: string) => void;
+  onProductLinkClick?: (link: string) => void;
+}
 
-const SupportForm = ({ type, title, subtitle }: { type: 'contact' | 'report'; title: string; subtitle: string }) => {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', body: '' });
-  const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
+/* ═══════════════════════════════════════════════════════
+   1. SYNUS-INSPIRED AI CHATBOT OVERLAY PAGE
+   ═══════════════════════════════════════════════════════ */
+function AIChatbotPage({
+  onGetStarted,
+  onAdminLoginTrigger,
+  onTherapistLoginTrigger,
+  onCompanyLinkClick,
+  onResourcesLinkClick,
+  onProductLinkClick,
+}: Omit<ProductPageProps, 'onClose' | 'page'>) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [activeTab, setActiveTab] = useState<'hindi' | 'english' | 'hinglish' | 'kannada'>('hinglish');
+  const [inputMessage, setInputMessage] = useState('');
+  const [chatLog, setChatLog] = useState([
+    { sender: 'zeni', text: 'Hey there. I\'m Zeni. Whenever your mind feels loud or you just need someone to vent to without judgment, I\'m here.' }
+  ]);
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setBusy(true); setMsg(null);
-    try {
-      await apiFetch('/support', { method: 'POST', body: JSON.stringify({ type, ...form }) });
-      setMsg({ text: 'Submitted successfully. Our team will get back to you soon!', ok: true });
-      setForm({ name: '', email: '', phone: '', subject: '', body: '' });
-    } catch(err: any) {
-      setMsg({ text: err.message || 'Failed to submit.', ok: false });
-    } finally {
-      setBusy(false);
-    }
+  const samples = {
+    hinglish: "Yaar exams ka tension bohot zyada lag raha hai, neend nahi aa rahi.",
+    english: "I feel like everyone expects too much from me and I'm falling behind.",
+    hindi: "मुझे बहुत चिंता हो रही है और समझ नहीं आ रहा किससे बात करूँ।",
+    kannada: "ನನಗೆ ತುಂಬಾ ಒತ್ತಡ ಎನಿಸುತ್ತಿದೆ ಮತ್ತು ಏನು ಮಾಡಬೇಕೆಂದು ತಿಳಿಯುತ್ತಿಲ್ಲ."
   };
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%', height: 44, borderRadius: 5, border: '2px solid #fefefe',
-    background: '#111', boxShadow: '4px 4px #fefefe',
-    fontSize: 14, fontWeight: 600, color: '#fefefe', padding: '5px 12px', outline: 'none',
-  };
-  const labelStyle: React.CSSProperties = { color: '#7e7e7e', fontSize: 12, fontWeight: 600, marginBottom: 4, display: 'block' };
+  const handleSend = (txt?: string) => {
+    const msg = txt || inputMessage;
+    if (!msg.trim()) return;
+    setChatLog(prev => [...prev, { sender: 'user', text: msg }]);
+    setInputMessage('');
 
-  return (
-    <div className="max-w-2xl mx-auto py-10">
-      <div className="text-center mb-10">
-        <h2 className="text-4xl sm:text-5xl font-black text-[#0a2617] dark:text-white mb-4" style={{ fontFamily: 'Syne, sans-serif' }}>{title}</h2>
-        <p className="text-[#4a7c5d] dark:text-gray-400 text-lg">{subtitle}</p>
-      </div>
-
-      <form onSubmit={submit} style={{
-        background: '#111', padding: '28px 32px', display: 'flex', flexDirection: 'column',
-        gap: 18, borderRadius: 5, border: '2px solid #fefefe', boxShadow: '4px 4px #fefefe',
-      }}>
-        <div style={{ color: '#fefefe', fontWeight: 900, fontSize: 20, marginBottom: 8 }}>
-          {type === 'contact' ? 'Get in Touch,' : 'Report an Issue,'}
-          <br /><span style={{ color: '#7e7e7e', fontWeight: 600, fontSize: 15 }}>fill out the form below</span>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          <label>
-            <span style={labelStyle}>Full Name</span>
-            <input required type="text" value={form.name} onChange={e => setForm({...form, name: e.target.value})}
-              placeholder="Your Name" style={inputStyle} onFocus={e => (e.target.style.borderColor = '#2d8cf0')} onBlur={e => (e.target.style.borderColor = '#fefefe')} />
-          </label>
-          <label>
-            <span style={labelStyle}>Email Address</span>
-            <input required type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})}
-              placeholder="youremail@example.com" style={inputStyle} onFocus={e => (e.target.style.borderColor = '#2d8cf0')} onBlur={e => (e.target.style.borderColor = '#fefefe')} />
-          </label>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          <label>
-            <span style={labelStyle}>Mobile Number</span>
-            <input required type="tel" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})}
-              placeholder="+91 9876543210" style={inputStyle} onFocus={e => (e.target.style.borderColor = '#2d8cf0')} onBlur={e => (e.target.style.borderColor = '#fefefe')} />
-          </label>
-          <label>
-            <span style={labelStyle}>Subject</span>
-            <input required type="text" value={form.subject} onChange={e => setForm({...form, subject: e.target.value})}
-              placeholder={type === 'report' ? "Bug or broken link" : "How can we help?"} style={inputStyle} onFocus={e => (e.target.style.borderColor = '#2d8cf0')} onBlur={e => (e.target.style.borderColor = '#fefefe')} />
-          </label>
-        </div>
-
-        <label>
-          <span style={labelStyle}>Message Details</span>
-          <textarea required value={form.body} onChange={e => setForm({...form, body: e.target.value})}
-            placeholder={type === 'report' ? "Describe the issue in detail..." : "Write your message here..."}
-            rows={4}
-            style={{ ...inputStyle, height: 'auto', resize: 'vertical', paddingTop: 10, paddingBottom: 10 }}
-            onFocus={e => (e.target.style.borderColor = '#2d8cf0')} onBlur={e => (e.target.style.borderColor = '#fefefe')} />
-        </label>
-
-        <button type="submit" disabled={busy} style={{
-          marginTop: 8, width: 140, height: 42, borderRadius: 5,
-          border: '2px solid #fefefe', background: '#111', boxShadow: '4px 4px #fefefe',
-          fontSize: 15, fontWeight: 600, color: '#fefefe', cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-          transition: 'all 0.15s ease', opacity: busy ? 0.6 : 1,
-        }}
-          onMouseDown={e => { (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none'; (e.currentTarget as HTMLButtonElement).style.transform = 'translate(3px,3px)'; }}
-          onMouseUp={e => { (e.currentTarget as HTMLButtonElement).style.boxShadow = '4px 4px #fefefe'; (e.currentTarget as HTMLButtonElement).style.transform = 'none'; }}
-        >
-          <Send size={15} /> {busy ? 'Sending...' : `Submit ${type === 'report' ? 'Report' : 'Message'}`}
-        </button>
-
-        {msg && (
-          <div style={{ padding: '10px 14px', borderRadius: 5, fontWeight: 700, fontSize: 13,
-            border: `1px solid ${msg.ok ? '#10b981' : '#ef4444'}`,
-            color: msg.ok ? '#10b981' : '#ef4444', background: 'transparent' }}>
-            {msg.text}
-          </div>
-        )}
-      </form>
-    </div>
-  );
-};
-
-const FAQTab = () => {
-  const [faqs, setFaqs] = useState<{ q: string; a: string }[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  React.useEffect(() => {
-    apiFetch<any>('/faqs')
-      .then(res => {
-        if (res.faqs && res.faqs.length > 0) {
-          setFaqs(res.faqs.map((f: any) => ({ q: f.question, a: f.answer })));
+    setTimeout(() => {
+      setChatLog(prev => [
+        ...prev,
+        {
+          sender: 'zeni',
+          text: 'I hear how heavy that feels right now. Take a slow, deep breath with me. You don\'t have to navigate all of this pressure alone. Tell me more about what\'s weighing on you most.'
         }
-      })
-      .catch(err => console.error('Failed to load FAQs:', err));
-  }, []);
+      ]);
+    }, 900);
+  };
 
   return (
-    <div className="max-w-4xl mx-auto py-10">
-      <div className="text-center mb-16">
-        <h2 className="text-4xl sm:text-6xl font-black text-[#0a2617] dark:text-white mb-6" style={{ fontFamily: 'Syne, sans-serif' }}>
-          Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0d5d3a] to-[#27a86a] dark:from-[#10b981] dark:to-[#34d399]">Questions.</span>
-        </h2>
-        <p className="text-[#4a7c5d] dark:text-gray-400 text-lg sm:text-xl">
-          Everything you need to know about the ZenMind platform, therapy, and billing.
-        </p>
-      </div>
+    <div ref={containerRef} className="fixed inset-0 z-[200] bg-[#0a2617] text-[#fffdf5] overflow-y-auto font-sans-main scrollbar-none [&::-webkit-scrollbar]:hidden">
+      <LandingNavbar
+        scrollContainerRef={containerRef}
+        delayReappearMs={1500}
+        onGetStarted={onGetStarted}
+        onAdminLoginTrigger={onAdminLoginTrigger}
+        onTherapistLoginTrigger={onTherapistLoginTrigger}
+        onCompanyLinkClick={onCompanyLinkClick}
+        onResourcesLinkClick={onResourcesLinkClick}
+        onProductLinkClick={onProductLinkClick}
+      />
 
-      <div className="bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 rounded-[2rem] p-6 sm:p-10 shadow-sm">
-        {faqs.map((faq, i) => (
-          <FAQItem key={i} q={faq.q} a={faq.a} />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default function ProductPage({ page, onClose }: { page: string; onClose: () => void }) {
-  
-  const renderContent = () => {
-    switch(page) {
-      case 'Features':
-        return (
-          <div className="space-y-12">
-            <div className="text-center max-w-3xl mx-auto pt-10 pb-6">
-              <h2 className="text-4xl sm:text-6xl font-black text-[#0a2617] dark:text-white mb-6" style={{ fontFamily: 'Syne, sans-serif' }}>
-                Everything you need for <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0d5d3a] to-[#27a86a] dark:from-[#10b981] dark:to-[#34d399]">mental wellness.</span>
-              </h2>
-              <p className="text-[#4a7c5d] dark:text-gray-400 text-lg sm:text-xl">
-                A powerful suite of tools designed specifically for adolescents to track, manage, and improve their mental health.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Feature 1 - Spans 2 cols */}
-              <div className="md:col-span-2 bg-gradient-to-br from-[#0d5d3a] to-[#1a8a5a] rounded-[2rem] p-8 sm:p-12 text-white shadow-xl relative overflow-hidden group">
-                <div className="absolute -right-10 -bottom-10 opacity-10 transform group-hover:scale-110 transition-transform duration-700">
-                  <BrainCircuit size={300} />
-                </div>
-                <div className="relative z-10 h-full flex flex-col justify-end">
-                  <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-8">
-                    <BrainCircuit size={32} />
-                  </div>
-                  <h3 className="text-3xl font-bold mb-4" style={{ fontFamily: 'Syne, sans-serif' }}>Intelligent AI Companion</h3>
-                  <p className="text-white/80 text-lg max-w-md">
-                    Available 24/7. Our highly advanced AI provides instant emotional support, coping mechanisms, and a safe space to vent without judgment.
-                  </p>
-                </div>
-              </div>
-
-              {/* Feature 2 */}
-              <div className="bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 rounded-[2rem] p-8 shadow-sm hover:shadow-xl transition-all duration-300 group">
-                <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                  <HeartHandshake size={28} />
-                </div>
-                <h3 className="text-xl font-bold text-[#0a2617] dark:text-white mb-3">Professional Therapy</h3>
-                <p className="text-[#4a7c5d] dark:text-gray-400">
-                  Book secure 1-on-1 video sessions with licensed and verified mental health professionals.
-                </p>
-              </div>
-
-              {/* Feature 3 */}
-              <div className="bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 rounded-[2rem] p-8 shadow-sm hover:shadow-xl transition-all duration-300 group">
-                <div className="w-14 h-14 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                  <Activity size={28} />
-                </div>
-                <h3 className="text-xl font-bold text-[#0a2617] dark:text-white mb-3">Mood Tracking</h3>
-                <p className="text-[#4a7c5d] dark:text-gray-400">
-                  Visualize your emotional trends over time with our intuitive daily mood logging system.
-                </p>
-              </div>
-
-              {/* Feature 4 - Spans 2 cols */}
-              <div className="md:col-span-2 bg-[#f0fbf4] dark:bg-[#0a1a12] border border-[#0d5d3a]/10 dark:border-[#10b981]/20 rounded-[2rem] p-8 sm:p-12 shadow-sm relative overflow-hidden group">
-                 <div className="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-[#0d5d3a]/5 dark:from-[#10b981]/10 to-transparent" />
-                 <div className="relative z-10">
-                  <div className="w-16 h-16 bg-white dark:bg-[#111] shadow-sm rounded-2xl flex items-center justify-center mb-8 text-[#0d5d3a] dark:text-[#10b981] group-hover:scale-110 transition-transform">
-                    <ShieldCheck size={32} />
-                  </div>
-                  <h3 className="text-3xl font-bold text-[#0a2617] dark:text-white mb-4" style={{ fontFamily: 'Syne, sans-serif' }}>End-to-End Privacy</h3>
-                  <p className="text-[#4a7c5d] dark:text-gray-400 text-lg max-w-lg">
-                    We built ZenMind on a foundation of absolute privacy. Your therapy videos are never recorded, and your AI chat logs are encrypted. Your data belongs to you.
-                  </p>
-                 </div>
-              </div>
-
-              {/* Feature 5 */}
-              <div className="bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 rounded-[2rem] p-8 shadow-sm hover:shadow-xl transition-all duration-300 group">
-                <div className="w-14 h-14 bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                  <Users size={28} />
-                </div>
-                <h3 className="text-xl font-bold text-[#0a2617] dark:text-white mb-3">Peer Circles</h3>
-                <p className="text-[#4a7c5d] dark:text-gray-400">
-                  Join safe, moderated group spaces to share experiences and connect with others who understand what you are going through.
-                </p>
-              </div>
-
-              {/* Feature 6 */}
-              <div className="bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 rounded-[2rem] p-8 shadow-sm hover:shadow-xl transition-all duration-300 group">
-                <div className="w-14 h-14 bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                  <ShoppingBag size={28} />
-                </div>
-                <h3 className="text-xl font-bold text-[#0a2617] dark:text-white mb-3">Wellness Store</h3>
-                <p className="text-[#4a7c5d] dark:text-gray-400">
-                  Access a curated collection of free and premium digital assets including guided meditations and worksheets.
-                </p>
-              </div>
-
-              {/* Feature 7 */}
-              <div className="bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 rounded-[2rem] p-8 shadow-sm hover:shadow-xl transition-all duration-300 group">
-                <div className="w-14 h-14 bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                  <Calendar size={28} />
-                </div>
-                <h3 className="text-xl font-bold text-[#0a2617] dark:text-white mb-3">Wellness Programs</h3>
-                <p className="text-[#4a7c5d] dark:text-gray-400">
-                  Participate in structured, step-by-step programs designed by professionals to tackle specific challenges like anxiety and stress.
-                </p>
-              </div>
-            </div>
+      {/* Hero */}
+      <section className="relative pt-32 sm:pt-40 md:pt-48 pb-20 sm:pb-28 bg-[#0a2617] border-b border-white/10 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-[#ffebc4] text-xs font-sans tracking-[0.2em] uppercase font-bold mb-6">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>AI COMPANION ARCHITECTURE</span>
           </div>
-        );
 
-      case 'AI Chatbot':
-        return (
-          <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 relative">
-            <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
-              <div className="w-[600px] h-[600px] bg-indigo-500/10 dark:bg-indigo-600/20 rounded-full blur-[100px] animate-pulse" />
-            </div>
-            
-            <div className="relative z-10 space-y-8">
-              <div className="relative w-32 h-32 mx-auto">
-                <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-full animate-ping opacity-20" />
-                <div className="absolute inset-2 bg-white dark:bg-[#111] rounded-full shadow-2xl flex items-center justify-center border border-indigo-100 dark:border-indigo-500/20">
-                  <BrainCircuit className="text-indigo-600 dark:text-indigo-400" size={48} />
-                </div>
-              </div>
-              
-              <div className="max-w-2xl mx-auto">
-                <h2 className="text-4xl sm:text-6xl font-black text-[#0a2617] dark:text-white mb-6 tracking-tight" style={{ fontFamily: 'Syne, sans-serif' }}>
-                  Meet Your AI Companion
-                </h2>
-                <p className="text-lg sm:text-xl text-[#4a7c5d] dark:text-gray-400 leading-relaxed mb-10">
-                  We are engineering a proprietary emotional intelligence model specifically calibrated for adolescent cognitive behavioral support.
-                </p>
-                <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 text-indigo-700 dark:text-indigo-300 font-bold">
-                  <Sparkles size={20} />
-                  Specifications & Beta Access Coming Soon
-                </div>
-              </div>
-            </div>
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl text-white font-normal leading-[0.98] mb-6 max-w-4xl mx-auto">
+            Meet Zeni: Your Private <span className="text-[#ffebc4] italic">24/7 AI Companion.</span>
+          </h1>
+
+          <p className="text-lg sm:text-xl text-white/80 font-normal max-w-2xl mx-auto mb-10 leading-relaxed">
+            Attuned to adolescent emotional needs. Multi-lingual, memory-enabled, and guarded by real-time safety pipelines.
+          </p>
+
+          <button
+            onClick={onGetStarted}
+            className="px-8 py-4 rounded-full bg-[#ffebc4] text-[#0a2617] font-bold text-xs uppercase tracking-wider hover:bg-white transition-all shadow-xl cursor-pointer"
+          >
+            START TALKING NOW →
+          </button>
+        </div>
+      </section>
+
+      {/* Interactive AI Sandbox Simulator */}
+      <section className="py-24 bg-[#071d13] border-b border-white/10">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <span className="text-[#ffebc4] text-xs font-sans tracking-widest uppercase font-bold block mb-2">
+              ✦ LIVE INTERACTIVE DEMO
+            </span>
+            <h2 className="text-3xl sm:text-5xl text-white font-normal">
+              Try Zeni in 4 Regional Languages
+            </h2>
           </div>
-        );
 
-      case 'Therapy':
-        return (
-          <div className="space-y-16 py-8">
-            {/* Hero Section */}
-            <div className="text-center max-w-4xl mx-auto">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold text-sm mb-6">
-                <Shield size={16} /> Verified Professionals Only
+          {/* Language Tabs */}
+          <div className="flex flex-wrap justify-center gap-3 mb-8">
+            {(['hinglish', 'english', 'hindi', 'kannada'] as const).map(lang => (
+              <button
+                key={lang}
+                onClick={() => { setActiveTab(lang); setInputMessage(samples[lang]); }}
+                className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all border cursor-pointer ${
+                  activeTab === lang
+                    ? 'bg-[#ffebc4] text-[#0a2617] border-[#ffebc4]'
+                    : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10'
+                }`}
+              >
+                {lang}
+              </button>
+            ))}
+          </div>
+
+          {/* Chat Window */}
+          <div className="p-6 sm:p-8 rounded-[2.5rem] bg-[#0a2617] border border-white/15 shadow-2xl space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 rounded-full bg-[#10b981] animate-ping" />
+                <span className="text-xs font-bold text-white uppercase tracking-wider">Zeni Active Simulator</span>
               </div>
-              <h2 className="text-4xl sm:text-6xl font-black text-[#0a2617] dark:text-white mb-6 leading-tight" style={{ fontFamily: 'Syne, sans-serif' }}>
-                Therapy built on <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">absolute trust.</span>
-              </h2>
-              <p className="text-[#4a7c5d] dark:text-gray-400 text-lg sm:text-xl max-w-2xl mx-auto">
-                We believe you deserve the best. Every single therapist on ZenMind is rigorously vetted, verified, and interviewed by our core medical administration team.
-              </p>
+              <span className="text-xs text-[#ffebc4] font-semibold">100% Encrypted & Anonymized</span>
             </div>
 
-            {/* Vetting Process */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[
-                { step: "01", title: "Credential Verification", desc: "We manually verify all medical licenses and educational backgrounds with issuing authorities." },
-                { step: "02", title: "Clinical Interview", desc: "Therapists undergo a rigorous interview focusing on adolescent psychology and crisis management." },
-                { step: "03", title: "Continuous Monitoring", desc: "We actively monitor patient feedback and ratings to ensure the highest standard of care is maintained." }
-              ].map((v, i) => (
-                <div key={i} className="bg-white dark:bg-[#111] p-8 rounded-[2rem] border border-gray-200 dark:border-white/10 relative overflow-hidden">
-                  <div className="text-6xl font-black text-gray-100 dark:text-white/5 absolute -top-4 -right-4">{v.step}</div>
-                  <div className="relative z-10 mt-8">
-                    <h4 className="text-xl font-bold text-[#0a2617] dark:text-white mb-3">{v.title}</h4>
-                    <p className="text-[#4a7c5d] dark:text-gray-400">{v.desc}</p>
+            <div className="space-y-4 min-h-[220px] max-h-[350px] overflow-y-auto pr-2">
+              {chatLog.map((msg, i) => (
+                <div key={i} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`p-4 rounded-2xl max-w-md text-sm leading-relaxed ${
+                    msg.sender === 'user'
+                      ? 'bg-white/15 text-white font-medium'
+                      : 'bg-[#10b981]/20 border border-[#10b981]/30 text-[#ffebc4]'
+                  }`}>
+                    {msg.text}
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Divider */}
-            <div className="h-px w-full bg-gradient-to-r from-transparent via-gray-200 dark:via-white/10 to-transparent" />
-
-            {/* Cancellation Policy */}
-            <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-10">
-                <h3 className="text-3xl font-black text-[#0a2617] dark:text-white mb-4" style={{ fontFamily: 'Syne, sans-serif' }}>Cancellation Policy</h3>
-                <p className="text-[#4a7c5d] dark:text-gray-400 text-lg">Transparent and fair policies to respect both your time and the therapist's schedule.</p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row gap-6 items-center p-6 bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 rounded-2xl shadow-sm">
-                  <div className="w-20 h-20 shrink-0 bg-green-50 dark:bg-green-500/10 rounded-full flex items-center justify-center text-green-600 dark:text-green-400 text-2xl font-black border-4 border-white dark:border-[#111] shadow-lg">100%</div>
-                  <div>
-                    <h4 className="text-xl font-bold text-[#0a2617] dark:text-white mb-2">3+ Days Advance Notice</h4>
-                    <p className="text-[#4a7c5d] dark:text-gray-400">Cancel your session 3 or more days prior to the scheduled time to receive a full, unconditional refund.</p>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-6 items-center p-6 bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 rounded-2xl shadow-sm">
-                  <div className="w-20 h-20 shrink-0 bg-amber-50 dark:bg-amber-500/10 rounded-full flex items-center justify-center text-amber-600 dark:text-amber-400 text-2xl font-black border-4 border-white dark:border-[#111] shadow-lg">80%</div>
-                  <div>
-                    <h4 className="text-xl font-bold text-[#0a2617] dark:text-white mb-2">2 Days Advance Notice</h4>
-                    <p className="text-[#4a7c5d] dark:text-gray-400">Cancellations made exactly 2 days prior incur a small 20% processing fee.</p>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-6 items-center p-6 bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 rounded-2xl shadow-sm">
-                  <div className="w-20 h-20 shrink-0 bg-red-50 dark:bg-red-500/10 rounded-full flex items-center justify-center text-red-600 dark:text-red-400 text-2xl font-black border-4 border-white dark:border-[#111] shadow-lg">70%</div>
-                  <div>
-                    <h4 className="text-xl font-bold text-[#0a2617] dark:text-white mb-2">Late / Instant Cancellation</h4>
-                    <p className="text-[#4a7c5d] dark:text-gray-400">Within 48 hours, a 30% fee is retained to cover platform and therapist reservation charges.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-8 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-500/30 rounded-2xl p-6 flex items-start gap-4">
-                <Clock className="text-blue-600 dark:text-blue-400 shrink-0 mt-1" size={24} />
-                <div>
-                  <h4 className="font-bold text-blue-900 dark:text-blue-300 text-lg mb-2">The 10-Minute No-Show Rule</h4>
-                  <p className="text-blue-800/80 dark:text-blue-300/80">
-                    If you do not join the video session within 10 minutes of the start time, the session is automatically cancelled (subject to late cancellation policy). If the therapist fails to join within 10 minutes, you are immediately issued a 100% refund.
-                  </p>
-                </div>
-              </div>
+            {/* Input Bar */}
+            <div className="flex gap-3 pt-4 border-t border-white/10">
+              <input
+                type="text"
+                value={inputMessage}
+                onChange={e => setInputMessage(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSend()}
+                placeholder="Type your message to Zeni..."
+                className="flex-1 bg-white/5 border border-white/15 rounded-full px-6 py-3.5 text-sm text-white focus:outline-none focus:border-[#10b981]"
+              />
+              <button
+                onClick={() => handleSend()}
+                className="px-6 py-3.5 rounded-full bg-[#10b981] text-[#0a2617] font-bold text-xs uppercase tracking-wider hover:bg-white transition-all cursor-pointer flex items-center gap-2"
+              >
+                <span>Send</span>
+                <Send size={14} />
+              </button>
             </div>
           </div>
-        );
+        </div>
+      </section>
 
-      case 'Pricing':
-        return (
-          <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 py-12">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl sm:text-5xl font-black text-[#0a2617] dark:text-white mb-4" style={{ fontFamily: 'Syne, sans-serif' }}>
-                Simple, transparent pricing
-              </h2>
-              <p className="text-[#4a7c5d] dark:text-gray-400 text-lg">
-                Choose the plan that best fits your wellness journey.
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl w-full">
-              {/* Free Tier */}
-              <div className="bg-white dark:bg-[#111] border border-[#0d5d3a]/10 dark:border-white/10 p-8 rounded-[2rem] shadow-sm hover:shadow-xl transition-all">
-                <h3 className="text-2xl font-bold text-[#0a2617] dark:text-white mb-2" style={{ fontFamily: 'Syne, sans-serif' }}>ZenFree</h3>
-                <div className="text-3xl font-black text-[#0d5d3a] dark:text-[#10b981] mb-1">₹0</div>
-                <div className="text-sm text-[#4a7c5d] dark:text-gray-400 mb-6">Free forever</div>
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-center gap-2 text-sm text-[#0a2617] dark:text-gray-300"><CheckCircle size={16} className="text-[#10b981]" /> 10 AI Chat credits per week (≈40/mo)</li>
-                  <li className="flex items-center gap-2 text-sm text-[#0a2617] dark:text-gray-300"><CheckCircle size={16} className="text-[#10b981]" /> Basic mood tracking</li>
-                  <li className="flex items-center gap-2 text-sm text-[#0a2617] dark:text-gray-300"><CheckCircle size={16} className="text-[#10b981]" /> Community access (view only)</li>
-                </ul>
-              </div>
+      <LandingFooter
+        onGetStarted={onGetStarted}
+        onTherapistLoginTrigger={onTherapistLoginTrigger}
+        onCompanyLinkClick={onCompanyLinkClick}
+        onResourcesLinkClick={onResourcesLinkClick}
+        onProductLinkClick={onProductLinkClick}
+      />
+    </div>
+  );
+}
 
-              {/* Silver Tier */}
-              <div className="bg-white dark:bg-[#111] border border-[#0d5d3a]/20 dark:border-[#10b981]/20 p-8 rounded-[2rem] shadow-md hover:shadow-xl transition-all">
-                <h3 className="text-2xl font-bold text-[#0a2617] dark:text-white mb-2" style={{ fontFamily: 'Syne, sans-serif' }}>ZenSilver</h3>
-                <div className="flex items-baseline gap-1 mb-1">
-                  <div className="text-3xl font-black text-[#0d5d3a] dark:text-[#10b981]">₹199</div>
-                  <div className="text-sm text-[#4a7c5d] dark:text-gray-400">/mo</div>
-                </div>
-                <div className="text-xs text-[#4a7c5d] dark:text-gray-400 mb-6">or ₹1,799/yr</div>
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-center gap-2 text-sm text-[#0a2617] dark:text-gray-300"><CheckCircle size={16} className="text-[#10b981]" /> 150 AI Chat credits / mo</li>
-                  <li className="flex items-center gap-2 text-sm text-[#0a2617] dark:text-gray-300"><CheckCircle size={16} className="text-[#10b981]" /> Therapy Hub access</li>
-                  <li className="flex items-center gap-2 text-sm text-[#0a2617] dark:text-gray-300"><CheckCircle size={16} className="text-[#10b981]" /> 2 Wellness Programs</li>
-                  <li className="flex items-center gap-2 text-sm text-[#0a2617] dark:text-gray-300"><CheckCircle size={16} className="text-[#10b981]" /> 5 Peer Circles</li>
-                  <li className="flex items-center gap-2 text-sm text-[#0a2617] dark:text-gray-300"><CheckCircle size={16} className="text-[#10b981]" /> Community story sharing</li>
-                  <li className="flex items-center gap-2 text-sm text-[#0a2617] dark:text-gray-300"><CheckCircle size={16} className="text-[#10b981]" /> 5% Store Discount</li>
-                </ul>
-              </div>
+/* ═══════════════════════════════════════════════════════
+   2. SYNUS-INSPIRED THERAPY DIRECTORY OVERLAY PAGE
+   ═══════════════════════════════════════════════════════ */
+function TherapyPage({
+  onGetStarted,
+  onAdminLoginTrigger,
+  onTherapistLoginTrigger,
+  onCompanyLinkClick,
+  onResourcesLinkClick,
+  onProductLinkClick,
+}: Omit<ProductPageProps, 'onClose' | 'page'>) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [selectedFilter, setSelectedFilter] = useState('All');
+  const [therapists, setTherapists] = useState<any[]>([]);
 
-              {/* Gold Tier */}
-              <div className="bg-gradient-to-b from-[#0d5d3a] to-[#1a8a5a] p-8 rounded-[2rem] shadow-xl transform md:-translate-y-4 relative">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                  Most Popular
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Syne, sans-serif' }}>ZenGold</h3>
-                <div className="flex items-baseline gap-1 mb-1">
-                  <div className="text-3xl font-black text-white">₹499</div>
-                  <div className="text-sm text-white/80">/mo</div>
-                </div>
-                <div className="text-xs text-white/80 mb-6">or ₹4,499/yr</div>
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-center gap-2 text-sm text-white"><CheckCircle size={16} className="text-yellow-400" /> 250 AI Chat credits / mo</li>
-                  <li className="flex items-center gap-2 text-sm text-white"><CheckCircle size={16} className="text-yellow-400" /> Unlimited Peer Circles</li>
-                  <li className="flex items-center gap-2 text-sm text-white"><CheckCircle size={16} className="text-yellow-400" /> Mood Journaling</li>
-                  <li className="flex items-center gap-2 text-sm text-white"><CheckCircle size={16} className="text-yellow-400" /> Up to 10 Wellness Programs</li>
-                  <li className="flex items-center gap-2 text-sm text-white"><CheckCircle size={16} className="text-yellow-400" /> Up to 10 Reading Lists</li>
-                  <li className="flex items-center gap-2 text-sm text-white"><CheckCircle size={16} className="text-yellow-400" /> Therapy Hub access</li>
-                  <li className="flex items-center gap-2 text-sm text-white"><CheckCircle size={16} className="text-yellow-400" /> 20% Store Discount</li>
-                </ul>
-              </div>
+  useEffect(() => {
+    apiFetch<any>('/therapists')
+      .then(res => setTherapists(res.therapists || []))
+      .catch(() => {});
+  }, []);
 
-              {/* Platinum Tier */}
-              <div className="bg-[#1a1a1a] dark:bg-[#050505] border border-gray-800 p-8 rounded-[2rem] shadow-lg hover:shadow-xl transition-all">
-                <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Syne, sans-serif' }}>ZenPlatinum</h3>
-                <div className="flex items-baseline gap-1 mb-1">
-                  <div className="text-3xl font-black text-white">₹999</div>
-                  <div className="text-sm text-gray-400">/mo</div>
-                </div>
-                <div className="text-xs text-gray-400 mb-6">or ₹8,999/yr</div>
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-center gap-2 text-sm text-gray-300"><CheckCircle size={16} className="text-[#10b981]" /> 2 Free Therapy Sessions / mo</li>
-                  <li className="flex items-center gap-2 text-sm text-gray-300"><CheckCircle size={16} className="text-[#10b981]" /> Unlimited AI Chat</li>
-                  <li className="flex items-center gap-2 text-sm text-gray-300"><CheckCircle size={16} className="text-[#10b981]" /> Direct Therapist Chat</li>
-                  <li className="flex items-center gap-2 text-sm text-gray-300"><CheckCircle size={16} className="text-[#10b981]" /> 30% Store Discount</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'FAQ':
-        return <FAQTab />;
-
-      case 'Contact Us':
-        return <SupportForm type="contact" title="Get in Touch" subtitle="Have a question or need assistance? Our support team is here to help." />;
-
-      case 'Report Issue':
-        return <SupportForm type="report" title="Report an Issue" subtitle="Found a bug or experiencing technical difficulties? Let us know so we can fix it." />;
-
-      case 'Documentation':
-        return (
-          <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 py-10">
-            <div className="relative w-full max-w-xl">
-              <div className="absolute inset-0 bg-[#0d5d3a]/20 dark:bg-[#10b981]/20 blur-3xl rounded-full" />
-              <div className="bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 p-6 sm:p-10 md:p-12 rounded-2xl sm:rounded-[3rem] shadow-2xl relative z-10 w-full">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#e6f4ea] dark:bg-[#0d5d3a]/30 text-[#0d5d3a] dark:text-[#10b981] rounded-full flex items-center justify-center mx-auto mb-6 sm:mb-8">
-                  <FileCode size={30} className="sm:hidden" />
-                  <FileCode size={36} className="hidden sm:block" />
-                </div>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0a2617] dark:text-white mb-4 sm:mb-6 break-words" style={{ fontFamily: 'Syne, sans-serif' }}>
-                  Documentation
-                </h2>
-                <div className="inline-block px-4 py-1.5 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 font-bold text-sm mb-4 sm:mb-6 uppercase tracking-widest">
-                  Coming Soon
-                </div>
-                <p className="text-[#4a7c5d] dark:text-gray-400 text-base sm:text-lg leading-relaxed">
-                  We are building comprehensive developer and user documentation to help you get the most out of the ZenMind platform.
-                </p>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'Safety Guidelines':
-        return (
-          <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 py-10">
-            <div className="relative w-full max-w-xl">
-              <div className="absolute inset-0 bg-blue-500/10 dark:bg-blue-500/20 blur-3xl rounded-full" />
-              <div className="bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 p-6 sm:p-10 md:p-12 rounded-2xl sm:rounded-[3rem] shadow-2xl relative z-10 w-full">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-6 sm:mb-8">
-                  <ShieldCheck size={30} className="sm:hidden" />
-                  <ShieldCheck size={36} className="hidden sm:block" />
-                </div>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0a2617] dark:text-white mb-4 sm:mb-6 break-words" style={{ fontFamily: 'Syne, sans-serif' }}>
-                  Safety Guidelines
-                </h2>
-                <div className="inline-block px-4 py-1.5 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 font-bold text-sm mb-4 sm:mb-6 uppercase tracking-widest">
-                  Coming Soon
-                </div>
-                <p className="text-[#4a7c5d] dark:text-gray-400 text-base sm:text-lg leading-relaxed">
-                  Community safety is our priority. Our comprehensive safety guidelines and crisis resources page is currently being finalized.
-                </p>
-              </div>
-            </div>
-          </div>
-        );
-
-      default:
-        return <div>Page not found</div>;
-    }
-  };
+  const filterOptions = ['All', 'Adolescent CBT', 'Anxiety & Stress', 'Depression Care', 'Academic Pressure'];
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 30 }} 
-      animate={{ opacity: 1, y: 0 }} 
-      exit={{ opacity: 0, y: 30 }}
-      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed inset-0 z-[100] bg-[#f7fbf8] dark:bg-[#050505] overflow-y-auto"
-    >
-      {/* Desktop header — hidden on mobile */}
-      <header className="hidden sm:flex sticky top-0 z-50 bg-white/80 dark:bg-[#050505]/80 backdrop-blur-xl border-b border-gray-200 dark:border-white/10 px-4 sm:px-8 py-4 items-center justify-between">
-        <button 
-          onClick={onClose}
-          className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-white/5 text-[#0a2617] dark:text-white font-bold hover:bg-gray-200 dark:hover:bg-white/10 transition-colors flex items-center gap-2"
-        >
-          <ChevronLeft size={20} />
-          Back to site
-        </button>
-        <span className="text-sm font-black tracking-widest uppercase text-gray-400 dark:text-gray-500">
-          ZenMind / {page}
-        </span>
-      </header>
-      {/* Mobile floating close button */}
-      <button onClick={onClose} className="sm:hidden fixed top-4 right-4 z-[110] w-10 h-10 rounded-full bg-white dark:bg-[#1a1a1a] shadow-lg border border-gray-200 dark:border-white/10 flex items-center justify-center text-[#0a2617] dark:text-white hover:bg-gray-100 transition">
-        <ChevronLeft size={18} />
-      </button>
+    <div ref={containerRef} className="fixed inset-0 z-[200] bg-[#0a2617] text-[#fffdf5] overflow-y-auto font-sans-main scrollbar-none [&::-webkit-scrollbar]:hidden">
+      <LandingNavbar
+        scrollContainerRef={containerRef}
+        delayReappearMs={1500}
+        onGetStarted={onGetStarted}
+        onAdminLoginTrigger={onAdminLoginTrigger}
+        onTherapistLoginTrigger={onTherapistLoginTrigger}
+        onCompanyLinkClick={onCompanyLinkClick}
+        onResourcesLinkClick={onResourcesLinkClick}
+        onProductLinkClick={onProductLinkClick}
+      />
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-8 py-10 pb-32">
-        {renderContent()}
-      </main>
-    </motion.div>
+      {/* Hero */}
+      <section className="relative pt-32 sm:pt-40 md:pt-48 pb-20 sm:pb-28 bg-[#0a2617] border-b border-white/10 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-[#ffebc4] text-xs font-sans tracking-[0.2em] uppercase font-bold mb-6">
+            <UserCheck className="w-3.5 h-3.5" />
+            <span>VERIFIED CLINICAL CARE</span>
+          </div>
+
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl text-white font-normal leading-[0.98] mb-6 max-w-4xl mx-auto">
+            When AI Isn't Enough, <span className="text-[#ffebc4] italic">People Are There.</span>
+          </h1>
+
+          <p className="text-lg sm:text-xl text-white/80 font-normal max-w-2xl mx-auto mb-10 leading-relaxed">
+            Verified licensed adolescent psychotherapists, psychiatrists, and counselors for 1-on-1 online and in-person sessions.
+          </p>
+
+          <button
+            onClick={onGetStarted}
+            className="px-8 py-4 rounded-full bg-[#ffebc4] text-[#0a2617] font-bold text-xs uppercase tracking-wider hover:bg-white transition-all shadow-xl cursor-pointer"
+          >
+            BOOK A SESSION NOW →
+          </button>
+        </div>
+      </section>
+
+      {/* Directory Section with Sticky Filter Bar */}
+      <section className="py-24 bg-[#071d13] border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+          
+          {/* Sticky Filter Bar */}
+          <div className="sticky top-24 z-30 bg-[#0a2617]/90 backdrop-blur-xl p-4 rounded-2xl border border-white/15 mb-12 flex flex-wrap items-center justify-between gap-4 shadow-xl">
+            <span className="text-xs font-sans text-[#ffebc4] font-bold tracking-wider uppercase">Filter Specialization:</span>
+            <div className="flex flex-wrap gap-2">
+              {filterOptions.map(opt => (
+                <button
+                  key={opt}
+                  onClick={() => setSelectedFilter(opt)}
+                  className={`px-4 py-2 rounded-full text-xs font-bold transition-all border cursor-pointer ${
+                    selectedFilter === opt
+                      ? 'bg-[#10b981] text-[#0a2617] border-[#10b981]'
+                      : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10'
+                  }`}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Directory Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {therapists.length > 0 ? (
+              therapists.map((t, idx) => (
+                <motion.div
+                  key={t._id || idx}
+                  whileHover={{ y: -8 }}
+                  className="p-6 rounded-[2.5rem] bg-[#0a2617] border border-white/15 shadow-2xl flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="h-48 rounded-2xl bg-white/10 mb-6 overflow-hidden relative">
+                      {t.imageUrl ? (
+                        <img src={t.imageUrl} alt={t.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-[#ffebc4]">
+                          {t.name ? t.name.charAt(0) : 'T'}
+                        </div>
+                      )}
+                      <span className="absolute top-3 right-3 px-3 py-1 rounded-full bg-[#10b981] text-[#0a2617] text-[10px] font-black uppercase">
+                        Verified Expert
+                      </span>
+                    </div>
+
+                    <h3 className="text-2xl text-white font-normal mb-1">{t.name}</h3>
+                    <p className="text-xs text-[#ffebc4] font-semibold mb-4">{t.specialty || 'Psychotherapist'} • {t.experienceYears || '10+'} Yrs Exp</p>
+                    <p className="text-xs text-white/70 leading-relaxed mb-6">{t.bio || 'Specializes in adolescent mental wellness, stress management, and cognitive behavioral therapy.'}</p>
+                  </div>
+
+                  <button
+                    onClick={onGetStarted}
+                    className="w-full py-3.5 rounded-full bg-[#ffebc4] text-[#0a2617] font-extrabold text-xs uppercase tracking-wider hover:bg-white transition-all shadow-md cursor-pointer"
+                  >
+                    BOOK SESSION (₹{t.sessionFee || '1,200'}) →
+                  </button>
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-16 p-8 rounded-[2.5rem] bg-[#0a2617] border border-white/15">
+                <h3 className="text-2xl text-white mb-2">Verified Psychotherapist Directory</h3>
+                <p className="text-sm text-white/70 max-w-md mx-auto mb-6">
+                  Online and offline appointment booking with licensed clinical counselors.
+                </p>
+                <button onClick={onGetStarted} className="px-6 py-3 rounded-full bg-[#ffebc4] text-[#0a2617] font-bold text-xs uppercase cursor-pointer">
+                  Book Therapist Session →
+                </button>
+              </div>
+            )}
+          </div>
+
+        </div>
+      </section>
+
+      <LandingFooter
+        onGetStarted={onGetStarted}
+        onTherapistLoginTrigger={onTherapistLoginTrigger}
+        onCompanyLinkClick={onCompanyLinkClick}
+        onResourcesLinkClick={onResourcesLinkClick}
+        onProductLinkClick={onProductLinkClick}
+      />
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   3. SYNUS-INSPIRED PRICING OVERLAY PAGE
+   ═══════════════════════════════════════════════════════ */
+function PricingPage({
+  onGetStarted,
+  onAdminLoginTrigger,
+  onTherapistLoginTrigger,
+  onCompanyLinkClick,
+  onResourcesLinkClick,
+  onProductLinkClick,
+}: Omit<ProductPageProps, 'onClose' | 'page'>) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
+
+  return (
+    <div ref={containerRef} className="fixed inset-0 z-[200] bg-[#0a2617] text-[#fffdf5] overflow-y-auto font-sans-main scrollbar-none [&::-webkit-scrollbar]:hidden">
+      <LandingNavbar
+        scrollContainerRef={containerRef}
+        delayReappearMs={1500}
+        onGetStarted={onGetStarted}
+        onAdminLoginTrigger={onAdminLoginTrigger}
+        onTherapistLoginTrigger={onTherapistLoginTrigger}
+        onCompanyLinkClick={onCompanyLinkClick}
+        onResourcesLinkClick={onResourcesLinkClick}
+        onProductLinkClick={onProductLinkClick}
+      />
+
+      {/* Hero */}
+      <section className="relative pt-32 sm:pt-40 md:pt-48 pb-20 sm:pb-28 bg-[#0a2617] border-b border-white/10 text-center">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-[#ffebc4] text-xs font-sans tracking-[0.2em] uppercase font-bold mb-6">
+            <IndianRupee className="w-3.5 h-3.5" />
+            <span>TRANSPARENT PLANS</span>
+          </div>
+
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl text-white font-normal leading-[0.98] mb-6 max-w-4xl mx-auto">
+            Accessible Care. <span className="text-[#ffebc4] italic">Zero Hidden Fees.</span>
+          </h1>
+
+          <p className="text-lg sm:text-xl text-white/80 font-normal max-w-2xl mx-auto mb-10 leading-relaxed">
+            Free forever for basic AI conversations, or upgrade for unlimited credits and human therapy discounts.
+          </p>
+
+          {/* Billing Cycle Selector */}
+          <div className="inline-flex items-center p-1.5 rounded-full bg-white/10 border border-white/15">
+            <button
+              onClick={() => setBillingCycle('monthly')}
+              className={`px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                billingCycle === 'monthly' ? 'bg-[#ffebc4] text-[#0a2617]' : 'text-white/70 hover:text-white'
+              }`}
+            >
+              Monthly Billing
+            </button>
+            <button
+              onClick={() => setBillingCycle('annual')}
+              className={`px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 ${
+                billingCycle === 'annual' ? 'bg-[#ffebc4] text-[#0a2617]' : 'text-white/70 hover:text-white'
+              }`}
+            >
+              <span>Annual Billing</span>
+              <span className="px-2 py-0.5 rounded-full bg-[#10b981] text-[#0a2617] text-[10px] font-black">20% OFF</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Cards Grid */}
+      <section className="py-24 bg-[#071d13] border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+            
+            {/* Free Plan */}
+            <div className="p-8 rounded-[2.5rem] bg-[#0a2617] border border-white/15 shadow-xl flex flex-col justify-between">
+              <div>
+                <span className="text-xs font-sans text-white/50 tracking-widest uppercase font-bold block mb-2">STARTER</span>
+                <h3 className="text-3xl text-white font-normal mb-2">ZenFree</h3>
+                <div className="text-4xl font-bold text-[#10b981] mb-6">₹0 <span className="text-sm font-normal text-white/50">/ forever</span></div>
+
+                <div className="space-y-3 text-xs sm:text-sm text-white/80 mb-8">
+                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#10b981]" /><span>40 AI Chat Credits / month</span></div>
+                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#10b981]" /><span>Basic Mood Logging</span></div>
+                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#10b981]" /><span>Peer Circles (View Only)</span></div>
+                </div>
+              </div>
+
+              <button onClick={onGetStarted} className="w-full py-4 rounded-full bg-white/10 text-white font-bold text-xs uppercase tracking-wider hover:bg-white hover:text-[#0a2617] transition-all cursor-pointer">
+                GET STARTED FREE
+              </button>
+            </div>
+
+            {/* Pro Plan (HERO CARD) */}
+            <div className="p-8 rounded-[2.5rem] bg-gradient-to-br from-[#0d5d3a] to-[#071d13] border-2 border-[#ffebc4] shadow-2xl flex flex-col justify-between relative">
+              <span className="absolute -top-4 right-8 px-4 py-1 rounded-full bg-[#ffebc4] text-[#0a2617] text-[10px] font-black uppercase tracking-wider">
+                MOST POPULAR
+              </span>
+
+              <div>
+                <span className="text-xs font-sans text-[#ffebc4] tracking-widest uppercase font-bold block mb-2">RECOMMENDED</span>
+                <h3 className="text-3xl text-white font-normal mb-2">ZenPro</h3>
+                <div className="text-4xl font-bold text-[#ffebc4] mb-6">
+                  {billingCycle === 'monthly' ? '₹299' : '₹2,799'} <span className="text-sm font-normal text-white/70">/ {billingCycle === 'monthly' ? 'mo' : 'yr'}</span>
+                </div>
+
+                <div className="space-y-3 text-xs sm:text-sm text-white mb-8">
+                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#ffebc4]" /><span>250 AI Chat Credits / month</span></div>
+                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#ffebc4]" /><span>Unlimited Peer Circles</span></div>
+                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#ffebc4]" /><span>Encrypted Sentiment Analytics</span></div>
+                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#ffebc4]" /><span>20% Wellness Store Discount</span></div>
+                </div>
+              </div>
+
+              <button onClick={onGetStarted} className="w-full py-4 rounded-full bg-[#ffebc4] text-[#0a2617] font-black text-xs uppercase tracking-wider hover:bg-white transition-all cursor-pointer shadow-lg">
+                START PRO TRIAL →
+              </button>
+            </div>
+
+            {/* Platinum Plan */}
+            <div className="p-8 rounded-[2.5rem] bg-[#0a2617] border border-white/15 shadow-xl flex flex-col justify-between">
+              <div>
+                <span className="text-xs font-sans text-white/50 tracking-widest uppercase font-bold block mb-2">COMPLETE CARE</span>
+                <h3 className="text-3xl text-white font-normal mb-2">ZenPlatinum</h3>
+                <div className="text-4xl font-bold text-white mb-6">
+                  {billingCycle === 'monthly' ? '₹999' : '₹8,999'} <span className="text-sm font-normal text-white/50">/ {billingCycle === 'monthly' ? 'mo' : 'yr'}</span>
+                </div>
+
+                <div className="space-y-3 text-xs sm:text-sm text-white/80 mb-8">
+                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#10b981]" /><span>2 Free Human Therapy Sessions / mo</span></div>
+                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#10b981]" /><span>Unlimited 24/7 AI Chat</span></div>
+                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#10b981]" /><span>Direct Therapist Messaging</span></div>
+                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#10b981]" /><span>30% Wellness Store Discount</span></div>
+                </div>
+              </div>
+
+              <button onClick={onGetStarted} className="w-full py-4 rounded-full bg-white/10 text-white font-bold text-xs uppercase tracking-wider hover:bg-white hover:text-[#0a2617] transition-all cursor-pointer">
+                CHOOSE PLATINUM
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <LandingFooter
+        onGetStarted={onGetStarted}
+        onTherapistLoginTrigger={onTherapistLoginTrigger}
+        onCompanyLinkClick={onCompanyLinkClick}
+        onResourcesLinkClick={onResourcesLinkClick}
+        onProductLinkClick={onProductLinkClick}
+      />
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   4. SYNUS-INSPIRED FAQ OVERLAY PAGE
+   ═══════════════════════════════════════════════════════ */
+function FAQPage({
+  onGetStarted,
+  onAdminLoginTrigger,
+  onTherapistLoginTrigger,
+  onCompanyLinkClick,
+  onResourcesLinkClick,
+  onProductLinkClick,
+}: Omit<ProductPageProps, 'onClose' | 'page'>) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [faqs, setFaqs] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [openIdx, setOpenIdx] = useState<number | null>(0);
+
+  useEffect(() => {
+    apiFetch<any>('/faqs')
+      .then(res => setFaqs(res.faqs || []))
+      .catch(() => {
+        setFaqs([
+          { question: "Is my conversation with Zeni private?", answer: "Yes, 100%. All chat logs are anonymized and end-to-end encrypted. We never sell or share your personal emotional data." },
+          { question: "How does Zeni handle crisis situations?", answer: "ZenMind runs an independent background safety pipeline that detects risk signals and immediately connects you with crisis help numbers and licensed human therapists." },
+          { question: "What languages can I speak with Zeni in?", answer: "Zeni fluently understands and responds in English, Hindi, Hinglish, and Kannada." },
+          { question: "How do I book a session with a human therapist?", answer: "Navigate to the Therapy Desk, choose a verified practitioner based on specialization, select your preferred time slot, and confirm online or offline booking." }
+        ]);
+      });
+  }, []);
+
+  const filteredFaqs = faqs.filter(f => 
+    (f.question || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (f.answer || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div ref={containerRef} className="fixed inset-0 z-[200] bg-[#0a2617] text-[#fffdf5] overflow-y-auto font-sans-main scrollbar-none [&::-webkit-scrollbar]:hidden">
+      <LandingNavbar
+        scrollContainerRef={containerRef}
+        delayReappearMs={1500}
+        onGetStarted={onGetStarted}
+        onAdminLoginTrigger={onAdminLoginTrigger}
+        onTherapistLoginTrigger={onTherapistLoginTrigger}
+        onCompanyLinkClick={onCompanyLinkClick}
+        onResourcesLinkClick={onResourcesLinkClick}
+        onProductLinkClick={onProductLinkClick}
+      />
+
+      {/* Hero */}
+      <section className="relative pt-32 sm:pt-40 md:pt-48 pb-20 sm:pb-28 bg-[#0a2617] border-b border-white/10 text-center">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-[#ffebc4] text-xs font-sans tracking-[0.2em] uppercase font-bold mb-6">
+            <HelpCircle className="w-3.5 h-3.5" />
+            <span>KNOWLEDGE BASE</span>
+          </div>
+
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl text-white font-normal leading-[0.98] mb-6 max-w-4xl mx-auto">
+            Frequently Asked <span className="text-[#ffebc4] italic">Questions.</span>
+          </h1>
+
+          {/* Search Bar */}
+          <div className="max-w-xl mx-auto relative">
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-white/50" size={18} />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              placeholder="Search questions about privacy, therapy, or AI..."
+              className="w-full bg-white/10 border border-white/15 rounded-full pl-12 pr-6 py-4 text-sm text-white focus:outline-none focus:border-[#10b981] placeholder-white/50"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Accordion List */}
+      <section className="py-24 bg-[#071d13] border-b border-white/10">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="space-y-4">
+            {filteredFaqs.map((faq, idx) => {
+              const isOpen = openIdx === idx;
+
+              return (
+                <div key={idx} className="p-6 rounded-[2rem] bg-[#0a2617] border border-white/15 shadow-xl">
+                  <button
+                    onClick={() => setOpenIdx(isOpen ? null : idx)}
+                    className="w-full flex items-center justify-between text-left gap-4 cursor-pointer"
+                  >
+                    <span className="text-lg sm:text-xl text-white font-normal">{faq.question}</span>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-transform ${
+                      isOpen ? 'bg-[#ffebc4] text-[#0a2617] rotate-180' : 'bg-white/10 text-white'
+                    }`}>
+                      <ChevronDown size={18} />
+                    </div>
+                  </button>
+
+                  <AnimatePresence>
+                    {isOpen && (
+                      <motion.p
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="mt-4 pt-4 border-t border-white/10 text-sm text-white/80 leading-relaxed"
+                      >
+                        {faq.answer}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <LandingFooter
+        onGetStarted={onGetStarted}
+        onTherapistLoginTrigger={onTherapistLoginTrigger}
+        onCompanyLinkClick={onCompanyLinkClick}
+        onResourcesLinkClick={onResourcesLinkClick}
+        onProductLinkClick={onProductLinkClick}
+      />
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   MAIN PRODUCT PAGE OVERLAY ROUTER
+   ═══════════════════════════════════════════════════════ */
+export default function ProductPage({
+  page,
+  onClose,
+  onGetStarted,
+  onAdminLoginTrigger,
+  onTherapistLoginTrigger,
+  onCompanyLinkClick,
+  onResourcesLinkClick,
+  onProductLinkClick,
+}: ProductPageProps) {
+  if (page === 'Features') {
+    return (
+      <FeaturesPage
+        onClose={onClose}
+        onGetStarted={onGetStarted}
+        onAdminLoginTrigger={onAdminLoginTrigger}
+        onTherapistLoginTrigger={onTherapistLoginTrigger}
+        onCompanyLinkClick={onCompanyLinkClick}
+        onResourcesLinkClick={onResourcesLinkClick}
+        onProductLinkClick={onProductLinkClick}
+      />
+    );
+  }
+
+  if (page === 'AI Chatbot') {
+    return (
+      <AIChatbotPage
+        onGetStarted={onGetStarted}
+        onAdminLoginTrigger={onAdminLoginTrigger}
+        onTherapistLoginTrigger={onTherapistLoginTrigger}
+        onCompanyLinkClick={onCompanyLinkClick}
+        onResourcesLinkClick={onResourcesLinkClick}
+        onProductLinkClick={onProductLinkClick}
+      />
+    );
+  }
+
+  if (page === 'Therapy') {
+    return (
+      <TherapyPage
+        onGetStarted={onGetStarted}
+        onAdminLoginTrigger={onAdminLoginTrigger}
+        onTherapistLoginTrigger={onTherapistLoginTrigger}
+        onCompanyLinkClick={onCompanyLinkClick}
+        onResourcesLinkClick={onResourcesLinkClick}
+        onProductLinkClick={onProductLinkClick}
+      />
+    );
+  }
+
+  if (page === 'Pricing') {
+    return (
+      <PricingPage
+        onGetStarted={onGetStarted}
+        onAdminLoginTrigger={onAdminLoginTrigger}
+        onTherapistLoginTrigger={onTherapistLoginTrigger}
+        onCompanyLinkClick={onCompanyLinkClick}
+        onResourcesLinkClick={onResourcesLinkClick}
+        onProductLinkClick={onProductLinkClick}
+      />
+    );
+  }
+
+  if (page === 'FAQ') {
+    return (
+      <FAQPage
+        onGetStarted={onGetStarted}
+        onAdminLoginTrigger={onAdminLoginTrigger}
+        onTherapistLoginTrigger={onTherapistLoginTrigger}
+        onCompanyLinkClick={onCompanyLinkClick}
+        onResourcesLinkClick={onResourcesLinkClick}
+        onProductLinkClick={onProductLinkClick}
+      />
+    );
+  }
+
+  // Fallback for contact / docs pages
+  return (
+    <div className="fixed inset-0 z-[200] bg-[#0a2617] text-[#fffdf5] overflow-y-auto font-sans-main scrollbar-none [&::-webkit-scrollbar]:hidden">
+      <LandingNavbar
+        delayReappearMs={1500}
+        onGetStarted={onGetStarted}
+        onAdminLoginTrigger={onAdminLoginTrigger}
+        onTherapistLoginTrigger={onTherapistLoginTrigger}
+        onCompanyLinkClick={onCompanyLinkClick}
+        onResourcesLinkClick={onResourcesLinkClick}
+        onProductLinkClick={onProductLinkClick}
+      />
+
+      <div className="max-w-4xl mx-auto py-40 px-6 text-center">
+        <h2 className="text-4xl text-white font-normal mb-4">{page}</h2>
+        <p className="text-white/70 mb-8">This page is managed by ZenMind digital health services.</p>
+        <button onClick={onGetStarted} className="px-6 py-3 rounded-full bg-[#ffebc4] text-[#0a2617] font-bold text-xs uppercase">
+          Back to Sanctuary →
+        </button>
+      </div>
+
+      <LandingFooter
+        onGetStarted={onGetStarted}
+        onTherapistLoginTrigger={onTherapistLoginTrigger}
+        onCompanyLinkClick={onCompanyLinkClick}
+        onResourcesLinkClick={onResourcesLinkClick}
+        onProductLinkClick={onProductLinkClick}
+      />
+    </div>
   );
 }
