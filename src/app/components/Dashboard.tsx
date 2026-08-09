@@ -4,7 +4,8 @@ import {
   MessageCircle, Settings, BookMarked, BarChart2,
   PanelLeftOpen, PanelLeftClose, Eye, EyeOff, LogOut, Menu, X, Stethoscope,
   Calendar, Clock, Trash2, CheckSquare, IndianRupee, Star, Save,
-  Library, BookHeart, Users2, Target, Globe2, Dumbbell, Info, Upload, ShoppingBag
+  Library, BookHeart, Users2, Target, Globe2, Dumbbell, Info, Upload, ShoppingBag,
+  Search, SlidersHorizontal, Grid, HelpCircle, Bell
 } from 'lucide-react';
 import { apiFetch } from '../api/client';
 import SidebarNav from './SidebarNav';
@@ -178,167 +179,201 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
     : 'ZM';
 
   return (
-    <div className="h-screen overflow-hidden flex transition-colors duration-300" style={{ background: 'var(--dash-bg)' }}>
-
-      {/* Mobile overlay */}
-      {mobileOpen && (
-        <div className="fixed inset-0 bg-black/40 z-30 md:hidden" onClick={() => setMobileOpen(false)} />
-      )}
-
-      {/* Mobile sidebar drawer */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed left-0 top-0 h-full w-64 z-40 md:hidden shadow-xl flex flex-col" style={{ background: 'var(--dash-sidebar-bg)', borderRight: '2px solid var(--dash-border)' } as React.CSSProperties}
+    <div className="h-screen w-screen overflow-hidden flex flex-col bg-[#f8fafd] dark:bg-[#0f172a] text-gray-800 dark:text-gray-100 font-sans">
+      
+      {/* ── GOOGLE WORKSPACE TOP HEADER BAR ── */}
+      <header className="h-16 flex-shrink-0 flex items-center justify-between px-4 bg-[#f8fafd] dark:bg-[#0f172a] border-b border-gray-200/60 dark:border-gray-800/60 z-20">
+        
+        {/* Left: Hamburger + Logo */}
+        <div className="flex items-center gap-3 min-w-[220px]">
+          <button
+            type="button"
+            onClick={() => setCollapsed(c => !c)}
+            className="p-2.5 rounded-full hover:bg-gray-200/70 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 transition-colors"
+            title="Toggle Menu"
           >
-            <div className="flex items-center p-3 min-h-[56px]" style={{ borderBottom: '1px solid var(--dash-border)' }}>
-              {avatarUrl
-                ? <img src={avatarUrl} alt="P" className={`w-8 h-8 rounded-full object-cover flex-shrink-0 ${getAvatarRingClass(me?.subscriptionTier)}`} />
-                : <div className={`w-8 h-8 rounded-full bg-gradient-to-br from-[#0d5d3a] to-[#1a8a5a] flex items-center justify-center text-white text-xs font-bold flex-shrink-0 ${getAvatarRingClass(me?.subscriptionTier)}`}>{initials}</div>
-              }
-              <div className="ml-2 flex-1 min-w-0">
-                <div className="text-[#0a2617] dark:text-gray-100 font-bold text-sm truncate" style={{fontFamily:'Syne,sans-serif'}}>Dashboard</div>
-                <div className="flex items-center gap-1.5 mt-0.5 min-w-0">
-                  <span className="text-xs text-[#4a7c5d] dark:text-gray-400 truncate max-w-[70%]">{me?.name}</span>
-                  {getTierBadge(me?.subscriptionTier)}
-                </div>
-              </div>
-              <button type="button" onClick={() => setMobileOpen(false)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 ml-1 text-[#0a2617] dark:text-gray-300">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
-              <SidebarNav tab={tab} navigateToTab={navigateToTab} collapsed={collapsed} setCollapsed={setCollapsed} />
-            </nav>
-            <div className="mt-auto border-t border-[#0d5d3a]/10 dark:border-white/10 p-2">
-              <div className="px-3 py-2 mb-1">
-                <div className="text-xs text-[#4a7c5d] dark:text-[#6aad8a]">Signed in as</div>
-                <div className="text-xs font-semibold text-[#0a2617] dark:text-gray-200 truncate">{me?.email || '-'}</div>
-              </div>
-              <button type="button" onClick={() => setShowLogoutConfirm(true)}
-                className="w-full flex items-center gap-2.5 text-sm font-semibold text-[#e05555] hover:bg-red-50 dark:hover:bg-red-900/20 rounded-2xl px-3 py-2.5 transition">
-                <LogOut className="w-4 h-4 flex-shrink-0" /><span>Sign out</span>
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <Menu className="w-5 h-5" />
+          </button>
 
-      {/* Desktop sidebar */}
-      <div className="hidden md:block flex-shrink-0 relative" style={{ width: collapsed ? 64 : 256, transition: 'width 0.3s cubic-bezier(0.4,0,0.2,1)' }}>
-
-        {/* Toggle tab */}
-        <button
-          type="button"
-          onClick={() => setCollapsed(c => !c)}
-          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="absolute -right-3.5 top-5 z-20 w-7 h-7 bg-white dark:bg-[#1a1a1a] border border-[#0d5d3a]/15 dark:border-white/10 rounded-full shadow-md flex items-center justify-center text-[#0d5d3a] dark:text-gray-300 hover:bg-[#f0fbf4] dark:hover:bg-[#222222] transition"
-        >
-          {collapsed ? <PanelLeftOpen className="w-3.5 h-3.5" /> : <PanelLeftClose className="w-3.5 h-3.5" />}
-        </button>
-
-        {/* Sidebar inner */}
-        <div className="zen-sidebar h-full overflow-hidden overflow-y-auto flex flex-col" style={{ background: 'var(--dash-sidebar-bg)', borderRight: '2px solid var(--dash-border)' }}>
-
-          {/* Header */}
-          <div className="flex items-center p-3 min-h-[64px]" style={{ borderBottom: '2px solid var(--dash-border)' }}>
-            {/* Avatar â€” fixed size and position in both states */}
-            {avatarUrl ? (
-              <img src={avatarUrl} alt="Profile"
-                className={`w-9 h-9 rounded-full object-cover flex-shrink-0 ${getAvatarRingClass(me?.subscriptionTier)}`} />
-            ) : (
-              <div className={`w-9 h-9 rounded-full bg-gradient-to-br from-[#0d5d3a] to-[#1a8a5a] flex items-center justify-center text-white text-xs font-bold flex-shrink-0 ${getAvatarRingClass(me?.subscriptionTier)}`}>
-                {initials}
-              </div>
-            )}
-            {/* Text */}
-            {!collapsed && (
-              <div className="ml-2 flex-1 min-w-0 overflow-hidden">
-                <div className="text-[#0a2617] dark:text-gray-100 font-bold text-sm truncate" style={{ fontFamily: 'Syne, sans-serif' }}>Dashboard</div>
-                <div className="flex items-center gap-1.5 mt-0.5 min-w-0">
-                  <span className="text-xs text-[#4a7c5d] dark:text-gray-400 truncate max-w-[70%]">{me?.name || '-'}</span>
-                  {getTierBadge(me?.subscriptionTier)}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Nav items */}
-          <nav className="flex-1 p-2 space-y-1">
-            <SidebarNav tab={tab} navigateToTab={navigateToTab} collapsed={collapsed} setCollapsed={setCollapsed} />
-          </nav>
-
-          {/* Footer */}
-          <div className="mt-auto border-t border-[#0d5d3a]/08">
-            {!collapsed && (
-              <div className="px-3 pt-3 pb-1">
-                <div className="rounded-2xl border border-[#0d5d3a]/10 dark:border-white/8 bg-[#f0fbf4] dark:bg-[#0d1f14] px-3 py-2.5 zen-shadow-sm">
-                  <div className="text-xs text-[#4a7c5d] dark:text-[#6aad8a]">Signed in as</div>
-                  <div className="text-sm text-[#0a2617] dark:text-gray-200 font-semibold truncate">{me?.email || '-'}</div>
-                </div>
-              </div>
-            )}
-            <div className={`p-2 ${collapsed ? 'flex justify-center' : ''}`}>
-              <button type="button" onClick={() => setShowLogoutConfirm(true)} title="Sign out"
-                className={`flex items-center gap-2.5 text-sm font-semibold text-[#e05555] hover:bg-red-50 rounded-2xl transition px-3 py-2.5 ${
-                  collapsed ? 'justify-center w-10 h-10 px-0' : 'w-full'
-                }`}>
-                <LogOut className="w-4 h-4 flex-shrink-0" />
-                {!collapsed && <span>Sign out</span>}
-              </button>
-            </div>
+          <div className="flex items-center gap-2 cursor-pointer select-none" onClick={() => navigateToTab('progress')}>
+            <img src="/logo.png" alt="ZenMind" className="w-8 h-8 object-contain" />
+            <span className="font-bold text-xl tracking-tight text-gray-800 dark:text-white" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
+              ZenMind
+            </span>
+            <span className="hidden sm:inline-block text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/80 px-2 py-0.5 rounded-full">
+              Sanctuary
+            </span>
           </div>
         </div>
-      </div>
 
-      {/* MAIN CONTENT */}
-      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
-        <header className="zen-header flex-shrink-0 backdrop-blur z-10" style={{ background: 'var(--dash-header-bg)', borderBottom: '2px solid var(--dash-border)' }}>
-          <div className="px-3 sm:px-5 py-3 flex items-center justify-between gap-2">
-            <div className="flex-1 flex flex-row items-center gap-3 min-w-0">
+        {/* Center: Google Search Pill */}
+        <div className="flex-1 max-w-2xl px-4 hidden md:block">
+          <div className="relative flex items-center w-full bg-[#edf2fc] dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800 focus-within:bg-white dark:focus-within:bg-gray-800 focus-within:shadow-md border border-transparent focus-within:border-emerald-500/50 rounded-full px-4 py-2 transition-all duration-200">
+            <Search className="w-4 h-4 text-gray-500 dark:text-gray-400 mr-3 flex-shrink-0" />
+            <input
+              type="text"
+              placeholder="Search in ZenMind resources, therapy, goals, or community..."
+              className="w-full bg-transparent text-sm text-gray-800 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none"
+            />
+            <button type="button" className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400">
+              <SlidersHorizontal className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
 
-              {/* Greeting pill — desktop only */}
-              <div className="hidden md:flex flex-shrink-0 items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: 'rgba(13,93,58,0.08)', border: '1.5px solid rgba(13,93,58,0.14)' }}>
-                {avatarUrl
-                  ? <img src={avatarUrl} alt="" className={`w-5 h-5 rounded-full object-cover flex-shrink-0 ${getAvatarRingClass(me?.subscriptionTier)}`} />
-                  : <div className={`w-5 h-5 rounded-full flex items-center justify-center text-white text-[8px] font-bold flex-shrink-0 ${getAvatarRingClass(me?.subscriptionTier)}`} style={{ background: 'linear-gradient(135deg,#0d5d3a,#1a8a5a)' }}>{initials}</div>
-                }
-                <span className="text-xs font-bold mr-1" style={{ color: '#0d5d3a' }}>
-                  {loading ? 'Loading…' : `Hi, ${me?.name?.split(' ')[0] || 'there'}! `}
-                </span>
-                {getTierBadge(me?.subscriptionTier)}
-              </div>
+        {/* Right: Quick Action Controls */}
+        <div className="flex items-center gap-1.5 sm:gap-3">
+          <ThemeToggle />
 
-              {/* Vertical divider */}
-              <div className="hidden md:block w-px h-8" style={{ background: 'var(--dash-border)' }} />
+          {/* Google 9-Dots Grid Launcher */}
+          <button
+            type="button"
+            onClick={() => navigateToTab('resources')}
+            className="p-2.5 rounded-full hover:bg-gray-200/70 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors hidden sm:flex items-center justify-center"
+            title="ZenMind Apps"
+          >
+            <Grid className="w-5 h-5" />
+          </button>
 
-              {/* Tab title with emoji */}
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-base leading-none">{TAB_ICONS[tab] || ''}</span>
-                  <span className="zen-dash-header-title truncate">
-                    {tab === 'sessions'  ? 'My Sessions' :
-                     tab === 'therapy'   ? 'Therapy Hub' :
-                     tab === 'chat'      ? 'Chat' :
-                     tab === 'aichat'    ? 'AI Chat' :
-                     tab === 'progress'  ? 'My Progress' :
-                     tab === 'community' ? 'Community' :
-                     tab === 'resources' ? 'Resources' :
-                     tab === 'reading'   ? 'Reading Lists' :
-                     tab === 'journal'   ? 'Mood Journal' :
-                     tab === 'circles'   ? 'Peer Circles' :
-                     tab === 'goals'     ? 'My Goals' :
-                     tab === 'programs'  ? 'Wellness Programs' :
-                     tab === 'store'     ? 'Wellness Store' :
-                     tab === 'settings'  ? 'Settings' :
-                     loading ? 'Loading…' : `Welcome, ${me?.name?.split(' ')[0] || 'there'}!`}
-                  </span>
+          {/* Help Icon */}
+          <button
+            type="button"
+            onClick={() => navigateToTab('resources')}
+            className="p-2.5 rounded-full hover:bg-gray-200/70 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors hidden sm:flex items-center justify-center"
+            title="Help & Support"
+          >
+            <HelpCircle className="w-5 h-5" />
+          </button>
+
+          {/* Settings */}
+          <button
+            type="button"
+            onClick={() => navigateToTab('settings')}
+            className="p-2.5 rounded-full hover:bg-gray-200/70 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors hidden sm:flex items-center justify-center"
+            title="Settings"
+          >
+            <Settings className="w-5 h-5" />
+          </button>
+
+          {/* Notifications */}
+          <NotificationCenter onNavigate={(t) => navigateToTab(t as TabKey)} />
+
+          {/* User Profile Avatar Circle */}
+          <div className="relative ml-1">
+            <button
+              type="button"
+              onClick={() => navigateToTab('settings')}
+              className="flex items-center focus:outline-none"
+              title={me?.name || 'Account'}
+            >
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt="Profile"
+                  className="w-9 h-9 rounded-full object-cover ring-2 ring-emerald-500/40 shadow-xs"
+                />
+              ) : (
+                <div className="w-9 h-9 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-xs ring-2 ring-emerald-500/40">
+                  {initials}
                 </div>
-                <div className="zen-dash-header-sub hidden sm:block truncate">
+              )}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* ── WORKSPACE BODY GRID ── */}
+      <div className="flex-1 flex overflow-hidden relative">
+
+        {/* Mobile overlay */}
+        {mobileOpen && (
+          <div className="fixed inset-0 bg-black/40 z-30 md:hidden" onClick={() => setMobileOpen(false)} />
+        )}
+
+        {/* Mobile sidebar drawer */}
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              className="fixed left-0 top-0 h-full w-64 z-40 md:hidden shadow-2xl flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800"
+            >
+              <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
+                <div className="flex items-center gap-2">
+                  <img src="/logo.png" alt="ZM" className="w-7 h-7 object-contain" />
+                  <span className="font-bold text-lg text-gray-800 dark:text-white">ZenMind</span>
+                </div>
+                <button type="button" onClick={() => setMobileOpen(false)} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+                  <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                </button>
+              </div>
+              <div className="flex-1 p-3 overflow-y-auto">
+                <SidebarNav tab={tab} navigateToTab={navigateToTab} collapsed={collapsed} setCollapsed={setCollapsed} />
+              </div>
+              <div className="p-3 border-t border-gray-200 dark:border-gray-800">
+                <button
+                  type="button"
+                  onClick={() => setShowLogoutConfirm(true)}
+                  className="w-full flex items-center gap-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl px-4 py-2.5 transition"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Sign out</span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Desktop Left Google Sidebar */}
+        <aside
+          className="hidden md:flex flex-col flex-shrink-0 bg-[#f8fafd] dark:bg-[#0f172a] p-3 transition-all duration-300 overflow-y-auto"
+          style={{ width: collapsed ? 72 : 256 }}
+        >
+          <SidebarNav tab={tab} navigateToTab={navigateToTab} collapsed={collapsed} setCollapsed={setCollapsed} />
+          
+          <div className="mt-auto pt-2">
+            <button
+              type="button"
+              onClick={() => setShowLogoutConfirm(true)}
+              title={collapsed ? "Sign out" : undefined}
+              className={`flex items-center gap-3 text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-full transition-all ${
+                collapsed ? 'w-10 h-10 justify-center p-0 mx-auto' : 'w-full px-4 py-2.5'
+              }`}
+            >
+              <LogOut className="w-4 h-4 flex-shrink-0" />
+              {!collapsed && <span>Sign out</span>}
+            </button>
+          </div>
+        </aside>
+
+        {/* ── GOOGLE MAIN CANVAS CONTAINER (ROUNDED CARD CANVAS) ── */}
+        <main className="flex-1 flex flex-col min-w-0 bg-white dark:bg-gray-900 rounded-3xl border border-gray-200/80 dark:border-gray-800 shadow-sm overflow-hidden m-2 sm:m-3 transition-all duration-200">
+          
+          {/* Canvas Header */}
+          <div className="px-5 py-3.5 border-b border-gray-100 dark:border-gray-800/80 flex items-center justify-between flex-shrink-0 bg-white dark:bg-gray-900">
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="text-xl leading-none">{TAB_ICONS[tab] || '🌿'}</span>
+              <div className="min-w-0">
+                <h1 className="text-lg font-bold text-gray-900 dark:text-white truncate tracking-tight">
+                  {tab === 'sessions'  ? 'My Sessions' :
+                   tab === 'therapy'   ? 'Therapy Hub' :
+                   tab === 'chat'      ? 'Chat' :
+                   tab === 'aichat'    ? 'AI Chat' :
+                   tab === 'progress'  ? 'My Progress' :
+                   tab === 'community' ? 'Community' :
+                   tab === 'resources' ? 'Resources' :
+                   tab === 'reading'   ? 'Reading Lists' :
+                   tab === 'journal'   ? 'Mood Journal' :
+                   tab === 'circles'   ? 'Peer Circles' :
+                   tab === 'goals'     ? 'My Goals' :
+                   tab === 'programs'  ? 'Wellness Programs' :
+                   tab === 'store'     ? 'Wellness Store' :
+                   tab === 'settings'  ? 'Settings' :
+                   loading ? 'Loading…' : `Welcome, ${me?.name?.split(' ')[0] || 'there'}!`}
+                </h1>
+                <p className="text-xs text-gray-500 dark:text-gray-400 truncate hidden sm:block">
                   {tab === 'sessions'  ? 'Manage your therapy appointments' :
                    tab === 'therapy'   ? 'Connect with verified professionals' :
                    tab === 'chat'      ? 'Real-time messaging with your therapist' :
@@ -354,25 +389,24 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
                    tab === 'store'     ? 'Download free & premium wellness resources' :
                    tab === 'settings'  ? 'Manage your account & preferences' :
                    'Your personal wellness dashboard'}
-                </div>
+                </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <ThemeToggle />
-              <NotificationCenter onNavigate={(tab) => navigateToTab(tab as TabKey)} />
-              <button type="button" onClick={() => setMobileOpen(true)}
-                className="md:hidden p-2 rounded-xl transition"
-                style={{ border: '2px solid var(--dash-border)', color: '#0d5d3a' }}>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setMobileOpen(true)}
+                className="md:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200"
+              >
                 <Menu className="w-5 h-5" />
               </button>
             </div>
           </div>
-        </header>
 
-        <main className="zen-panel flex-1 overflow-hidden flex flex-col min-h-0">
-          {/* Post-session feedback modal — auto-appears when a session is completed */}
-          <PostSessionModal />
+          {/* Active Tab Panel Canvas */}
+          <div className="flex-1 overflow-hidden flex flex-col min-h-0 bg-white dark:bg-gray-900">
+            <PostSessionModal />
 
           {tab === 'therapy' ? (
             <div className="flex flex-col h-full overflow-hidden">
@@ -499,7 +533,76 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
               </div>
             </div>
           )}
+          </div>
         </main>
+
+        {/* ── GOOGLE WORKSPACE RIGHT COMPANION TOOLBAR ── */}
+        <aside className="hidden lg:flex flex-col items-center gap-4 py-4 w-14 flex-shrink-0 bg-[#f8fafd] dark:bg-[#0f172a] border-l border-gray-200/50 dark:border-gray-800/50">
+          <button
+            type="button"
+            onClick={() => navigateToTab('aichat')}
+            className={`p-3 rounded-2xl transition-all duration-200 ${
+              tab === 'aichat'
+                ? 'bg-emerald-500 text-white shadow-md'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200/70 dark:hover:bg-gray-800'
+            }`}
+            title="Quick AI Assistant"
+          >
+            <MessageCircle className="w-5 h-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigateToTab('journal')}
+            className={`p-3 rounded-2xl transition-all duration-200 ${
+              tab === 'journal'
+                ? 'bg-emerald-500 text-white shadow-md'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200/70 dark:hover:bg-gray-800'
+            }`}
+            title="Quick Mood Check"
+          >
+            <BookHeart className="w-5 h-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigateToTab('therapy')}
+            className={`p-3 rounded-2xl transition-all duration-200 ${
+              tab === 'therapy'
+                ? 'bg-emerald-500 text-white shadow-md'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200/70 dark:hover:bg-gray-800'
+            }`}
+            title="Therapy Desk"
+          >
+            <Stethoscope className="w-5 h-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigateToTab('goals')}
+            className={`p-3 rounded-2xl transition-all duration-200 ${
+              tab === 'goals'
+                ? 'bg-emerald-500 text-white shadow-md'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200/70 dark:hover:bg-gray-800'
+            }`}
+            title="Goals & Habits"
+          >
+            <Target className="w-5 h-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigateToTab('progress')}
+            className={`p-3 rounded-2xl transition-all duration-200 ${
+              tab === 'progress'
+                ? 'bg-emerald-500 text-white shadow-md'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200/70 dark:hover:bg-gray-800'
+            }`}
+            title="My Progress"
+          >
+            <BarChart2 className="w-5 h-5" />
+          </button>
+        </aside>
       </div>
 
       {/* ── Logout Confirmation Modal ── */}
