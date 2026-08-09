@@ -17,9 +17,10 @@ interface ContactPageProps {
 
 const defaultGlobeConfig = {
   positions: [
-    { top: "45%", left: "75%", scale: 1.3 },   // Section 0 (Hero): Right side, rotating
-    { top: "50%", left: "50%", scale: 1.1 },   // Section 1 (Form): Center frozen backdrop
-    { top: "50%", left: "25%", scale: 1.4 },   // Section 2 (Crisis): Left side
+    { top: "50%", left: "75%", scale: 1.4 },  // Section 0 (Hero): Right side
+    { top: "25%", left: "50%", scale: 0.9 },  // Section 1 (Presence): Top side
+    { top: "20%", left: "80%", scale: 1.8 },  // Section 2 (HQ KLECET): Left/Right large
+    { top: "50%", left: "50%", scale: 1.5 },  // Section 3 (Contact Form): Center backdrop
   ]
 };
 
@@ -39,6 +40,7 @@ export default function ContactPage({
   const [globeTransform, setGlobeTransform] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const footerRef = useRef<HTMLDivElement>(null);
   const animationFrameId = useRef<number>();
 
   // Contact Form State
@@ -85,8 +87,15 @@ export default function ContactPage({
       }
     });
 
-    // When the active section is 1 (the contact form card), lock the globe in position
-    const currentPos = calculatedPositions[newActiveSection] || calculatedPositions[0];
+    // Check if footer is in viewport
+    if (footerRef.current) {
+      const footerRect = footerRef.current.getBoundingClientRect();
+      if (footerRect.top < window.innerHeight - 100) {
+        newActiveSection = 4; // Footer mode: hide globe completely
+      }
+    }
+
+    const currentPos = calculatedPositions[newActiveSection] || calculatedPositions[3] || calculatedPositions[0];
     const transform = `translate3d(${currentPos.left}vw, ${currentPos.top}vh, 0) translate3d(-50%, -50%, 0) scale3d(${currentPos.scale}, ${currentPos.scale}, 1)`;
     
     setGlobeTransform(transform);
@@ -174,6 +183,8 @@ export default function ContactPage({
 
   const mapsUrl = "https://www.google.com/maps?sca_esv=11c71c9d54d57fde&rlz=1C1JJTC_enIN1106IN1107&output=search&q=klecet+chikodi&source=lnms&fbs=ABfTbFVyMZGZf1hfvX9uKjN_-G8c4u0nXx4bEIpwm1lnNH832VTJOOCxW_fyN-Q_ezyf8gKmVML23HcLQCydI7S-9bmoaQbnQjvqWqR3ZVfluTIt6owk8QYspgn5r-j5WWyEi-hRYfKKV6-Z2UFQx_cMNv1QVOi6V_Cn6Lcx_7pf9YGrQg46tAz-MPZRqLovPAxny-Ewux8rMCZOFWRCQaKr_EbZbQFsjw&entry=mc&ved=1t:200715&ictx=111";
 
+  const navBadges = ["Welcome", "Global Presence", "HQ Location", "Contact Form"];
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -195,42 +206,159 @@ export default function ContactPage({
         onProductLinkClick={onProductLinkClick}
       />
 
-      {/* ── INTERACTIVE 3D SCROLL GLOBE (STOPS & FREEZES AT INPUT CARD) ── */}
+      {/* Progress Bar */}
+      <div className="fixed top-0 left-0 w-full h-1 bg-white/10 z-[250]">
+        <div
+          className="h-full bg-gradient-to-r from-[#0d5d3a] via-[#d97706] to-[#fde68a] transition-all duration-150"
+          style={{ width: `${scrollProgress * 100}%` }}
+        />
+      </div>
+
+      {/* Right Navigation Dots */}
+      <div className="hidden sm:flex fixed right-4 lg:right-8 top-1/2 -translate-y-1/2 z-[240] flex-col gap-4">
+        {navBadges.map((badge, index) => (
+          <button
+            key={badge}
+            type="button"
+            onClick={() => {
+              sectionRefs.current[index]?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="group relative flex items-center justify-end p-2 transition-all cursor-pointer"
+          >
+            <span className={`absolute right-8 px-3 py-1 rounded-full text-xs font-extrabold whitespace-nowrap bg-white text-[#0d5d3a] shadow-md transition-all ${activeSection === index ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2 pointer-events-none'}`}>
+              {badge}
+            </span>
+            <div className={`w-3 h-3 rounded-full border-2 transition-all ${activeSection === index ? 'bg-[#d97706] border-[#d97706] scale-125 shadow-md' : 'border-white/40 bg-white/10 hover:bg-white/30'}`} />
+          </button>
+        ))}
+      </div>
+
+      {/* ── INTERACTIVE 3D SCROLL GLOBE (HIDES COMPLETELY IN FOOTER ACTIVE SECTION 4) ── */}
       <div
         className="fixed z-10 pointer-events-none transition-all duration-[1200ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
         style={{
           transform: globeTransform,
-          filter: `opacity(${activeSection === 1 ? 0.22 : 0.75})`,
+          opacity: activeSection >= 4 ? 0 : activeSection === 3 ? 0.25 : 0.85,
+          visibility: activeSection >= 4 ? 'hidden' : 'visible'
         }}
       >
         <Globe />
       </div>
 
-      {/* ── HERO SECTION: HEADQUARTERS & INTERACTIVE MAP CARD ── */}
+      {/* ── PAGE 1: HERO SECTION ── */}
       <section
         ref={el => (sectionRefs.current[0] = el)}
-        className="relative pt-32 sm:pt-40 md:pt-44 pb-20 sm:pb-28 bg-[#0a2617] overflow-hidden border-b border-white/10 z-20"
+        className="relative min-h-screen flex flex-col justify-center pt-32 sm:pt-40 md:pt-44 pb-20 bg-[#0a2617] overflow-hidden border-b border-white/10 z-20"
       >
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
-            {/* Left Column: Headquarters Details */}
+            {/* Left Headline */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-6 space-y-6"
+              className="lg:col-span-7 space-y-6"
             >
               <span className="text-[#ffebc4] text-xs font-sans tracking-[0.2em] uppercase font-bold block">
-                ✦ ZENMIND MAIN HEADQUARTERS
+                ✦ WELCOME TO ZENMIND CONTACT SANCTUARY
+              </span>
+              <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[76px] text-[#fffdf5] font-normal leading-[0.98] tracking-tight">
+                Let&apos;s Make Mental Health<br />
+                <span className="text-[#d97706] font-bold">Easier to Talk About.</span>
+              </h1>
+              <p className="text-lg sm:text-xl text-[#fffdf5]/85 font-normal leading-relaxed max-w-2xl">
+                Journey through an immersive 24/7 digital sanctuary where technology meets compassionate care. Scroll down to explore our global reach, campus headquarters, and direct contact form.
+              </p>
+              <div className="flex flex-wrap gap-4 pt-2">
+                <button
+                  type="button"
+                  onClick={() => sectionRefs.current[3]?.scrollIntoView({ behavior: 'smooth' })}
+                  className="px-8 py-4 rounded-full bg-[#d97706] hover:bg-[#b45309] text-white font-extrabold text-xs uppercase tracking-wider shadow-lg transition-all cursor-pointer"
+                >
+                  Fill Contact Form ↓
+                </button>
+                <button
+                  type="button"
+                  onClick={() => sectionRefs.current[2]?.scrollIntoView({ behavior: 'smooth' })}
+                  className="px-8 py-4 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 text-white font-extrabold text-xs uppercase tracking-wider transition-all cursor-pointer"
+                >
+                  Explore Campus HQ →
+                </button>
+              </div>
+            </motion.div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ── PAGE 2: GLOBAL PRESENCE ── */}
+      <section
+        ref={el => (sectionRefs.current[1] = el)}
+        className="relative min-h-screen flex flex-col justify-center py-24 sm:py-32 bg-[#0a2617] border-b border-white/10 z-20"
+      >
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full">
+          <div className="max-w-3xl space-y-6">
+            <span className="text-[#ffebc4] text-xs font-sans tracking-[0.2em] uppercase font-bold block">
+              ✦ GLOBAL DIGITAL NETWORK
+            </span>
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl text-white font-normal leading-tight">
+              Connected Worldwide,<br />
+              <span className="text-[#10b981] font-bold">Rooted in Care.</span>
+            </h2>
+            <p className="text-base sm:text-lg text-[#fffdf5]/80 font-normal leading-relaxed">
+              From every corner of the globe, our encrypted network supports adolescents, therapists, and institutions 24 hours a day, 7 days a week.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-6 mt-12 max-w-4xl">
+            <div className="bg-white/5 border border-white/15 p-6 rounded-3xl backdrop-blur-md space-y-3">
+              <Clock className="w-8 h-8 text-[#d97706]" />
+              <h3 className="text-lg font-bold text-white">24/7 AI Companion</h3>
+              <p className="text-xs text-[#fffdf5]/70 leading-relaxed font-normal">
+                Instant emotional support available anytime in English, Hindi, and Hinglish with zero waiting line.
+              </p>
+            </div>
+
+            <div className="bg-white/5 border border-white/15 p-6 rounded-3xl backdrop-blur-md space-y-3">
+              <ShieldCheck className="w-8 h-8 text-[#10b981]" />
+              <h3 className="text-lg font-bold text-white">Encrypted Network</h3>
+              <p className="text-xs text-[#fffdf5]/70 leading-relaxed font-normal">
+                End-to-end encrypted messaging and clinical video consultation rooms for ultimate privacy.
+              </p>
+            </div>
+
+            <div className="bg-white/5 border border-white/15 p-6 rounded-3xl backdrop-blur-md space-y-3">
+              <Send className="w-8 h-8 text-[#d97706]" />
+              <h3 className="text-lg font-bold text-white">Direct Admin Routing</h3>
+              <p className="text-xs text-[#fffdf5]/70 leading-relaxed font-normal">
+                All contact queries land directly inside our Super Admin dashboard for real-time response.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── PAGE 3: HEADQUARTERS & INTERACTIVE MAP ── */}
+      <section
+        ref={el => (sectionRefs.current[2] = el)}
+        className="relative min-h-screen flex flex-col justify-center py-24 sm:py-32 bg-[#0a2617] border-b border-white/10 z-20"
+      >
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full">
+          <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+            
+            {/* Left Column: Campus HQ Info */}
+            <div className="lg:col-span-6 space-y-6">
+              <span className="text-[#ffebc4] text-xs font-sans tracking-[0.2em] uppercase font-bold block">
+                ✦ MAIN HEADQUARTERS LOCATION
               </span>
               
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl text-[#fffdf5] font-normal leading-[0.98] tracking-tight">
-                Rooted in<br />
+              <h2 className="text-3xl sm:text-5xl lg:text-6xl text-white font-normal leading-tight">
+                Engineered at<br />
                 <span className="text-[#d97706] font-bold">KLECET Chikodi.</span>
-              </h1>
-              
-              <p className="text-base sm:text-lg text-[#fffdf5]/85 font-normal leading-relaxed">
+              </h2>
+
+              <p className="text-base sm:text-lg text-[#fffdf5]/80 font-normal leading-relaxed">
                 ZenMind is proudly engineered at KLE College of Engineering and Technology (KLECET), Chikodi. Serving students, therapists, and institutions across Karnataka, India, and global communities.
               </p>
 
@@ -269,21 +397,16 @@ export default function ContactPage({
               <div className="pt-2">
                 <button
                   type="button"
-                  onClick={() => sectionRefs.current[1]?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => sectionRefs.current[3]?.scrollIntoView({ behavior: 'smooth' })}
                   className="px-8 py-4 rounded-full bg-[#d97706] hover:bg-[#b45309] text-white font-extrabold text-xs uppercase tracking-wider shadow-lg transition-all cursor-pointer"
                 >
-                  Send Direct Query ↓
+                  Proceed to Form ↓
                 </button>
               </div>
-            </motion.div>
+            </div>
 
             {/* Right Column: Embedded Google Maps Location Card */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="lg:col-span-6 bg-white/5 border border-white/15 p-4 sm:p-6 rounded-3xl backdrop-blur-md shadow-2xl relative"
-            >
+            <div className="lg:col-span-6 bg-white/5 border border-white/15 p-4 sm:p-6 rounded-3xl backdrop-blur-md shadow-2xl relative">
               <div className="flex items-center justify-between mb-4 px-2">
                 <div className="flex items-center gap-2">
                   <Compass className="w-5 h-5 text-[#d97706]" />
@@ -314,15 +437,15 @@ export default function ContactPage({
                   className="w-full h-full filter contrast-[1.05] brightness-[0.95]"
                 />
               </div>
-            </motion.div>
+            </div>
 
           </div>
         </div>
       </section>
 
-      {/* ── SECTION 2: EXACT LANDING PAGE CONTACT CARD UI (GetInTouchSection) ── */}
+      {/* ── SECTION 4: EXACT LANDING PAGE CONTACT CARD UI (GetInTouchSection) ── */}
       <section
-        ref={el => (sectionRefs.current[1] = el)}
+        ref={el => (sectionRefs.current[3] = el)}
         className="relative w-full bg-[#0a2617] py-16 sm:py-24 z-20"
       >
         <div className="w-full bg-[#0a2617]">
@@ -471,62 +594,16 @@ export default function ContactPage({
         </div>
       </section>
 
-      {/* ── SECTION 3: CRISIS HELPLINES ── */}
-      <section
-        ref={el => (sectionRefs.current[2] = el)}
-        className="relative py-20 px-6 sm:px-10 lg:px-16 max-w-7xl mx-auto z-20"
-      >
-        <div className="mb-12 text-center sm:text-left">
-          <span className="text-[#ffebc4] text-xs font-sans tracking-[0.2em] uppercase font-bold block mb-3">
-            ✦ EMERGENCY CRISIS LINES
-          </span>
-          <h2 className="text-3xl sm:text-5xl font-normal text-white tracking-tight mb-4">
-            In Need of Urgent Help?
-          </h2>
-          <p className="text-sm sm:text-base text-[#fffdf5]/80 max-w-xl font-normal">
-            ZenMind is a supportive platform. If you or someone you know is in immediate crisis, tap any number to call trained counsellors directly.
-          </p>
-        </div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <a href="tel:18005990019" className="bg-white/5 border border-white/15 p-6 rounded-2xl backdrop-blur-md hover:border-[#d97706] transition-all">
-            <Phone className="w-6 h-6 text-[#d97706] mb-3" />
-            <div className="text-xs font-bold text-[#ffebc4] uppercase">Kiran – Govt of India</div>
-            <div className="text-lg font-bold text-white mt-1">1800-599-0019</div>
-            <div className="text-xs text-white/60 mt-1">24/7 · Toll-Free · 13 Languages</div>
-          </a>
-
-          <a href="tel:9152987821" className="bg-white/5 border border-white/15 p-6 rounded-2xl backdrop-blur-md hover:border-[#10b981] transition-all">
-            <Phone className="w-6 h-6 text-[#10b981] mb-3" />
-            <div className="text-xs font-bold text-[#ffebc4] uppercase">iCall – TISS</div>
-            <div className="text-lg font-bold text-white mt-1">9152987821</div>
-            <div className="text-xs text-white/60 mt-1">Mon–Sat, 8am–10pm · Free</div>
-          </a>
-
-          <a href="tel:18602662345" className="bg-white/5 border border-white/15 p-6 rounded-2xl backdrop-blur-md hover:border-[#d97706] transition-all">
-            <Phone className="w-6 h-6 text-[#d97706] mb-3" />
-            <div className="text-xs font-bold text-[#ffebc4] uppercase">Vandrevala Foundation</div>
-            <div className="text-lg font-bold text-white mt-1">1860-2662-345</div>
-            <div className="text-xs text-white/60 mt-1">24/7 · Mental Health & Crisis</div>
-          </a>
-
-          <a href="tel:08046110007" className="bg-white/5 border border-white/15 p-6 rounded-2xl backdrop-blur-md hover:border-[#10b981] transition-all">
-            <Phone className="w-6 h-6 text-[#10b981] mb-3" />
-            <div className="text-xs font-bold text-[#ffebc4] uppercase">NIMHANS Helpline</div>
-            <div className="text-lg font-bold text-white mt-1">080-46110007</div>
-            <div className="text-xs text-white/60 mt-1">National Institute Bangalore</div>
-          </a>
-        </div>
-      </section>
-
-      {/* ── LANDING FOOTER ── */}
-      <LandingFooter
-        onProductLinkClick={onProductLinkClick}
-        onCompanyLinkClick={handleCompanyNavigation}
-        onResourcesLinkClick={onResourcesLinkClick}
-        onTherapistLoginTrigger={onTherapistLoginTrigger}
-        onGetStarted={onGetStarted}
-      />
+      {/* ── LANDING FOOTER (NO EARTH GLOBE IN BACKGROUND HERE) ── */}
+      <div ref={footerRef} className="relative z-30 bg-[#0a2617]">
+        <LandingFooter
+          onProductLinkClick={onProductLinkClick}
+          onCompanyLinkClick={handleCompanyNavigation}
+          onResourcesLinkClick={onResourcesLinkClick}
+          onTherapistLoginTrigger={onTherapistLoginTrigger}
+          onGetStarted={onGetStarted}
+        />
+      </div>
     </motion.div>
   );
 }
