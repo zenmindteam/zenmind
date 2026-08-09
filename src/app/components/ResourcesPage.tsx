@@ -172,9 +172,9 @@ function ReportIssueForm() {
         </div>
       </section>
 
-      {/* Form Card Section — FULL WIDTH w-full EXACTLY LIKE GETINTOUCHSECTION / CONTACT PAGE */}
+      {/* Form Card Section — FULL WIDTH w-full SIT CLEANLY BELOW HERO CARDS WITHOUT OVERLAPPING */}
       <section
-        className="relative w-full bg-[#f8fdf9] text-[#0a2617] rounded-[2.5rem] lg:rounded-[3.5rem] z-20 pt-[10px] pb-16 sm:pb-24 overflow-hidden -mt-12 sm:-mt-16 border-2 border-[#0d5d3a]/15 shadow-2xl"
+        className="relative w-full bg-[#f8fdf9] text-[#0a2617] rounded-[2.5rem] lg:rounded-[3.5rem] z-20 pt-[10px] pb-16 sm:pb-24 overflow-hidden mt-6 sm:mt-10 mb-16 sm:mb-24 border-2 border-[#0d5d3a]/15 shadow-2xl"
       >
         {/* Top Right Decorative Arrow */}
         <div className="absolute top-[10px] right-[10px] sm:right-6 lg:right-10 text-[#0a2617]">
@@ -308,6 +308,8 @@ function ReportIssueForm() {
           </div>
         </div>
       </section>
+
+      <div className="h-12 bg-[#0a2617]"></div>
     </div>
   );
 }
@@ -366,9 +368,9 @@ function FeedbackForm() {
         </div>
       </section>
 
-      {/* Form Card Section — FULL WIDTH w-full EXACTLY LIKE GETINTOUCHSECTION / CONTACT PAGE */}
+      {/* Form Card Section — FULL WIDTH w-full SIT CLEANLY BELOW HERO CARDS WITHOUT OVERLAPPING */}
       <section
-        className="relative w-full bg-[#f8fdf9] text-[#0a2617] rounded-[2.5rem] lg:rounded-[3.5rem] z-20 pt-[10px] pb-16 sm:pb-24 overflow-hidden -mt-12 sm:-mt-16 border-2 border-[#0d5d3a]/15 shadow-2xl"
+        className="relative w-full bg-[#f8fdf9] text-[#0a2617] rounded-[2.5rem] lg:rounded-[3.5rem] z-20 pt-[10px] pb-16 sm:pb-24 overflow-hidden mt-6 sm:mt-10 mb-16 sm:mb-24 border-2 border-[#0d5d3a]/15 shadow-2xl"
       >
         {/* Top Right Decorative Arrow */}
         <div className="absolute top-[10px] right-[10px] sm:right-6 lg:right-10 text-[#0a2617]">
