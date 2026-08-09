@@ -1,6 +1,10 @@
 # dependencies
 node_modules
 
+# local scratch
+.claude/
+.mongo-data/
+
 # env files — ignore real secrets, but commit the examples
 .env
 .env.local
