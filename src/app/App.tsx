@@ -76,6 +76,12 @@ export default function App() {
   // Helper: open any overlay and push history so browser back button closes it
   const openOverlay = (setter: (v: string) => void, value: string) => {
     history.pushState({ zmOverlay: true }, '');
+    if (value === 'Contact Us' || value === 'Contact') {
+      setActiveCompanyPage(null);
+      setActiveFooterPage(null);
+      setActiveResourcesPage('Contact Us');
+      return;
+    }
     setter(value);
   };
 

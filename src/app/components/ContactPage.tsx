@@ -190,8 +190,10 @@ export default function ContactPage({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
       ref={containerRef}
       data-lenis-prevent
+      style={{ backgroundColor: '#0a2617' }}
       className="fixed inset-0 z-[200] bg-[#0a2617] text-[#fffdf5] overflow-y-auto font-sans-main scrollbar-none [&::-webkit-scrollbar]:hidden no-scrollbar select-none"
     >
       {/* ── LANDING NAVBAR ── */}
