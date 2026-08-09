@@ -1,5 +1,6 @@
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { DotPattern } from "./ui/dot-pattern";
 
 const useIsoLayoutEffect =
   typeof window !== "undefined" ? React.useLayoutEffect : React.useEffect;
@@ -300,6 +301,7 @@ export function CoverflowCarousel({
                   draggable={false}
                   className="h-full w-full select-none object-cover"
                 />
+                <DotPattern className="fill-[#ffebc4]/25 opacity-40 pointer-events-none" />
               </div>
             ))}
           </div>

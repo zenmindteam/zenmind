@@ -146,13 +146,20 @@ export const CommunityStoriesSection: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -30 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="p-8 sm:p-14 lg:p-16 rounded-[2.5rem] bg-[#0a2617] border border-white/20 shadow-2xl relative overflow-hidden grid lg:grid-cols-12 gap-10 items-center"
+            className="p-8 sm:p-14 lg:p-16 rounded-[2.5rem] bg-[#0a2617] border-2 border-[#ffebc4]/25 shadow-2xl relative overflow-hidden grid lg:grid-cols-12 gap-10 items-center"
           >
-            {/* Background Dot Pattern */}
-            <DotPattern className="[mask-image:radial-gradient(600px_circle_at_center,white,transparent)] opacity-30" />
+            {/* Background Dot Pattern — High contrast gold dots */}
+            <DotPattern
+              width={24}
+              height={24}
+              cx={2}
+              cy={2}
+              cr={1.5}
+              className="fill-[#ffebc4]/35 [mask-image:radial-gradient(700px_circle_at_center,white,transparent)]"
+            />
 
             {/* Left Narrative Quote */}
-            <div className="lg:col-span-8 space-y-6">
+            <div className="lg:col-span-8 space-y-6 relative z-10">
               <div className="flex items-center gap-3">
                 <Quote className="w-8 h-8 text-[#ffebc4]" />
                 <span className="px-3.5 py-1 rounded-full bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30 text-xs font-bold font-sans uppercase tracking-wider">
@@ -182,7 +189,7 @@ export const CommunityStoriesSection: React.FC = () => {
             </div>
 
             {/* Right Author Photo Frame */}
-            <div className="lg:col-span-4 relative aspect-square rounded-[2rem] overflow-hidden border border-white/20 shadow-2xl">
+            <div className="lg:col-span-4 relative z-10 aspect-square rounded-[2rem] overflow-hidden border-2 border-white/20 shadow-2xl">
               <img
                 src={current.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80'}
                 alt={current.author}

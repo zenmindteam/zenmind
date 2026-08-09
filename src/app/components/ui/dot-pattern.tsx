@@ -14,13 +14,13 @@ interface DotPatternProps {
 }
 
 export function DotPattern({
-  width = 24,
-  height = 24,
+  width = 20,
+  height = 20,
   x = 0,
   y = 0,
   cx = 1,
-  cy = 0.5,
-  cr = 0.5,
+  cy = 1,
+  cr = 1.2,
   className,
   ...props
 }: DotPatternProps) {
@@ -30,7 +30,7 @@ export function DotPattern({
     <svg
       aria-hidden="true"
       className={cn(
-        "pointer-events-none absolute inset-0 h-full w-full fill-[#ffebc4]/20",
+        "pointer-events-none absolute inset-0 h-full w-full fill-[#ffebc4]/25",
         className,
       )}
       {...props}
