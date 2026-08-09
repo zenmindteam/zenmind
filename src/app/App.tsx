@@ -24,6 +24,7 @@ import AboutPage from './components/AboutPage';
 import CareersPage from './components/CareersPage';
 import ComingSoonPage from './components/ComingSoonPage';
 import ResourcesPage from './components/ResourcesPage';
+import ContactPage from './components/ContactPage';
 import { apiFetch } from './api/client';
 import OnboardingFlow from './components/OnboardingFlow';
 
@@ -312,10 +313,25 @@ export default function App() {
             )}
           </AnimatePresence>
 
-          {/* ── Resources Pages ── */}
+          {/* ── Resources & Contact Pages ── */}
           <AnimatePresence>
             {activeResourcesPage && (
-              <ResourcesPage page={activeResourcesPage} onClose={() => setActiveResourcesPage(null)} />
+              (activeResourcesPage === 'Contact Us' || activeResourcesPage === 'Contact') ? (
+                <ContactPage
+                  onClose={() => setActiveResourcesPage(null)}
+                  onGetStarted={() => { setActiveResourcesPage(null); setLoginIntent('progress'); setShowAuth(true); }}
+                  onAdminLoginTrigger={() => setShowAdminLogin(true)}
+                  onTherapistLoginTrigger={() => setShowTherapistLogin(true)}
+                  onCompanyLinkClick={(link) => openOverlay(setActiveCompanyPage, link)}
+                  onResourcesLinkClick={(link) => openOverlay(setActiveResourcesPage, link)}
+                  onProductLinkClick={(link) => {
+                    setActiveResourcesPage(null);
+                    openOverlay(setActiveFooterPage, link);
+                  }}
+                />
+              ) : (
+                <ResourcesPage page={activeResourcesPage} onClose={() => setActiveResourcesPage(null)} />
+              )
             )}
           </AnimatePresence>
 
