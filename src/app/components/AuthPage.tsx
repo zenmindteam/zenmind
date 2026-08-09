@@ -5,10 +5,10 @@ type AuthPageProps = { onBackHome: () => void; onAuthSuccess: () => void; };
 
 const CSS = `
   .doodle-wrapper {
-    --ink: #323232; --paper-front: #fff9e6; --paper-back: #e6f0ff;
-    --bg-color: #ffffff; --primary-btn: #ff6b6b; --primary-btn-hover: #ff5252;
-    --secondary-btn: #4ecdc4; --secondary-btn-hover: #3bbfb6;
-    --switch-bg: #ffe66d; --input-focus: #2d8cf0;
+    --ink: #0d5d3a; --paper-front: #ffffff; --paper-back: #ffffff;
+    --bg-color: #ffffff; --primary-btn: #0d5d3a; --primary-btn-hover: #084229;
+    --secondary-btn: #d97706; --secondary-btn-hover: #b45309;
+    --switch-bg: #fef3c7; --input-focus: #d97706;
     --card-width: 310px; --card-height: 500px;
     --input-width: 260px; --input-height: 40px;
     --btn-width: 130px; --btn-height: 42px;

@@ -8,17 +8,17 @@ export default function CancellationPolicy({ onClose }: { onClose: () => void })
       initial={{ opacity: 0, y: 20 }} 
       animate={{ opacity: 1, y: 0 }} 
       exit={{ opacity: 0, y: 20 }}
-      className="fixed inset-0 z-[100] bg-[#f7fbf8] dark:bg-[#050505] overflow-y-auto"
+      className="fixed inset-0 z-[100] bg-[#f4faf7] overflow-y-auto text-[#0a2617]"
     >
-      <header className="sticky top-0 z-10 bg-white/80 dark:bg-[#050505]/80 backdrop-blur-md border-b border-[#0d5d3a]/10 dark:border-white/10 px-4 sm:px-8 py-4 flex items-center gap-4">
+      <header className="sticky top-0 z-10 bg-white/90 backdrop-blur-md border-b border-[#0d5d3a]/15 px-4 sm:px-8 py-4 flex items-center gap-4">
         <button 
           onClick={onClose}
-          className="p-2 rounded-xl border border-[#0d5d3a]/15 text-[#0d5d3a] dark:border-white/10 dark:text-gray-300 hover:bg-[#f0fbf4] dark:hover:bg-white/10 transition flex items-center gap-2"
+          className="p-2 rounded-full border border-[#0d5d3a]/20 text-[#0d5d3a] hover:bg-[#e6f4ea] transition flex items-center gap-2"
         >
           <ChevronLeft size={20} />
-          <span className="font-bold text-sm hidden sm:inline">Back to Dashboard</span>
+          <span className="font-bold text-xs hidden sm:inline">Back to Dashboard</span>
         </button>
-        <h1 className="text-xl sm:text-2xl font-bold text-[#0a2617] dark:text-white" style={{ fontFamily: 'Syne, sans-serif' }}>
+        <h1 className="text-xl sm:text-2xl font-extrabold text-[#0d5d3a]">
           Cancellation Policy
         </h1>
       </header>

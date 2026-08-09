@@ -68,198 +68,129 @@ useEffect(() => {
     setActiveTab(tab);
 
     setMobileOpen(false);
-
   };
 
-
-
-  const SidebarContent = ({ mobile }: { mobile?: boolean }) => (
-    <>
-      <div className={`p-5 flex items-center ${(!mobile && sidebarExpanded) || mobile ? 'gap-3' : 'justify-center'} h-[72px] border-b border-[#0d5d3a]/10 dark:border-white/10 shrink-0`}>
-        <img src={logo} alt="Logo" className="w-9 h-9 rounded-full object-cover shrink-0" />
-        {(mobile || sidebarExpanded) && (
-          <span className="font-bold text-lg tracking-wide overflow-hidden whitespace-nowrap text-[#0a2617] dark:text-gray-100" style={{ fontFamily: 'Syne, sans-serif' }}>
-            Admin Panel
-          </span>
-        )}
-      </div>
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 flex flex-col gap-1 custom-scrollbar">
-        <AdminSidebarNav
-          tab={activeTab}
-          navigateToTab={navTo}
-          collapsed={!sidebarExpanded && !mobile}
-          setCollapsed={(c) => setSidebarExpanded(!c)}
-        />
-      </div>
-      <div className="p-2 border-t border-[#0d5d3a]/10 dark:border-white/10 shrink-0">
-        <button onClick={() => setShowLogoutConfirm(true)} className={`w-full flex items-center ${(mobile || sidebarExpanded) ? 'gap-2.5 px-3' : 'justify-center px-0'} py-2.5 rounded-2xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 font-semibold text-sm transition-colors`}>
-          <LogOut size={16} className="shrink-0" />
-          {(mobile || sidebarExpanded) && <span>Sign Out</span>}
-        </button>
-      </div>
-    </>
-  );
-
-
+  const SidebarContent = ({ mobile }: { mobile?: boolean }) => {
+    return (
+      <>
+        <div className={`flex items-center ${(mobile || sidebarExpanded) ? 'gap-3 px-5' : 'justify-center px-0'} h-16 border-b border-[#0d5d3a]/15 shrink-0 bg-[#f4faf7]`}>
+          <img src={logo} alt="ZenMind" className="w-8 h-8 rounded-full object-cover shrink-0" />
+          {(mobile || sidebarExpanded) && (
+            <span className="font-bold text-lg tracking-wide overflow-hidden whitespace-nowrap text-[#0d5d3a]" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
+              Admin Panel
+            </span>
+          )}
+        </div>
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 flex flex-col gap-1.5 custom-scrollbar bg-[#f4faf7]">
+          <AdminSidebarNav
+            tab={activeTab}
+            navigateToTab={navTo}
+            collapsed={!sidebarExpanded && !mobile}
+            setCollapsed={(c) => setSidebarExpanded(!c)}
+          />
+        </div>
+        <div className="p-3 border-t border-[#0d5d3a]/15 shrink-0 bg-[#f4faf7]">
+          <button onClick={() => setShowLogoutConfirm(true)} className={`w-full flex items-center ${(mobile || sidebarExpanded) ? 'gap-3 px-4' : 'justify-center px-0'} py-2.5 rounded-full text-red-600 hover:bg-red-50 font-bold text-xs transition-colors`}>
+            <LogOut size={16} className="shrink-0" />
+            {(mobile || sidebarExpanded) && <span>Sign Out</span>}
+          </button>
+        </div>
+      </>
+    );
+  };
 
   return (
-
-    <div className="flex h-screen w-full bg-[#f7fbf8] dark:bg-[#050505] overflow-hidden text-[#0a2617] dark:text-gray-100 transition-colors duration-300">
+    <div className="flex h-screen w-full bg-[#f4faf7] overflow-hidden text-[#0a2617]">
 
       {/* Mobile overlay */}
-
       <AnimatePresence>
-
         {mobileOpen && (
-
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-
             className="fixed inset-0 bg-black/40 z-30 md:hidden" onClick={() => setMobileOpen(false)} />
-
         )}
-
       </AnimatePresence>
-
-
 
       {/* Mobile drawer */}
-
       <AnimatePresence>
-
         {mobileOpen && (
-
           <motion.aside initial={{ x: -280 }} animate={{ x: 0 }} exit={{ x: -280 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-
-            className="fixed left-0 top-0 h-full w-[260px] bg-white dark:bg-[#111111] border-r border-[#0d5d3a]/10 dark:border-white/10 flex flex-col z-40 md:hidden overflow-y-auto">
-
-            <button onClick={() => setMobileOpen(false)} className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300">
-
+            className="fixed left-0 top-0 h-full w-[260px] bg-white border-r border-[#0d5d3a]/15 flex flex-col z-40 md:hidden overflow-y-auto">
+            <button onClick={() => setMobileOpen(false)} className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-gray-100 text-[#0d5d3a]">
               <X size={18} />
-
             </button>
-
             <SidebarContent mobile />
-
           </motion.aside>
-
         )}
-
       </AnimatePresence>
 
-
-
       {/* Desktop sidebar */}
-
       <div className="hidden md:block flex-shrink-0 relative z-20" style={{ width: sidebarExpanded ? 260 : 72, transition: 'width 0.3s cubic-bezier(0.4,0,0.2,1)' }}>
         <button onClick={() => setSidebarExpanded(s => !s)}
-          className="absolute -right-3.5 top-6 z-30 w-7 h-7 bg-white dark:bg-[#1a1a1a] border border-[#0d5d3a]/15 dark:border-white/10 text-[#0a2617] dark:text-gray-300 rounded-full shadow-md flex items-center justify-center hover:bg-[#f0fbf4] dark:hover:bg-[#222222] hover:text-[#0d5d3a] dark:hover:text-white transition-colors">
+          className="absolute -right-3.5 top-5 z-30 w-7 h-7 bg-white border border-[#0d5d3a]/20 text-[#0d5d3a] rounded-full shadow-md flex items-center justify-center hover:bg-[#e6f4ea] transition-colors">
           {sidebarExpanded ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
         </button>
-        <div className="bg-white dark:bg-[#111111] border-r border-[#0d5d3a]/10 dark:border-white/10 h-full flex flex-col overflow-hidden">
+        <div className="bg-[#f4faf7] border-r border-[#0d5d3a]/15 h-full flex flex-col overflow-hidden">
           <SidebarContent />
         </div>
       </div>
 
-
-
-      {/* Main Container */}
-
+      {/* Main Workspace Grid */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
 
-        <header className="h-[72px] shrink-0 bg-white/80 dark:bg-[#050505]/80 backdrop-blur-md border-b border-[#0d5d3a]/10 dark:border-white/10 flex items-center justify-between px-4 sm:px-8 z-10">
+        {/* Google Top Header Bar */}
+        <header className="h-16 shrink-0 bg-[#f4faf7] border-b border-[#0d5d3a]/15 flex items-center justify-between px-4 sm:px-6 z-10">
+          <div className="flex items-center gap-3">
+            <button onClick={() => setMobileOpen(true)} className="md:hidden p-2 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a]">
+              <Menu size={18} />
+            </button>
+            <div>
+              <h1 className="font-extrabold text-base sm:text-lg text-[#0d5d3a] leading-tight">
+                {activeTab === 'analytics' ? 'Platform Analytics' : activeTab === 'users' ? 'Members Directory' : activeTab === 'therapists' ? 'Therapists Directory' : activeTab === 'content' ? 'Content Management' : activeTab === 'faqs' ? 'FAQs Management' : activeTab === 'circles' ? 'Peer Circles' : activeTab === 'flagged' ? 'Flagged Content' : activeTab === 'reading' ? 'Reading Lists' : activeTab === 'programs' ? 'Wellness Programs' : activeTab === 'store' ? 'Wellness Store' : activeTab === 'quiz' ? 'Quiz Questions' : activeTab === 'support' ? 'Support Tickets' : activeTab === 'team' ? 'Team Members' : activeTab === 'jobs' ? 'Job Postings' : activeTab === 'applications' ? 'Job Applications' : activeTab === 'therapist_inbox' ? 'Therapist Inbox' : activeTab === 'crisis' ? 'Crisis Monitor' : activeTab === 'notifications' ? 'Notification Center' : activeTab === 'session_insights' ? 'Session Insights' : 'Admin Settings'}
+              </h1>
+              <p className="text-xs font-semibold text-[#d97706]">ZenMind Administration System</p>
+            </div>
+          </div>
 
           <div className="flex items-center gap-3">
-
-            <button onClick={() => setMobileOpen(true)} className="md:hidden p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition text-gray-700 dark:text-gray-300">
-
-              <Menu size={20} />
-
-            </button>
-
-            <h1 className="text-lg sm:text-2xl font-bold text-[#0a2617] dark:text-gray-100" style={{ fontFamily: 'Syne, sans-serif' }}>
-
-            {activeTab === 'analytics' ? 'Platform Analytics' : activeTab === 'users' ? 'Members Directory' : activeTab === 'therapists' ? 'Therapists Directory' : activeTab === 'content' ? 'Content Management' : activeTab === 'faqs' ? 'FAQs Management' : activeTab === 'circles' ? 'Peer Circles' : activeTab === 'flagged' ? 'Flagged Content' : activeTab === 'reading' ? 'Reading Lists' : activeTab === 'programs' ? 'Wellness Programs' : activeTab === 'store' ? 'Wellness Store' : activeTab === 'quiz' ? 'Quiz Questions' : activeTab === 'support' ? 'Support Tickets' : activeTab === 'team' ? 'Team Members' : activeTab === 'jobs' ? 'Job Postings' : activeTab === 'applications' ? 'Job Applications' : activeTab === 'therapist_inbox' ? 'Therapist Inbox' : activeTab === 'crisis' ? 'Crisis Monitor' : activeTab === 'notifications' ? 'Notification Center' : activeTab === 'session_insights' ? 'Session Insights' : 'Admin Settings'}
-
-            </h1>
-
-          </div>
-
-          <div className="flex items-center gap-4">
-
-            <ThemeToggle />
-
-            <div className="flex items-center gap-2">
-
-              <div className="w-9 h-9 rounded-full bg-[#0d5d3a] dark:bg-[#1a8a5a] flex items-center justify-center text-white font-bold">
-
-                <Shield size={18} />
-
+            <div className="flex items-center gap-2 bg-[#fef3c7] border border-[#fde68a] px-3 py-1 rounded-full shadow-2xs">
+              <div className="w-6 h-6 rounded-full bg-[#0d5d3a] flex items-center justify-center text-white font-bold text-xs ring-2 ring-[#d97706]">
+                <Shield size={12} />
               </div>
-
-              <div className="hidden sm:block text-sm">
-
-                <div className="font-bold text-[#0a2617] dark:text-gray-100">{adminUsername}</div>
-
-                <div className="text-xs text-[#4a7c5d] dark:text-gray-400">Super Admin</div>
-
+              <div className="hidden sm:block text-xs">
+                <span className="font-bold text-[#78350f]">{adminUsername}</span>
+                <span className="text-[10px] text-[#92400e] block font-semibold">Super Admin</span>
               </div>
-
             </div>
-
           </div>
-
         </header>
 
-
-
-        <main className="flex-1 overflow-y-auto p-4 sm:p-8">
-
-          <div className="mx-auto w-full max-w-7xl">
-
-            {activeTab === 'analytics' && <AdminAnalytics />}
-
-            {activeTab === 'users' && <UsersManagement />}
-
-            {activeTab === 'therapists' && <TherapistsManagement />}
-
-            {activeTab === 'content' && <ContentManagement />}
-
-            {activeTab === 'faqs' && <AdminFAQManager />}
-
-            {activeTab === 'circles' && <PeerCirclesManagement />}
-
-            {activeTab === 'flagged' && <FlaggedContent />}
-
-            {activeTab === 'reading' && <ReadingListsAdmin />}
-
-            {activeTab === 'programs' && <WellnessProgramsAdmin />}
-
-            {activeTab === 'store' && <WellnessStoreAdmin />}
-
-            {activeTab === 'quiz' && <QuizManagement />}
-
-            {activeTab === 'support' && <SupportManagement />}
-
-            {activeTab === 'team' && <TeamManagement />}
-
-            {activeTab === 'jobs' && <JobsManagement />}
-
-            {activeTab === 'applications' && <ApplicationsAdmin />}
-
-            {activeTab === 'therapist_inbox' && <TherapistInboxAdmin />}
-
-            {activeTab === 'crisis' && <CrisisMonitorWidget />}
-
-            {activeTab === 'notifications' && <NotificationBroadcastWidget />}
-
-            {activeTab === 'session_insights' && <SessionInsightsWidget />}
-
-            {activeTab === 'settings' && <AdminSettings onUpdateName={setAdminUsername} />}
-
+        {/* Main Canvas Card Container */}
+        <main className="flex-1 bg-white rounded-3xl border-2 border-[#0d5d3a]/15 shadow-sm overflow-hidden m-2 sm:m-3 flex flex-col min-h-0">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+            <div className="mx-auto w-full max-w-7xl">
+              {activeTab === 'analytics' && <AdminAnalytics />}
+              {activeTab === 'users' && <UsersManagement />}
+              {activeTab === 'therapists' && <TherapistsManagement />}
+              {activeTab === 'content' && <ContentManagement />}
+              {activeTab === 'faqs' && <AdminFAQManager />}
+              {activeTab === 'circles' && <PeerCirclesManagement />}
+              {activeTab === 'flagged' && <FlaggedContent />}
+              {activeTab === 'reading' && <ReadingListsAdmin />}
+              {activeTab === 'programs' && <WellnessProgramsAdmin />}
+              {activeTab === 'store' && <WellnessStoreAdmin />}
+              {activeTab === 'quiz' && <QuizManagement />}
+              {activeTab === 'support' && <SupportManagement />}
+              {activeTab === 'team' && <TeamManagement />}
+              {activeTab === 'jobs' && <JobsManagement />}
+              {activeTab === 'applications' && <ApplicationsAdmin />}
+              {activeTab === 'therapist_inbox' && <TherapistInboxAdmin />}
+              {activeTab === 'crisis' && <CrisisMonitorWidget />}
+              {activeTab === 'notifications' && <NotificationBroadcastWidget />}
+              {activeTab === 'session_insights' && <SessionInsightsWidget />}
+              {activeTab === 'settings' && <AdminSettings onUpdateName={setAdminUsername} />}
+            </div>
           </div>
-
         </main>
-
       </div>
 
       {/* Logout Confirmation Modal */}

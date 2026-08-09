@@ -4,9 +4,9 @@ import logo from '../../../asset/logo.png';
 
 const DOODLE_CSS = `
   .doodle-th-wrapper {
-    --ink: #323232; --paper: #fff9e6; --bg-color: #ffffff;
-    --primary-btn: #ff6b6b; --primary-btn-hover: #ff5252;
-    --input-focus: #2d8cf0; --border-width: 2px; --shadow-offset: 4px;
+    --ink: #0d5d3a; --paper: #ffffff; --bg-color: #ffffff;
+    --primary-btn: #0d5d3a; --primary-btn-hover: #084229;
+    --input-focus: #d97706; --border-width: 2px; --shadow-offset: 4px;
     --sketch-r1: 8px 24px 8px 24px / 24px 8px 24px 8px;
     --sketch-r2: 24px 8px 24px 8px / 8px 24px 8px 24px;
     --sketch-rbtn: 16px 5px 16px 5px / 5px 16px 5px 16px;

@@ -205,50 +205,50 @@ export default function TherapistDashboard({ onLogout }: { onLogout: () => void 
   if (loading) return <div className="h-screen flex items-center justify-center font-bold text-[#0d5d3a] text-lg">Loading...</div>;
 
   const navItems: { key: TabKey; label: string; icon: React.ReactNode }[] = [
-    { key: 'profile', label: 'My Profile', icon: <User size={20} /> },
-    { key: 'schedule', label: 'Schedule', icon: <Calendar size={20} /> },
-    { key: 'sessions', label: 'Booked Sessions', icon: <CheckCircle size={20} /> },
-    { key: 'chats', label: 'Chats', icon: <MessageCircle size={20} /> },
-    { key: 'reading', label: 'Reading Lists', icon: <Info size={20} /> },
-    { key: 'support', label: 'Support & Reports', icon: <ShieldAlert size={20} /> },
+    { key: 'profile', label: 'My Profile', icon: <User size={18} /> },
+    { key: 'schedule', label: 'Schedule', icon: <Calendar size={18} /> },
+    { key: 'sessions', label: 'Booked Sessions', icon: <CheckCircle size={18} /> },
+    { key: 'chats', label: 'Chats', icon: <MessageCircle size={18} /> },
+    { key: 'reading', label: 'Reading Lists', icon: <Info size={18} /> },
+    { key: 'support', label: 'Support & Reports', icon: <ShieldAlert size={18} /> },
   ];
 
   const SidebarContent = ({ mobile }: { mobile?: boolean }) => {
     const wide = mobile || !collapsed;
     return (
       <>
-        <div className={`flex items-center ${wide ? 'gap-3 px-5' : 'justify-center px-0'} h-[72px] border-b border-[#0d5d3a]/10 dark:border-white/10 shrink-0`}>
-          <img src={logo} alt="ZenMind" className="w-9 h-9 rounded-full object-cover shrink-0" />
-          {wide && <span className="font-bold text-lg text-[#0a2617] dark:text-white whitespace-nowrap" style={{ fontFamily: 'Syne, sans-serif' }}>Therapist</span>}
+        <div className={`flex items-center ${wide ? 'gap-3 px-5' : 'justify-center px-0'} h-16 border-b border-[#0d5d3a]/15 shrink-0 bg-[#f4faf7]`}>
+          <img src={logo} alt="ZenMind" className="w-8 h-8 rounded-full object-cover shrink-0" />
+          {wide && <span className="font-bold text-lg text-[#0d5d3a]" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>Therapist Desk</span>}
         </div>
         {wide && (
-          <div className="px-5 py-3 border-b border-[#0d5d3a]/5 dark:border-white/5 flex items-center gap-3 shrink-0">
+          <div className="px-5 py-3.5 border-b border-[#0d5d3a]/10 flex items-center gap-3 shrink-0 bg-white">
             <div className="relative shrink-0">
               {picPreview
-                ? <img src={picPreview} alt="P" className="w-10 h-10 rounded-full object-cover border-2 border-[#0d5d3a]/20" />
-                : <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0d5d3a] to-[#1a8a5a] flex items-center justify-center text-white text-lg font-bold">{therapist?.name?.charAt(0)}</div>
+                ? <img src={picPreview} alt="P" className="w-10 h-10 rounded-full object-cover ring-2 ring-[#d97706]" />
+                : <div className="w-10 h-10 rounded-full bg-[#0d5d3a] flex items-center justify-center text-white text-lg font-bold ring-2 ring-[#d97706]">{therapist?.name?.charAt(0)}</div>
               }
             </div>
             <div className="min-w-0">
-              <div className="font-bold text-[#0a2617] dark:text-white text-sm truncate">{therapist?.name}</div>
-              <div className="text-xs text-[#0d5d3a] dark:text-[#10b981] font-semibold truncate">{therapist?.specialization}</div>
+              <div className="font-bold text-[#0d5d3a] text-sm truncate">{therapist?.name}</div>
+              <div className="text-xs text-[#d97706] font-extrabold truncate">{therapist?.specialization}</div>
             </div>
           </div>
         )}
-        <nav className="flex-1 overflow-y-auto overflow-x-hidden p-2 flex flex-col gap-1 custom-scrollbar">
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden p-3 flex flex-col gap-1.5 custom-scrollbar bg-[#f4faf7]">
           {navItems.map(({ key, label, icon }) => (
             <button key={key} onClick={() => { setTab(key); if (mobile) setMobileOpen(false); }}
-              className={`w-full flex items-center ${wide ? 'gap-2.5 px-3' : 'justify-center px-0'} py-2.5 rounded-2xl text-sm font-semibold transition-all
-                ${tab === key ? 'bg-[#0d5d3a] text-white shadow-md' : 'text-[#4a7c5d] dark:text-gray-400 hover:bg-[#f0fbf4] dark:hover:bg-white/5 hover:text-[#0d5d3a]'}`}
+              className={`w-full flex items-center ${wide ? 'gap-3 px-4' : 'justify-center px-0'} py-2.5 rounded-full text-xs font-bold transition-all
+                ${tab === key ? 'bg-[#0d5d3a] text-white shadow-sm border-r-4 border-[#d97706]' : 'text-[#0d5d3a] hover:bg-[#e6f4ea]'}`}
               title={!wide ? label : undefined}
             >
               {React.cloneElement(icon as React.ReactElement, { size: 16 })}{wide && <span>{label}</span>}
             </button>
           ))}
         </nav>
-        <div className="p-2 border-t border-[#0d5d3a]/10 dark:border-white/10 shrink-0">
+        <div className="p-3 border-t border-[#0d5d3a]/15 shrink-0 bg-[#f4faf7]">
           <button onClick={() => setShowLogoutConfirm(true)}
-            className={`w-full flex items-center ${wide ? 'gap-2.5 px-3' : 'justify-center px-0'} py-2.5 rounded-2xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 text-sm font-semibold transition-colors`}
+            className={`w-full flex items-center ${wide ? 'gap-3 px-4' : 'justify-center px-0'} py-2.5 rounded-full text-red-600 hover:bg-red-50 text-xs font-bold transition-colors`}
           >
             <LogOut size={16} className="shrink-0" />{wide && <span>Sign Out</span>}
           </button>
@@ -258,7 +258,7 @@ export default function TherapistDashboard({ onLogout }: { onLogout: () => void 
   };
 
   return (
-    <div className="flex h-screen w-full bg-[#f7fbf8] dark:bg-[#050505] overflow-hidden text-[#0a2617] dark:text-gray-100 transition-colors duration-300">
+    <div className="flex h-screen w-full bg-[#f4faf7] overflow-hidden text-[#0a2617]">
 
       {/* Mobile overlay */}
       <AnimatePresence>
@@ -273,9 +273,9 @@ export default function TherapistDashboard({ onLogout }: { onLogout: () => void 
         {mobileOpen && (
           <motion.aside initial={{ x: -280 }} animate={{ x: 0 }} exit={{ x: -280 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed left-0 top-0 h-full w-[260px] bg-white dark:bg-[#111111] border-r border-[#0d5d3a]/10 dark:border-white/10 flex flex-col z-40 md:hidden">
-            <button onClick={() => setMobileOpen(false)} className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10">
-              <X size={18} className="text-gray-500" />
+            className="fixed left-0 top-0 h-full w-[260px] bg-white border-r border-[#0d5d3a]/15 flex flex-col z-40 md:hidden">
+            <button onClick={() => setMobileOpen(false)} className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-gray-100">
+              <X size={18} className="text-[#0d5d3a]" />
             </button>
             <SidebarContent mobile />
           </motion.aside>
@@ -285,29 +285,46 @@ export default function TherapistDashboard({ onLogout }: { onLogout: () => void 
       {/* Desktop sidebar */}
       <div className="hidden md:block flex-shrink-0 relative z-20" style={{ width: collapsed ? 72 : 260, transition: 'width 0.3s cubic-bezier(0.4,0,0.2,1)' }}>
         <button onClick={() => setCollapsed(c => !c)} title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="absolute -right-3.5 top-6 z-30 w-7 h-7 bg-white dark:bg-[#1a1a1a] border border-[#0d5d3a]/15 dark:border-white/10 text-[#0a2617] dark:text-gray-300 rounded-full shadow-md flex items-center justify-center hover:bg-[#f0fbf4] dark:hover:bg-[#222222] hover:text-[#0d5d3a] dark:hover:text-white transition-colors">
+          className="absolute -right-3.5 top-5 z-30 w-7 h-7 bg-white border border-[#0d5d3a]/20 text-[#0d5d3a] rounded-full shadow-md flex items-center justify-center hover:bg-[#e6f4ea] transition-colors">
           {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
-        <div className="bg-white dark:bg-[#111111] border-r border-[#0d5d3a]/10 dark:border-white/10 h-full flex flex-col overflow-hidden">
+        <div className="bg-[#f4faf7] border-r border-[#0d5d3a]/15 h-full flex flex-col overflow-hidden">
           <SidebarContent />
         </div>
       </div>
 
-      {/* Main */}
+      {/* Main Workspace Grid */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
-        <header className="h-[72px] shrink-0 bg-white/80 dark:bg-[#050505]/80 backdrop-blur-md border-b border-[#0d5d3a]/10 dark:border-white/10 flex items-center justify-between px-4 sm:px-8 z-10">
+        
+        {/* Google Top Header Bar */}
+        <header className="h-16 shrink-0 bg-[#f4faf7] border-b border-[#0d5d3a]/15 flex items-center justify-between px-4 sm:px-6 z-10">
           <div className="flex items-center gap-3">
-            <button onClick={() => setMobileOpen(true)} className="md:hidden p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10">
-              <Menu size={20} />
+            <button onClick={() => setMobileOpen(true)} className="md:hidden p-2 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a]">
+              <Menu size={18} />
             </button>
-            <h1 className="text-lg sm:text-2xl font-bold" style={{ fontFamily: 'Syne, sans-serif' }}>
-            {tab === 'profile' ? 'My Profile' : tab === 'schedule' ? 'Schedule & Availability' : tab === 'chats' ? 'Chats' : tab === 'reading' ? ' Reading Lists' : tab === 'support' ? '️ Support & Reports' : 'Booked Sessions'}
-            </h1>
+            <div>
+              <h1 className="font-extrabold text-base sm:text-lg text-[#0d5d3a] leading-tight">
+                {tab === 'profile'  ? 'Therapist Profile & Details' :
+                 tab === 'schedule' ? 'Availability & Session Slot Manager' :
+                 tab === 'sessions' ? 'Booked Client Appointments' :
+                 tab === 'chats'    ? 'Client Communication Desk' :
+                 tab === 'reading'  ? 'Therapist Reading Lists & Resources' :
+                 'Support & Clinical Incident Reports'}
+              </h1>
+              <p className="text-xs font-semibold text-[#d97706]">ZenMind Verified Clinical Portal</p>
+            </div>
           </div>
-          <ThemeToggle />
+
+          <div className="flex items-center gap-3">
+            <span className="hidden sm:inline-flex text-xs font-extrabold text-[#78350f] bg-[#fef3c7] border border-[#fde68a] px-3 py-1 rounded-full shadow-2xs">
+              Clinical Desk Active
+            </span>
+          </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto">
+        {/* Main Canvas Card Container */}
+        <main className="flex-1 bg-white rounded-3xl border-2 border-[#0d5d3a]/15 shadow-sm overflow-hidden m-2 sm:m-3 flex flex-col min-h-0">
+          <div className="flex-1 overflow-y-auto">
           {/* Toast */}
           <AnimatePresence>
             {msg && (
@@ -638,7 +655,7 @@ export default function TherapistDashboard({ onLogout }: { onLogout: () => void 
               <TherapistSupportDesk />
             </div>
           )}
-
+          </div>
         </main>
       </div>
 
