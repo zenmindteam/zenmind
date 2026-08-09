@@ -432,28 +432,34 @@ function FAQPage({
         </div>
       </section>
 
-      {/* Full-width Accordion Section — Cream bg with rounded top */}
-      <section className="relative bg-[#f8fdf9] rounded-t-[2.5rem] lg:rounded-t-[3.5rem] -mt-8 z-10 pt-12 sm:pt-16 pb-24 sm:pb-32 border-t-2 border-[#0d5d3a]/10">
-        <div className="max-w-5xl mx-auto px-6 sm:px-10 lg:px-16">
+      {/* Full-width Accordion Section — Directly on section, NO card container */}
+      <section className="relative bg-[#f8fdf9] min-h-[60vh] py-16 sm:py-24 border-t border-[#0d5d3a]/15">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
 
-          {/* Accordion */}
-          <div className="w-full border-2 border-[#0d5d3a]/15 rounded-3xl overflow-hidden bg-white shadow-xl">
+          {/* Accordion List directly on section */}
+          <div className="w-full border-t border-b border-[#0d5d3a]/20 divide-y divide-[#0d5d3a]/15">
             {faqItems.map((item) => {
               const isOpen = openId === item.id;
               return (
                 <div
                   key={item.id}
-                  className={`border-b-2 border-[#0d5d3a]/10 last:border-b-0 transition-colors duration-300 ${isOpen ? 'bg-[#f4faf7]' : 'bg-white hover:bg-[#fafdf9]'}`}
+                  className={`transition-colors duration-300 ${isOpen ? 'bg-[#0d5d3a]/5' : 'hover:bg-[#0d5d3a]/[0.02]'}`}
                 >
                   {/* Trigger */}
                   <button
                     onClick={() => setOpenId(isOpen ? null : item.id)}
-                    className="w-full flex items-center gap-4 px-6 sm:px-8 py-6 sm:py-7 text-left cursor-pointer transition-all duration-300 hover:no-underline bg-transparent border-0"
+                    className="w-full flex items-center justify-between gap-4 py-7 sm:py-9 text-left cursor-pointer transition-all duration-300 hover:no-underline bg-transparent border-0 px-2 sm:px-4"
                   >
+                    {/* Number + Title */}
+                    <div className="flex items-center gap-4 sm:gap-6 flex-1 min-w-0">
+                      <span className="text-xs sm:text-sm font-bold text-[#d97706] tracking-wider font-sans shrink-0">{item.id}</span>
+                      <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-[#0a2617] tracking-tight">{item.title}</h3>
+                    </div>
+
                     {/* Plus / Minus Icon */}
                     <div className={`relative w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-500 ${
                       isOpen
-                        ? 'bg-[#d97706] text-white shadow-lg shadow-[#d97706]/30'
+                        ? 'bg-[#d97706] text-white shadow-md shadow-[#d97706]/30'
                         : 'bg-[#0d5d3a]/10 text-[#0d5d3a]'
                     }`}>
                       <motion.div
@@ -471,12 +477,6 @@ function FAQPage({
                         <Minus className="w-5 h-5 sm:w-6 sm:h-6" />
                       </motion.div>
                     </div>
-
-                    {/* Number + Title */}
-                    <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                      <span className="text-xs sm:text-sm font-bold text-[#d97706] tracking-wider font-sans">{item.id}</span>
-                      <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-[#0a2617] truncate">{item.title}</h3>
-                    </div>
                   </button>
 
                   {/* Content */}
@@ -489,26 +489,26 @@ function FAQPage({
                         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                         className="overflow-hidden"
                       >
-                        <div className="px-6 sm:px-8 pb-8 sm:pb-10 ml-12 sm:ml-14">
-                          <div className="grid gap-8 md:grid-cols-2">
+                        <div className="pb-8 sm:pb-10 pt-2 px-2 sm:px-4 pl-8 sm:pl-14">
+                          <div className="grid gap-8 lg:grid-cols-12 items-start">
                             {/* Answer */}
-                            <div>
-                              <p className="text-sm sm:text-base text-[#0a2617]/80 leading-relaxed font-medium">
+                            <div className="lg:col-span-7">
+                              <p className="text-base sm:text-lg text-[#0a2617]/85 leading-relaxed font-normal">
                                 {item.content}
                               </p>
                             </div>
 
                             {/* Related Services */}
-                            <div className="space-y-3">
+                            <div className="lg:col-span-5 space-y-2 lg:pl-8 border-l-0 lg:border-l border-[#0d5d3a]/15">
                               <p className="text-[10px] sm:text-xs font-bold text-[#0d5d3a] tracking-[0.15em] uppercase">RELATED SERVICES</p>
-                              <p className="text-xs sm:text-sm text-[#0a2617]/60 leading-relaxed font-medium">
+                              <p className="text-xs sm:text-sm text-[#0a2617]/70 leading-relaxed font-medium">
                                 {item.services}
                               </p>
                             </div>
                           </div>
 
                           {/* CTA Button */}
-                          <div className="mt-6 flex justify-end">
+                          <div className="mt-8 flex justify-end">
                             <button
                               onClick={() => onResourcesLinkClick?.('Contact Us')}
                               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#0d5d3a] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#084229] transition-all cursor-pointer shadow-md"
@@ -528,7 +528,7 @@ function FAQPage({
 
           {/* Bottom CTA */}
           <div className="mt-16 text-center">
-            <p className="text-sm text-[#0a2617]/60 font-medium mb-4">Still have questions?</p>
+            <p className="text-sm text-[#0a2617]/70 font-semibold mb-4">Still have questions?</p>
             <button
               onClick={() => onResourcesLinkClick?.('Contact Us')}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#0d5d3a] text-white text-sm font-bold uppercase tracking-wider hover:bg-[#084229] transition-all cursor-pointer shadow-lg"
