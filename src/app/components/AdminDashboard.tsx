@@ -87,7 +87,7 @@ useEffect(() => {
             title="Create Content / Entry"
           >
             <div className={`${wide ? 'w-6 h-6 rounded-full bg-[#d97706] text-white flex items-center justify-center flex-shrink-0 shadow-xs' : 'flex items-center justify-center'}`}>
-              <Plus className="w-4 h-4 stroke-[3]" />
+              <Plus className={`${wide ? 'w-4 h-4' : 'w-6 h-6'} stroke-[3]`} />
             </div>
             {wide && (
               <span className="font-bold text-sm tracking-wide text-[#0d5d3a]">
@@ -97,8 +97,8 @@ useEffect(() => {
           </button>
         </div>
 
-        {/* Navigation Items */}
-        <div className={`flex-1 overflow-y-auto overflow-x-hidden ${wide ? 'px-3' : 'px-1'} py-1 flex flex-col gap-1 custom-scrollbar bg-[#f4faf7]`}>
+        {/* Navigation Items (Scrollbar Hidden for clean look) */}
+        <div className={`flex-1 overflow-y-auto overflow-x-hidden ${wide ? 'px-3' : 'px-1'} py-1 flex flex-col gap-1 no-scrollbar bg-[#f4faf7]`}>
           <AdminSidebarNav
             tab={activeTab}
             navigateToTab={navTo}
@@ -306,70 +306,70 @@ useEffect(() => {
         </main>
 
         {/* ── GOOGLE WORKSPACE RIGHT COMPANION TOOLBAR ── */}
-        <aside className="hidden lg:flex flex-col items-center gap-4 py-4 w-14 flex-shrink-0 bg-[#f4faf7] border-l border-[#0d5d3a]/15">
+        <aside className="hidden lg:flex flex-col items-center gap-4 py-4 w-16 flex-shrink-0 bg-[#f4faf7] border-l border-[#0d5d3a]/15">
           <button
             type="button"
             onClick={() => setActiveTab('analytics')}
-            className={`p-3 rounded-2xl transition-all duration-200 ${
+            className={`w-11 h-11 flex items-center justify-center rounded-2xl transition-all duration-200 ${
               activeTab === 'analytics'
                 ? 'bg-[#0d5d3a] text-white shadow-md border-r-2 border-[#d97706]'
                 : 'text-[#0d5d3a] hover:bg-[#e6f4ea]'
             }`}
             title="Analytics"
           >
-            <Activity className="w-5 h-5" />
+            <Activity className="w-6 h-6 stroke-[2.2]" />
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('users')}
-            className={`p-3 rounded-2xl transition-all duration-200 ${
+            className={`w-11 h-11 flex items-center justify-center rounded-2xl transition-all duration-200 ${
               activeTab === 'users'
                 ? 'bg-[#d97706] text-white shadow-md'
                 : 'text-[#d97706] hover:bg-[#fef3c7]'
             }`}
             title="Members Directory"
           >
-            <Users className="w-5 h-5" />
+            <Users className="w-6 h-6 stroke-[2.2]" />
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('therapists')}
-            className={`p-3 rounded-2xl transition-all duration-200 ${
+            className={`w-11 h-11 flex items-center justify-center rounded-2xl transition-all duration-200 ${
               activeTab === 'therapists'
                 ? 'bg-[#0d5d3a] text-white shadow-md border-r-2 border-[#d97706]'
                 : 'text-[#0d5d3a] hover:bg-[#e6f4ea]'
             }`}
             title="Therapists Directory"
           >
-            <Shield className="w-5 h-5" />
+            <Shield className="w-6 h-6 stroke-[2.2]" />
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('content')}
-            className={`p-3 rounded-2xl transition-all duration-200 ${
+            className={`w-11 h-11 flex items-center justify-center rounded-2xl transition-all duration-200 ${
               activeTab === 'content'
                 ? 'bg-[#d97706] text-white shadow-md'
                 : 'text-[#d97706] hover:bg-[#fef3c7]'
             }`}
             title="Content Management"
           >
-            <FileText className="w-5 h-5" />
+            <FileText className="w-6 h-6 stroke-[2.2]" />
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('settings')}
-            className={`p-3 rounded-2xl transition-all duration-200 ${
+            className={`w-11 h-11 flex items-center justify-center rounded-2xl transition-all duration-200 ${
               activeTab === 'settings'
                 ? 'bg-[#0d5d3a] text-white shadow-md border-r-2 border-[#d97706]'
                 : 'text-[#0d5d3a] hover:bg-[#e6f4ea]'
             }`}
             title="Admin Settings"
           >
-            <Settings className="w-5 h-5" />
+            <Settings className="w-6 h-6 stroke-[2.2]" />
           </button>
         </aside>
       </div>

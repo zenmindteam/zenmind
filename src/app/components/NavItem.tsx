@@ -5,14 +5,14 @@ export default function NavItem({ icon: Icon, label, active, onClick, expanded }
     return (
       <button
         onClick={onClick}
-        className={`w-10 h-10 my-0.5 mx-auto flex items-center justify-center rounded-full transition-all duration-200 ${
+        className={`w-11 h-11 my-1 mx-auto flex items-center justify-center rounded-full transition-all duration-200 shrink-0 ${
           active
             ? 'bg-[#0d5d3a] text-white shadow-md ring-2 ring-[#d97706]'
             : 'text-[#0d5d3a] hover:bg-[#e6f4ea]'
         }`}
         title={label}
       >
-        <Icon size={18} className="shrink-0" />
+        <Icon size={22} className="shrink-0" />
       </button>
     );
   }
@@ -27,7 +27,7 @@ export default function NavItem({ icon: Icon, label, active, onClick, expanded }
       }`}
       title={label}
     >
-      <Icon size={16} className="shrink-0" />
+      <Icon size={20} className="shrink-0" />
       <span className="whitespace-nowrap overflow-hidden text-ellipsis">{label}</span>
     </button>
   );
