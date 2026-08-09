@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { motion, AnimatePresence } from 'motion/react';
 
-import { Settings, LogOut, Shield, CheckCircle, ChevronLeft, ChevronRight, Users, Search, Trash2, Clock, Activity, UserX, UserCheck, Menu, X, AlertTriangle, FileText, Plus, Edit2, Save, Stethoscope, LifeBuoy, Eye, Video, Music, Image as ImageIcon, Link2, Upload as UploadIcon, BookOpen, MessageSquare, Brain, ToggleLeft, ToggleRight, UserCircle, Briefcase, ShieldAlert, TrendingUp, TrendingDown, Minus, Bell, Send, RefreshCw, ShoppingBag, HelpCircle } from 'lucide-react';
+import { Settings, LogOut, Shield, CheckCircle, ChevronLeft, ChevronRight, Users, Search, Trash2, Clock, Activity, UserX, UserCheck, Menu, X, AlertTriangle, FileText, Plus, Edit2, Save, Stethoscope, LifeBuoy, Eye, Video, Music, Image as ImageIcon, Link2, Upload as UploadIcon, BookOpen, MessageSquare, Brain, ToggleLeft, ToggleRight, UserCircle, Briefcase, ShieldAlert, TrendingUp, TrendingDown, Minus, Bell, Send, RefreshCw, ShoppingBag, HelpCircle, Grid, SlidersHorizontal } from 'lucide-react';
 
 import { apiFetch } from '../api/client';
 
@@ -71,17 +71,32 @@ useEffect(() => {
   };
 
   const SidebarContent = ({ mobile }: { mobile?: boolean }) => {
+    const wide = mobile || sidebarExpanded;
     return (
       <>
-        <div className={`flex items-center ${(mobile || sidebarExpanded) ? 'gap-3 px-5' : 'justify-center px-0'} h-16 border-b border-[#0d5d3a]/15 shrink-0 bg-[#f4faf7]`}>
-          <img src={logo} alt="ZenMind" className="w-8 h-8 rounded-full object-cover shrink-0" />
-          {(mobile || sidebarExpanded) && (
-            <span className="font-bold text-lg tracking-wide overflow-hidden whitespace-nowrap text-[#0d5d3a]" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
-              Admin Panel
-            </span>
-          )}
+        {/* Floating Google "+ Action" Button */}
+        <div className="p-3 mb-1">
+          <button
+            type="button"
+            onClick={() => { setActiveTab('content'); if (mobile) setMobileOpen(false); }}
+            className={`flex items-center gap-3 bg-white text-[#0d5d3a] hover:bg-[#fef8ec] shadow-md hover:shadow-lg border-2 border-[#d97706]/40 rounded-2xl transition-all duration-200 ${
+              wide ? 'px-5 py-3.5 w-full' : 'w-12 h-12 justify-center p-0 mx-auto'
+            }`}
+            title="Create Content / Entry"
+          >
+            <div className="w-6 h-6 rounded-full bg-[#d97706] text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+              <Plus className="w-4 h-4 stroke-[3]" />
+            </div>
+            {wide && (
+              <span className="font-bold text-sm tracking-wide text-[#0d5d3a]">
+                Quick Action
+              </span>
+            )}
+          </button>
         </div>
-        <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 flex flex-col gap-1.5 custom-scrollbar bg-[#f4faf7]">
+
+        {/* Navigation Items */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-1 flex flex-col gap-1.5 custom-scrollbar bg-[#f4faf7]">
           <AdminSidebarNav
             tab={activeTab}
             navigateToTab={navTo}
@@ -89,10 +104,26 @@ useEffect(() => {
             setCollapsed={(c) => setSidebarExpanded(!c)}
           />
         </div>
+
+        {/* System Status Widget */}
+        {wide && (
+          <div className="mx-3 my-2 p-3 bg-gradient-to-br from-[#fef3c7] to-[#ffffff] rounded-2xl border-2 border-[#d97706]/30 flex flex-col gap-1.5 shadow-xs">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-extrabold text-[#78350f]">Admin System</span>
+              <span className="text-[10px] font-bold text-[#0d5d3a] bg-[#e6f4ea] px-2 py-0.5 rounded-full border border-[#0d5d3a]/20">
+                Operational
+              </span>
+            </div>
+            <span className="text-[11px] font-medium text-[#92400e]">
+              Super Admin Session
+            </span>
+          </div>
+        )}
+
         <div className="p-3 border-t border-[#0d5d3a]/15 shrink-0 bg-[#f4faf7]">
-          <button onClick={() => setShowLogoutConfirm(true)} className={`w-full flex items-center ${(mobile || sidebarExpanded) ? 'gap-3 px-4' : 'justify-center px-0'} py-2.5 rounded-full text-red-600 hover:bg-red-50 font-bold text-xs transition-colors`}>
+          <button onClick={() => setShowLogoutConfirm(true)} className={`w-full flex items-center ${wide ? 'gap-3 px-4' : 'justify-center px-0'} py-2.5 rounded-full text-red-600 hover:bg-red-50 font-bold text-xs transition-colors`}>
             <LogOut size={16} className="shrink-0" />
-            {(mobile || sidebarExpanded) && <span>Sign Out</span>}
+            {wide && <span>Sign Out</span>}
           </button>
         </div>
       </>
@@ -100,72 +131,146 @@ useEffect(() => {
   };
 
   return (
-    <div className="flex h-screen w-full bg-[#f4faf7] overflow-hidden text-[#0a2617]">
+    <div className="h-screen w-screen overflow-hidden flex flex-col bg-[#f4faf7] text-[#0a2617] font-sans">
 
-      {/* Mobile overlay */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 z-30 md:hidden" onClick={() => setMobileOpen(false)} />
-        )}
-      </AnimatePresence>
+      {/* ── GOOGLE WORKSPACE TOP HEADER BAR ── */}
+      <header className="h-16 flex-shrink-0 flex items-center justify-between px-4 bg-[#f4faf7] border-b border-[#0d5d3a]/15 z-20">
+        
+        {/* Left: Hamburger + Logo */}
+        <div className="flex items-center gap-3 min-w-[220px]">
+          <button
+            type="button"
+            onClick={() => setSidebarExpanded(s => !s)}
+            className="p-2.5 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a] transition-colors"
+            title="Toggle Menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
 
-      {/* Mobile drawer */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.aside initial={{ x: -280 }} animate={{ x: 0 }} exit={{ x: -280 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed left-0 top-0 h-full w-[260px] bg-white border-r border-[#0d5d3a]/15 flex flex-col z-40 md:hidden overflow-y-auto">
-            <button onClick={() => setMobileOpen(false)} className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-gray-100 text-[#0d5d3a]">
-              <X size={18} />
-            </button>
-            <SidebarContent mobile />
-          </motion.aside>
-        )}
-      </AnimatePresence>
-
-      {/* Desktop sidebar */}
-      <div className="hidden md:block flex-shrink-0 relative z-20" style={{ width: sidebarExpanded ? 260 : 72, transition: 'width 0.3s cubic-bezier(0.4,0,0.2,1)' }}>
-        <button onClick={() => setSidebarExpanded(s => !s)}
-          className="absolute -right-3.5 top-5 z-30 w-7 h-7 bg-white border border-[#0d5d3a]/20 text-[#0d5d3a] rounded-full shadow-md flex items-center justify-center hover:bg-[#e6f4ea] transition-colors">
-          {sidebarExpanded ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
-        </button>
-        <div className="bg-[#f4faf7] border-r border-[#0d5d3a]/15 h-full flex flex-col overflow-hidden">
-          <SidebarContent />
+          <div className="flex items-center gap-2 cursor-pointer select-none" onClick={() => setActiveTab('analytics')}>
+            <img src={logo} alt="ZenMind" className="w-8 h-8 object-contain" />
+            <span className="font-bold text-xl tracking-tight text-[#0d5d3a]" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
+              ZenMind
+            </span>
+            <span className="hidden sm:inline-block text-xs font-extrabold text-[#78350f] bg-[#fef3c7] border border-[#fde68a] px-2.5 py-0.5 rounded-full">
+              Admin Panel
+            </span>
+          </div>
         </div>
-      </div>
 
-      {/* Main Workspace Grid */}
-      <div className="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
+        {/* Center: Google Search Pill */}
+        <div className="flex-1 max-w-2xl px-4 hidden md:block">
+          <div className="relative flex items-center w-full bg-white hover:bg-[#fef8ec] focus-within:bg-white border-2 border-[#0d5d3a]/15 focus-within:border-[#d97706] focus-within:ring-2 focus-within:ring-[#d97706]/20 rounded-full px-4 py-2 shadow-xs transition-all duration-200">
+            <Search className="w-4 h-4 text-[#0d5d3a] mr-3 flex-shrink-0" />
+            <input
+              type="text"
+              placeholder="Search members, therapists, content, FAQs, support tickets, or settings..."
+              className="w-full bg-transparent text-sm text-[#0a2617] placeholder:text-[#0d5d3a]/50 font-medium focus:outline-none"
+            />
+            <button type="button" className="p-1 rounded-full hover:bg-[#fef3c7] text-[#d97706]">
+              <SlidersHorizontal className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
 
-        {/* Google Top Header Bar */}
-        <header className="h-16 shrink-0 bg-[#f4faf7] border-b border-[#0d5d3a]/15 flex items-center justify-between px-4 sm:px-6 z-10">
-          <div className="flex items-center gap-3">
-            <button onClick={() => setMobileOpen(true)} className="md:hidden p-2 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a]">
+        {/* Right: Quick Action Controls */}
+        <div className="flex items-center gap-1.5 sm:gap-3">
+          <button
+            type="button"
+            onClick={() => setActiveTab('analytics')}
+            className="p-2.5 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a] transition-colors hidden sm:flex items-center justify-center"
+            title="App Launcher"
+          >
+            <Grid className="w-5 h-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('support')}
+            className="p-2.5 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a] transition-colors hidden sm:flex items-center justify-center"
+            title="Support Desk"
+          >
+            <HelpCircle className="w-5 h-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('settings')}
+            className="p-2.5 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a] transition-colors hidden sm:flex items-center justify-center"
+            title="Settings"
+          >
+            <Settings className="w-5 h-5" />
+          </button>
+
+          {/* Super Admin Avatar Circle */}
+          <div className="relative ml-1 flex items-center gap-2 bg-[#fef3c7] border border-[#fde68a] px-3 py-1 rounded-full shadow-2xs">
+            <div className="w-7 h-7 rounded-full bg-[#0d5d3a] text-white flex items-center justify-center font-bold text-xs ring-2 ring-[#d97706]">
+              <Shield size={14} />
+            </div>
+            <div className="hidden sm:block text-xs">
+              <span className="font-bold text-[#78350f] block leading-tight">{adminUsername}</span>
+              <span className="text-[10px] text-[#92400e] block font-semibold leading-tight">Super Admin</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* ── WORKSPACE BODY GRID ── */}
+      <div className="flex-1 flex overflow-hidden relative">
+
+        {/* Mobile overlay */}
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/40 z-30 md:hidden" onClick={() => setMobileOpen(false)} />
+          )}
+        </AnimatePresence>
+
+        {/* Mobile drawer */}
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.aside initial={{ x: -280 }} animate={{ x: 0 }} exit={{ x: -280 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              className="fixed left-0 top-0 h-full w-[260px] bg-white border-r border-[#0d5d3a]/15 flex flex-col z-40 md:hidden overflow-y-auto">
+              <button onClick={() => setMobileOpen(false)} className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-gray-100 text-[#0d5d3a]">
+                <X size={18} />
+              </button>
+              <SidebarContent mobile />
+            </motion.aside>
+          )}
+        </AnimatePresence>
+
+        {/* Desktop Left Google Sidebar */}
+        <aside className="hidden md:flex flex-col flex-shrink-0 bg-[#f4faf7] p-3 transition-all duration-300 overflow-y-auto border-r border-[#0d5d3a]/10"
+          style={{ width: sidebarExpanded ? 260 : 72 }}>
+          <SidebarContent />
+        </aside>
+
+        {/* ── GOOGLE MAIN CANVAS CONTAINER (ROUNDED CARD CANVAS) ── */}
+        <main className="flex-1 flex flex-col min-w-0 bg-white rounded-3xl border-2 border-[#0d5d3a]/15 shadow-sm overflow-hidden m-2 sm:m-3 transition-all duration-200">
+          
+          {/* Canvas Header */}
+          <div className="px-5 py-3.5 border-b border-[#0d5d3a]/10 flex items-center justify-between flex-shrink-0 bg-white">
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="text-xl leading-none">🛡️</span>
+              <div className="min-w-0">
+                <h1 className="text-lg font-extrabold text-[#0d5d3a] truncate tracking-tight">
+                  {activeTab === 'analytics' ? 'Platform Analytics' : activeTab === 'users' ? 'Members Directory' : activeTab === 'therapists' ? 'Therapists Directory' : activeTab === 'content' ? 'Content Management' : activeTab === 'faqs' ? 'FAQs Management' : activeTab === 'circles' ? 'Peer Circles' : activeTab === 'flagged' ? 'Flagged Content' : activeTab === 'reading' ? 'Reading Lists' : activeTab === 'programs' ? 'Wellness Programs' : activeTab === 'store' ? 'Wellness Store' : activeTab === 'quiz' ? 'Quiz Questions' : activeTab === 'support' ? 'Support Tickets' : activeTab === 'team' ? 'Team Members' : activeTab === 'jobs' ? 'Job Postings' : activeTab === 'applications' ? 'Job Applications' : activeTab === 'therapist_inbox' ? 'Therapist Inbox' : activeTab === 'crisis' ? 'Crisis Monitor' : activeTab === 'notifications' ? 'Notification Center' : activeTab === 'session_insights' ? 'Session Insights' : 'Admin Settings'}
+                </h1>
+                <p className="text-xs font-semibold text-[#d97706] truncate hidden sm:block">
+                  ZenMind Administration System
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setMobileOpen(true)}
+              className="md:hidden p-2 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a]"
+            >
               <Menu size={18} />
             </button>
-            <div>
-              <h1 className="font-extrabold text-base sm:text-lg text-[#0d5d3a] leading-tight">
-                {activeTab === 'analytics' ? 'Platform Analytics' : activeTab === 'users' ? 'Members Directory' : activeTab === 'therapists' ? 'Therapists Directory' : activeTab === 'content' ? 'Content Management' : activeTab === 'faqs' ? 'FAQs Management' : activeTab === 'circles' ? 'Peer Circles' : activeTab === 'flagged' ? 'Flagged Content' : activeTab === 'reading' ? 'Reading Lists' : activeTab === 'programs' ? 'Wellness Programs' : activeTab === 'store' ? 'Wellness Store' : activeTab === 'quiz' ? 'Quiz Questions' : activeTab === 'support' ? 'Support Tickets' : activeTab === 'team' ? 'Team Members' : activeTab === 'jobs' ? 'Job Postings' : activeTab === 'applications' ? 'Job Applications' : activeTab === 'therapist_inbox' ? 'Therapist Inbox' : activeTab === 'crisis' ? 'Crisis Monitor' : activeTab === 'notifications' ? 'Notification Center' : activeTab === 'session_insights' ? 'Session Insights' : 'Admin Settings'}
-              </h1>
-              <p className="text-xs font-semibold text-[#d97706]">ZenMind Administration System</p>
-            </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 bg-[#fef3c7] border border-[#fde68a] px-3 py-1 rounded-full shadow-2xs">
-              <div className="w-6 h-6 rounded-full bg-[#0d5d3a] flex items-center justify-center text-white font-bold text-xs ring-2 ring-[#d97706]">
-                <Shield size={12} />
-              </div>
-              <div className="hidden sm:block text-xs">
-                <span className="font-bold text-[#78350f]">{adminUsername}</span>
-                <span className="text-[10px] text-[#92400e] block font-semibold">Super Admin</span>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Main Canvas Card Container */}
-        <main className="flex-1 bg-white rounded-3xl border-2 border-[#0d5d3a]/15 shadow-sm overflow-hidden m-2 sm:m-3 flex flex-col min-h-0">
           <div className="flex-1 overflow-y-auto p-4 sm:p-6">
             <div className="mx-auto w-full max-w-7xl">
               {activeTab === 'analytics' && <AdminAnalytics />}
@@ -191,6 +296,74 @@ useEffect(() => {
             </div>
           </div>
         </main>
+
+        {/* ── GOOGLE WORKSPACE RIGHT COMPANION TOOLBAR ── */}
+        <aside className="hidden lg:flex flex-col items-center gap-4 py-4 w-14 flex-shrink-0 bg-[#f4faf7] border-l border-[#0d5d3a]/15">
+          <button
+            type="button"
+            onClick={() => setActiveTab('analytics')}
+            className={`p-3 rounded-2xl transition-all duration-200 ${
+              activeTab === 'analytics'
+                ? 'bg-[#0d5d3a] text-white shadow-md border-r-2 border-[#d97706]'
+                : 'text-[#0d5d3a] hover:bg-[#e6f4ea]'
+            }`}
+            title="Analytics"
+          >
+            <Activity className="w-5 h-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('users')}
+            className={`p-3 rounded-2xl transition-all duration-200 ${
+              activeTab === 'users'
+                ? 'bg-[#d97706] text-white shadow-md'
+                : 'text-[#d97706] hover:bg-[#fef3c7]'
+            }`}
+            title="Members Directory"
+          >
+            <Users className="w-5 h-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('therapists')}
+            className={`p-3 rounded-2xl transition-all duration-200 ${
+              activeTab === 'therapists'
+                ? 'bg-[#0d5d3a] text-white shadow-md border-r-2 border-[#d97706]'
+                : 'text-[#0d5d3a] hover:bg-[#e6f4ea]'
+            }`}
+            title="Therapists Directory"
+          >
+            <Shield className="w-5 h-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('content')}
+            className={`p-3 rounded-2xl transition-all duration-200 ${
+              activeTab === 'content'
+                ? 'bg-[#d97706] text-white shadow-md'
+                : 'text-[#d97706] hover:bg-[#fef3c7]'
+            }`}
+            title="Content Management"
+          >
+            <FileText className="w-5 h-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('settings')}
+            className={`p-3 rounded-2xl transition-all duration-200 ${
+              activeTab === 'settings'
+                ? 'bg-[#0d5d3a] text-white shadow-md border-r-2 border-[#d97706]'
+                : 'text-[#0d5d3a] hover:bg-[#e6f4ea]'
+            }`}
+            title="Admin Settings"
+          >
+            <Settings className="w-5 h-5" />
+          </button>
+        </aside>
       </div>
 
       {/* Logout Confirmation Modal */}
