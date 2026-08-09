@@ -104,7 +104,7 @@ export default function App() {
         setActiveFooterPage(null);
         setActiveResourcesPage(null);
         setActiveCompanyPage('Careers');
-      } else if (route === 'features' || route === 'pricing' || route === 'faq' || route === 'therapy' || route === 'ai-chatbot') {
+      } else if (route === 'features' || route === 'faq' || route === 'therapy' || route === 'ai-chatbot') {
         const pageName = route === 'ai-chatbot' ? 'AI Chatbot' : route.charAt(0).toUpperCase() + route.slice(1);
         setActiveCompanyPage(null);
         setActiveResourcesPage(null);

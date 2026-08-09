@@ -61,7 +61,7 @@ export const Footer: React.FC<FooterProps> = ({
             <div>
               <p className="font-sans text-xs sm:text-sm text-[#ffebc4] mb-4 font-semibold uppercase tracking-wider">Product</p>
               <div className="flex flex-col gap-2.5">
-                {['Features', 'AI Chatbot', 'Therapy', 'Pricing', 'FAQ'].map((link) => (
+                {['Features', 'AI Chatbot', 'Therapy', 'FAQ'].map((link) => (
                   <button
                     key={link}
                     onClick={() => {

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Quote, Star, Sparkles, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { apiFetch } from '../../api/client';
 import { CoverflowCarousel, CoverflowSlide } from '../CoverflowCarousel';
+import { DotPattern } from '../ui/dot-pattern';
 
 const STORY_SLIDES: CoverflowSlide[] = [
   {
@@ -147,6 +148,9 @@ export const CommunityStoriesSection: React.FC = () => {
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="p-8 sm:p-14 lg:p-16 rounded-[2.5rem] bg-[#0a2617] border border-white/20 shadow-2xl relative overflow-hidden grid lg:grid-cols-12 gap-10 items-center"
           >
+            {/* Background Dot Pattern */}
+            <DotPattern className="[mask-image:radial-gradient(600px_circle_at_center,white,transparent)] opacity-30" />
+
             {/* Left Narrative Quote */}
             <div className="lg:col-span-8 space-y-6">
               <div className="flex items-center gap-3">

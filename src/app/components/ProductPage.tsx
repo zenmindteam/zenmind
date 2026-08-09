@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   Sparkles, BrainCircuit, ShieldCheck, MessageSquare, HeartHandshake, Lock, 
   UserCheck, ArrowRight, ChevronDown, Activity, Users, ShoppingBag, 
-  Calendar, CheckCircle, RefreshCw, Layers, Shield, Zap, Search, Send, Clock, IndianRupee, HelpCircle, FileCode, AlertTriangle
+  Calendar, CheckCircle, RefreshCw, Layers, Shield, Zap, Search, Send, Clock, HelpCircle, FileCode, AlertTriangle, Plus, Minus
 } from 'lucide-react';
 import FeaturesPage from './FeaturesPage';
 import { Navbar as LandingNavbar } from './landing/Navbar';
@@ -64,7 +64,7 @@ function AIChatbotPage({
   };
 
   return (
-    <div ref={containerRef} className="fixed inset-0 z-[200] bg-[#0a2617] text-[#fffdf5] overflow-y-auto font-sans-main scrollbar-none [&::-webkit-scrollbar]:hidden">
+    <div ref={containerRef} data-lenis-prevent className="fixed inset-0 z-[200] bg-[#0a2617] text-[#fffdf5] overflow-y-auto font-sans-main scrollbar-none [&::-webkit-scrollbar]:hidden">
       <LandingNavbar
         scrollContainerRef={containerRef}
         delayReappearMs={1500}
@@ -211,7 +211,7 @@ function TherapyPage({
   const filterOptions = ['All', 'Adolescent CBT', 'Anxiety & Stress', 'Depression Care', 'Academic Pressure'];
 
   return (
-    <div ref={containerRef} className="fixed inset-0 z-[200] bg-[#0a2617] text-[#fffdf5] overflow-y-auto font-sans-main scrollbar-none [&::-webkit-scrollbar]:hidden">
+    <div ref={containerRef} data-lenis-prevent className="fixed inset-0 z-[200] bg-[#0a2617] text-[#fffdf5] overflow-y-auto font-sans-main scrollbar-none [&::-webkit-scrollbar]:hidden">
       <LandingNavbar
         scrollContainerRef={containerRef}
         delayReappearMs={1500}
@@ -336,161 +336,60 @@ function TherapyPage({
 }
 
 /* ═══════════════════════════════════════════════════════
-   3. SYNUS-INSPIRED PRICING OVERLAY PAGE
+   3. FULL-SCREEN FAQ OVERLAY PAGE — ACCORDION PATTERN
    ═══════════════════════════════════════════════════════ */
-function PricingPage({
-  onGetStarted,
-  onAdminLoginTrigger,
-  onTherapistLoginTrigger,
-  onCompanyLinkClick,
-  onResourcesLinkClick,
-  onProductLinkClick,
-}: Omit<ProductPageProps, 'onClose' | 'page'>) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
 
-  return (
-    <div ref={containerRef} className="fixed inset-0 z-[200] bg-[#0a2617] text-[#fffdf5] overflow-y-auto font-sans-main scrollbar-none [&::-webkit-scrollbar]:hidden">
-      <LandingNavbar
-        scrollContainerRef={containerRef}
-        delayReappearMs={1500}
-        onGetStarted={onGetStarted}
-        onAdminLoginTrigger={onAdminLoginTrigger}
-        onTherapistLoginTrigger={onTherapistLoginTrigger}
-        onCompanyLinkClick={onCompanyLinkClick}
-        onResourcesLinkClick={onResourcesLinkClick}
-        onProductLinkClick={onProductLinkClick}
-      />
+const faqItems = [
+  {
+    id: "01",
+    title: "What is ZenMind?",
+    content: "ZenMind is a comprehensive mental wellness platform that combines AI-powered conversation therapy with verified human therapists. Built for college students, professionals, and anyone seeking accessible mental health support, ZenMind provides 24/7 AI companionship, mood tracking, peer circles, and on-demand human therapy sessions — all in one secure space.",
+    services: "AI Chat Therapy, Human Therapy Sessions, Mood Tracking, Peer Circles, Wellness Programs, Crisis Support, Resource Hub",
+  },
+  {
+    id: "02",
+    title: "Is my conversation with Zeni private?",
+    content: "Yes, 100%. All chat logs are anonymized and end-to-end encrypted. We never sell or share your personal emotional data. ZenMind is HIPAA-aligned and follows strict data protection protocols. Your therapy sessions, mood entries, and personal insights are stored securely and accessible only to you and your chosen therapist.",
+    services: "End-to-End Encryption, Data Anonymization, HIPAA Alignment, Secure Storage, Privacy Controls, Data Deletion Rights",
+  },
+  {
+    id: "03",
+    title: "How does Zeni handle crisis situations?",
+    content: "ZenMind runs an independent background safety pipeline that detects risk signals in real-time. When critical emotional distress is identified, the system immediately connects you with crisis helpline numbers (iCall: 9152987821, Vandrevala Foundation: 1860-2662-345) and licensed human therapists. Our AI never replaces professional help — it bridges the gap until expert care is available.",
+    services: "Crisis Detection Pipeline, Emergency Helpline Integration, Real-Time Risk Assessment, Therapist Escalation, Safety Protocols, 24/7 Monitoring",
+  },
+  {
+    id: "04",
+    title: "What languages can I speak with Zeni in?",
+    content: "Zeni fluently understands and responds in English, Hindi, Hinglish, and Kannada. Our AI is trained to pick up colloquial expressions, regional nuances, and code-switching patterns that are natural in Indian conversations. We're continuously expanding language support to make mental health care accessible to everyone.",
+    services: "Multilingual AI, English Support, Hindi Support, Hinglish Support, Kannada Support, Regional Language Expansion",
+  },
+  {
+    id: "05",
+    title: "How do I book a session with a human therapist?",
+    content: "Navigate to the Therapy Desk from your dashboard, browse verified practitioners filtered by specialization (anxiety, depression, relationships, career stress, etc.), select your preferred time slot, and confirm your booking — online or offline. You'll receive session prep cards before each appointment and post-session insights after.",
+    services: "Therapist Directory, Specialization Filters, Online/Offline Booking, Session Prep Cards, Post-Session Insights, Therapist Matching",
+  },
+  {
+    id: "06",
+    title: "Is ZenMind free to use?",
+    content: "ZenMind offers a generous free tier with 40 AI chat credits per month, basic mood logging, and peer circle access. For unlimited AI conversations, advanced analytics, and therapy session discounts, we offer affordable premium plans designed specifically for students. Our mission is to make mental health support accessible — cost should never be a barrier.",
+    services: "Free Tier, Student Pricing, AI Chat Credits, Mood Analytics, Premium Features, Therapy Discounts",
+  },
+  {
+    id: "07",
+    title: "Who built ZenMind?",
+    content: "ZenMind was built by a passionate team of students and mental health advocates headquartered at KLE Centre for Engineering and Technology (KLECET), Chikodi, Karnataka, India. We believe that technology can bridge the gap in mental healthcare accessibility, especially for young people in India who face unique pressures but lack affordable support options.",
+    services: "Student-Built Platform, KLECET Chikodi, Mental Health Advocacy, Indian Youth Focus, Affordable Care Mission, Community-Driven Development",
+  },
+  {
+    id: "08",
+    title: "How can I reach the ZenMind team?",
+    content: "We'd love to hear from you! Reach us via email at support@zenmind.in, call our toll-free helpline at 1800-599-0019 (available 24/7), or use the Contact Us form on our website. Whether it's feedback, partnership inquiries, technical issues, or just a friendly hello — we're always here to listen.",
+    services: "Email Support, Toll-Free Helpline, Contact Form, Partnership Inquiries, Technical Support, Feedback Channel",
+  },
+];
 
-      {/* Hero */}
-      <section className="relative pt-32 sm:pt-40 md:pt-48 pb-20 sm:pb-28 bg-[#0a2617] border-b border-white/10 text-center">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-[#ffebc4] text-xs font-sans tracking-[0.2em] uppercase font-bold mb-6">
-            <IndianRupee className="w-3.5 h-3.5" />
-            <span>TRANSPARENT PLANS</span>
-          </div>
-
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl text-white font-normal leading-[0.98] mb-6 max-w-4xl mx-auto">
-            Accessible Care. <span className="text-[#ffebc4] italic">Zero Hidden Fees.</span>
-          </h1>
-
-          <p className="text-lg sm:text-xl text-white/80 font-normal max-w-2xl mx-auto mb-10 leading-relaxed">
-            Free forever for basic AI conversations, or upgrade for unlimited credits and human therapy discounts.
-          </p>
-
-          {/* Billing Cycle Selector */}
-          <div className="inline-flex items-center p-1.5 rounded-full bg-white/10 border border-white/15">
-            <button
-              onClick={() => setBillingCycle('monthly')}
-              className={`px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                billingCycle === 'monthly' ? 'bg-[#ffebc4] text-[#0a2617]' : 'text-white/70 hover:text-white'
-              }`}
-            >
-              Monthly Billing
-            </button>
-            <button
-              onClick={() => setBillingCycle('annual')}
-              className={`px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 ${
-                billingCycle === 'annual' ? 'bg-[#ffebc4] text-[#0a2617]' : 'text-white/70 hover:text-white'
-              }`}
-            >
-              <span>Annual Billing</span>
-              <span className="px-2 py-0.5 rounded-full bg-[#10b981] text-[#0a2617] text-[10px] font-black">20% OFF</span>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Cards Grid */}
-      <section className="py-24 bg-[#071d13] border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-            
-            {/* Free Plan */}
-            <div className="p-8 rounded-[2.5rem] bg-[#0a2617] border border-white/15 shadow-xl flex flex-col justify-between">
-              <div>
-                <span className="text-xs font-sans text-white/50 tracking-widest uppercase font-bold block mb-2">STARTER</span>
-                <h3 className="text-3xl text-white font-normal mb-2">ZenFree</h3>
-                <div className="text-4xl font-bold text-[#10b981] mb-6">₹0 <span className="text-sm font-normal text-white/50">/ forever</span></div>
-
-                <div className="space-y-3 text-xs sm:text-sm text-white/80 mb-8">
-                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#10b981]" /><span>40 AI Chat Credits / month</span></div>
-                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#10b981]" /><span>Basic Mood Logging</span></div>
-                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#10b981]" /><span>Peer Circles (View Only)</span></div>
-                </div>
-              </div>
-
-              <button onClick={onGetStarted} className="w-full py-4 rounded-full bg-white/10 text-white font-bold text-xs uppercase tracking-wider hover:bg-white hover:text-[#0a2617] transition-all cursor-pointer">
-                GET STARTED FREE
-              </button>
-            </div>
-
-            {/* Pro Plan (HERO CARD) */}
-            <div className="p-8 rounded-[2.5rem] bg-gradient-to-br from-[#0d5d3a] to-[#071d13] border-2 border-[#ffebc4] shadow-2xl flex flex-col justify-between relative">
-              <span className="absolute -top-4 right-8 px-4 py-1 rounded-full bg-[#ffebc4] text-[#0a2617] text-[10px] font-black uppercase tracking-wider">
-                MOST POPULAR
-              </span>
-
-              <div>
-                <span className="text-xs font-sans text-[#ffebc4] tracking-widest uppercase font-bold block mb-2">RECOMMENDED</span>
-                <h3 className="text-3xl text-white font-normal mb-2">ZenPro</h3>
-                <div className="text-4xl font-bold text-[#ffebc4] mb-6">
-                  {billingCycle === 'monthly' ? '₹299' : '₹2,799'} <span className="text-sm font-normal text-white/70">/ {billingCycle === 'monthly' ? 'mo' : 'yr'}</span>
-                </div>
-
-                <div className="space-y-3 text-xs sm:text-sm text-white mb-8">
-                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#ffebc4]" /><span>250 AI Chat Credits / month</span></div>
-                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#ffebc4]" /><span>Unlimited Peer Circles</span></div>
-                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#ffebc4]" /><span>Encrypted Sentiment Analytics</span></div>
-                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#ffebc4]" /><span>20% Wellness Store Discount</span></div>
-                </div>
-              </div>
-
-              <button onClick={onGetStarted} className="w-full py-4 rounded-full bg-[#ffebc4] text-[#0a2617] font-black text-xs uppercase tracking-wider hover:bg-white transition-all cursor-pointer shadow-lg">
-                START PRO TRIAL →
-              </button>
-            </div>
-
-            {/* Platinum Plan */}
-            <div className="p-8 rounded-[2.5rem] bg-[#0a2617] border border-white/15 shadow-xl flex flex-col justify-between">
-              <div>
-                <span className="text-xs font-sans text-white/50 tracking-widest uppercase font-bold block mb-2">COMPLETE CARE</span>
-                <h3 className="text-3xl text-white font-normal mb-2">ZenPlatinum</h3>
-                <div className="text-4xl font-bold text-white mb-6">
-                  {billingCycle === 'monthly' ? '₹999' : '₹8,999'} <span className="text-sm font-normal text-white/50">/ {billingCycle === 'monthly' ? 'mo' : 'yr'}</span>
-                </div>
-
-                <div className="space-y-3 text-xs sm:text-sm text-white/80 mb-8">
-                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#10b981]" /><span>2 Free Human Therapy Sessions / mo</span></div>
-                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#10b981]" /><span>Unlimited 24/7 AI Chat</span></div>
-                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#10b981]" /><span>Direct Therapist Messaging</span></div>
-                  <div className="flex items-center gap-3"><CheckCircle size={16} className="text-[#10b981]" /><span>30% Wellness Store Discount</span></div>
-                </div>
-              </div>
-
-              <button onClick={onGetStarted} className="w-full py-4 rounded-full bg-white/10 text-white font-bold text-xs uppercase tracking-wider hover:bg-white hover:text-[#0a2617] transition-all cursor-pointer">
-                CHOOSE PLATINUM
-              </button>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      <LandingFooter
-        onGetStarted={onGetStarted}
-        onTherapistLoginTrigger={onTherapistLoginTrigger}
-        onCompanyLinkClick={onCompanyLinkClick}
-        onResourcesLinkClick={onResourcesLinkClick}
-        onProductLinkClick={onProductLinkClick}
-      />
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════
-   4. SYNUS-INSPIRED FAQ OVERLAY PAGE
-   ═══════════════════════════════════════════════════════ */
 function FAQPage({
   onGetStarted,
   onAdminLoginTrigger,
@@ -500,30 +399,10 @@ function FAQPage({
   onProductLinkClick,
 }: Omit<ProductPageProps, 'onClose' | 'page'>) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [faqs, setFaqs] = useState<any[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [openIdx, setOpenIdx] = useState<number | null>(0);
-
-  useEffect(() => {
-    apiFetch<any>('/faqs')
-      .then(res => setFaqs(res.faqs || []))
-      .catch(() => {
-        setFaqs([
-          { question: "Is my conversation with Zeni private?", answer: "Yes, 100%. All chat logs are anonymized and end-to-end encrypted. We never sell or share your personal emotional data." },
-          { question: "How does Zeni handle crisis situations?", answer: "ZenMind runs an independent background safety pipeline that detects risk signals and immediately connects you with crisis help numbers and licensed human therapists." },
-          { question: "What languages can I speak with Zeni in?", answer: "Zeni fluently understands and responds in English, Hindi, Hinglish, and Kannada." },
-          { question: "How do I book a session with a human therapist?", answer: "Navigate to the Therapy Desk, choose a verified practitioner based on specialization, select your preferred time slot, and confirm online or offline booking." }
-        ]);
-      });
-  }, []);
-
-  const filteredFaqs = faqs.filter(f => 
-    (f.question || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (f.answer || '').toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [openId, setOpenId] = useState<string | null>("01");
 
   return (
-    <div ref={containerRef} className="fixed inset-0 z-[200] bg-[#0a2617] text-[#fffdf5] overflow-y-auto font-sans-main scrollbar-none [&::-webkit-scrollbar]:hidden">
+    <div ref={containerRef} data-lenis-prevent className="fixed inset-0 z-[200] bg-[#f8fdf9] text-[#0a2617] overflow-y-auto font-sans-main scrollbar-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       <LandingNavbar
         scrollContainerRef={containerRef}
         delayReappearMs={1500}
@@ -536,78 +415,140 @@ function FAQPage({
       />
 
       {/* Hero */}
-      <section className="relative pt-32 sm:pt-40 md:pt-48 pb-20 sm:pb-28 bg-[#0a2617] border-b border-white/10 text-center">
+      <section className="relative pt-32 sm:pt-40 md:pt-48 pb-16 sm:pb-20 bg-[#0a2617] text-center">
         <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-[#ffebc4] text-xs font-sans tracking-[0.2em] uppercase font-bold mb-6">
             <HelpCircle className="w-3.5 h-3.5" />
             <span>KNOWLEDGE BASE</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl text-white font-normal leading-[0.98] mb-6 max-w-4xl mx-auto">
-            Frequently Asked <span className="text-[#ffebc4] italic">Questions.</span>
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl text-white font-extrabold leading-[0.98] mb-6 max-w-4xl mx-auto" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
+            Frequently Asked <span className="text-[#ffebc4] italic font-normal">Questions.</span>
           </h1>
 
-          {/* Search Bar */}
-          <div className="max-w-xl mx-auto relative">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-white/50" size={18} />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              placeholder="Search questions about privacy, therapy, or AI..."
-              className="w-full bg-white/10 border border-white/15 rounded-full pl-12 pr-6 py-4 text-sm text-white focus:outline-none focus:border-[#10b981] placeholder-white/50"
-            />
-          </div>
+          <p className="text-lg sm:text-xl text-white/80 font-normal max-w-2xl mx-auto leading-relaxed">
+            Everything you need to know about ZenMind, our AI companion Zeni, therapy sessions, and privacy.
+          </p>
         </div>
       </section>
 
-      {/* FAQ Accordion List */}
-      <section className="py-24 bg-[#071d13] border-b border-white/10">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="space-y-4">
-            {filteredFaqs.map((faq, idx) => {
-              const isOpen = openIdx === idx;
+      {/* Full-width Accordion Section — Cream bg with rounded top */}
+      <section className="relative bg-[#f8fdf9] rounded-t-[2.5rem] lg:rounded-t-[3.5rem] -mt-8 z-10 pt-12 sm:pt-16 pb-24 sm:pb-32 border-t-2 border-[#0d5d3a]/10">
+        <div className="max-w-5xl mx-auto px-6 sm:px-10 lg:px-16">
 
+          {/* Accordion */}
+          <div className="w-full border-2 border-[#0d5d3a]/15 rounded-3xl overflow-hidden bg-white shadow-xl">
+            {faqItems.map((item) => {
+              const isOpen = openId === item.id;
               return (
-                <div key={idx} className="p-6 rounded-[2rem] bg-[#0a2617] border border-white/15 shadow-xl">
+                <div
+                  key={item.id}
+                  className={`border-b-2 border-[#0d5d3a]/10 last:border-b-0 transition-colors duration-300 ${isOpen ? 'bg-[#f4faf7]' : 'bg-white hover:bg-[#fafdf9]'}`}
+                >
+                  {/* Trigger */}
                   <button
-                    onClick={() => setOpenIdx(isOpen ? null : idx)}
-                    className="w-full flex items-center justify-between text-left gap-4 cursor-pointer"
+                    onClick={() => setOpenId(isOpen ? null : item.id)}
+                    className="w-full flex items-center gap-4 px-6 sm:px-8 py-6 sm:py-7 text-left cursor-pointer transition-all duration-300 hover:no-underline bg-transparent border-0"
                   >
-                    <span className="text-lg sm:text-xl text-white font-normal">{faq.question}</span>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-transform ${
-                      isOpen ? 'bg-[#ffebc4] text-[#0a2617] rotate-180' : 'bg-white/10 text-white'
+                    {/* Plus / Minus Icon */}
+                    <div className={`relative w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-500 ${
+                      isOpen
+                        ? 'bg-[#d97706] text-white shadow-lg shadow-[#d97706]/30'
+                        : 'bg-[#0d5d3a]/10 text-[#0d5d3a]'
                     }`}>
-                      <ChevronDown size={18} />
+                      <motion.div
+                        animate={{ rotate: isOpen ? 180 : 0, opacity: isOpen ? 0 : 1 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute"
+                      >
+                        <Plus className="w-5 h-5 sm:w-6 sm:h-6" />
+                      </motion.div>
+                      <motion.div
+                        animate={{ rotate: isOpen ? 0 : -180, opacity: isOpen ? 1 : 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute"
+                      >
+                        <Minus className="w-5 h-5 sm:w-6 sm:h-6" />
+                      </motion.div>
+                    </div>
+
+                    {/* Number + Title */}
+                    <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                      <span className="text-xs sm:text-sm font-bold text-[#d97706] tracking-wider font-sans">{item.id}</span>
+                      <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-[#0a2617] truncate">{item.title}</h3>
                     </div>
                   </button>
 
+                  {/* Content */}
                   <AnimatePresence>
                     {isOpen && (
-                      <motion.p
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="mt-4 pt-4 border-t border-white/10 text-sm text-white/80 leading-relaxed"
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                        className="overflow-hidden"
                       >
-                        {faq.answer}
-                      </motion.p>
+                        <div className="px-6 sm:px-8 pb-8 sm:pb-10 ml-12 sm:ml-14">
+                          <div className="grid gap-8 md:grid-cols-2">
+                            {/* Answer */}
+                            <div>
+                              <p className="text-sm sm:text-base text-[#0a2617]/80 leading-relaxed font-medium">
+                                {item.content}
+                              </p>
+                            </div>
+
+                            {/* Related Services */}
+                            <div className="space-y-3">
+                              <p className="text-[10px] sm:text-xs font-bold text-[#0d5d3a] tracking-[0.15em] uppercase">RELATED SERVICES</p>
+                              <p className="text-xs sm:text-sm text-[#0a2617]/60 leading-relaxed font-medium">
+                                {item.services}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* CTA Button */}
+                          <div className="mt-6 flex justify-end">
+                            <button
+                              onClick={() => onResourcesLinkClick?.('Contact Us')}
+                              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#0d5d3a] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#084229] transition-all cursor-pointer shadow-md"
+                            >
+                              <Send className="w-3.5 h-3.5 text-[#fde68a]" />
+                              <span>Reach out support@zenmind.in</span>
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
               );
             })}
           </div>
+
+          {/* Bottom CTA */}
+          <div className="mt-16 text-center">
+            <p className="text-sm text-[#0a2617]/60 font-medium mb-4">Still have questions?</p>
+            <button
+              onClick={() => onResourcesLinkClick?.('Contact Us')}
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#0d5d3a] text-white text-sm font-bold uppercase tracking-wider hover:bg-[#084229] transition-all cursor-pointer shadow-lg"
+            >
+              <Send className="w-4 h-4 text-[#fde68a]" />
+              <span>Contact ZenMind Support</span>
+            </button>
+          </div>
         </div>
       </section>
 
-      <LandingFooter
-        onGetStarted={onGetStarted}
-        onTherapistLoginTrigger={onTherapistLoginTrigger}
-        onCompanyLinkClick={onCompanyLinkClick}
-        onResourcesLinkClick={onResourcesLinkClick}
-        onProductLinkClick={onProductLinkClick}
-      />
+      <div className="bg-[#0a2617]">
+        <LandingFooter
+          onGetStarted={onGetStarted}
+          onTherapistLoginTrigger={onTherapistLoginTrigger}
+          onCompanyLinkClick={onCompanyLinkClick}
+          onResourcesLinkClick={onResourcesLinkClick}
+          onProductLinkClick={onProductLinkClick}
+        />
+      </div>
     </div>
   );
 }
@@ -665,19 +606,6 @@ export default function ProductPage({
     );
   }
 
-  if (page === 'Pricing') {
-    return (
-      <PricingPage
-        onGetStarted={onGetStarted}
-        onAdminLoginTrigger={onAdminLoginTrigger}
-        onTherapistLoginTrigger={onTherapistLoginTrigger}
-        onCompanyLinkClick={onCompanyLinkClick}
-        onResourcesLinkClick={onResourcesLinkClick}
-        onProductLinkClick={onProductLinkClick}
-      />
-    );
-  }
-
   if (page === 'FAQ') {
     return (
       <FAQPage
@@ -693,7 +621,7 @@ export default function ProductPage({
 
   // Fallback for contact / docs pages
   return (
-    <div className="fixed inset-0 z-[200] bg-[#0a2617] text-[#fffdf5] overflow-y-auto font-sans-main scrollbar-none [&::-webkit-scrollbar]:hidden">
+    <div data-lenis-prevent className="fixed inset-0 z-[200] bg-[#0a2617] text-[#fffdf5] overflow-y-auto font-sans-main scrollbar-none [&::-webkit-scrollbar]:hidden">
       <LandingNavbar
         delayReappearMs={1500}
         onGetStarted={onGetStarted}
