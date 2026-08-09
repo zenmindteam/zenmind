@@ -148,7 +148,13 @@ useEffect(() => {
         <div className="flex items-center gap-3 min-w-[220px]">
           <button
             type="button"
-            onClick={() => setSidebarExpanded(s => !s)}
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.innerWidth < 768) {
+                setMobileOpen(m => !m);
+              } else {
+                setSidebarExpanded(s => !s);
+              }
+            }}
             className="p-2.5 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a] transition-colors"
             title="Toggle Menu"
           >
@@ -269,14 +275,6 @@ useEffect(() => {
                 </p>
               </div>
             </div>
-
-            <button
-              type="button"
-              onClick={() => setMobileOpen(true)}
-              className="md:hidden p-2 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a]"
-            >
-              <Menu size={18} />
-            </button>
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 sm:p-6">
