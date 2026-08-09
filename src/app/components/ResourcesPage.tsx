@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Phone, Mail, ExternalLink, Shield, FileText, Users, HeartHandshake, BookOpen, AlertTriangle, CheckCircle, Send, Sparkles, X } from 'lucide-react';
+import ContactPage from './ContactPage';
 
 const CRISIS_LINES = [
   { name: 'iCall – Tata Institute', number: '9152987821', desc: 'Mon–Sat, 8am–10pm · Free counselling & therapy', tag: 'Counselling' },
@@ -28,6 +29,10 @@ const TAG_COLORS: Record<string, string> = {
 };
 
 export default function ResourcesPage({ page, onClose }: { page: string; onClose: () => void }) {
+  if (page === 'Contact Us' || page === 'Contact') {
+    return <ContactPage onClose={onClose} />;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
@@ -47,7 +52,6 @@ export default function ResourcesPage({ page, onClose }: { page: string; onClose
         {page === 'Terms of Service' && <TermsOfService />}
         {page === 'Crisis Support' && <CrisisSupport />}
         {page === 'Community' && <Community />}
-        {(page === 'Contact Us' || page === 'Contact') && <ContactUsPage />}
       </div>
     </motion.div>
   );

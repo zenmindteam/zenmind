@@ -238,14 +238,14 @@ export default function ContactPage({
         className="fixed z-10 pointer-events-none transition-all duration-[1200ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
         style={{
           transform: globeTransform,
-          opacity: activeSection >= 4 ? 0 : activeSection === 3 ? 0.25 : 0.85,
+          opacity: activeSection >= 4 ? 0 : activeSection === 3 ? 0.2 : 0.85,
           visibility: activeSection >= 4 ? 'hidden' : 'visible'
         }}
       >
         <Globe />
       </div>
 
-      {/* ── PAGE 1: HERO SECTION ── */}
+      {/* ── SECTION 0: HERO ── */}
       <section
         ref={el => (sectionRefs.current[0] = el)}
         className="relative min-h-screen flex flex-col justify-center pt-32 sm:pt-40 md:pt-44 pb-20 bg-[#0a2617] overflow-hidden border-b border-white/10 z-20"
@@ -253,7 +253,6 @@ export default function ContactPage({
         <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
-            {/* Left Headline */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -292,7 +291,7 @@ export default function ContactPage({
         </div>
       </section>
 
-      {/* ── PAGE 2: GLOBAL PRESENCE ── */}
+      {/* ── SECTION 1: GLOBAL PRESENCE ── */}
       <section
         ref={el => (sectionRefs.current[1] = el)}
         className="relative min-h-screen flex flex-col justify-center py-24 sm:py-32 bg-[#0a2617] border-b border-white/10 z-20"
@@ -339,7 +338,7 @@ export default function ContactPage({
         </div>
       </section>
 
-      {/* ── PAGE 3: HEADQUARTERS & INTERACTIVE MAP ── */}
+      {/* ── SECTION 2: HEADQUARTERS & INTERACTIVE MAP ── */}
       <section
         ref={el => (sectionRefs.current[2] = el)}
         className="relative min-h-screen flex flex-col justify-center py-24 sm:py-32 bg-[#0a2617] border-b border-white/10 z-20"
@@ -423,7 +422,6 @@ export default function ContactPage({
                 </a>
               </div>
 
-              {/* Embedded Google Maps Frame */}
               <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 shadow-lg relative bg-[#071a0e]">
                 <iframe
                   title="KLECET Chikodi Location Map"
@@ -443,18 +441,18 @@ export default function ContactPage({
         </div>
       </section>
 
-      {/* ── SECTION 4: EXACT LANDING PAGE CONTACT CARD UI (GetInTouchSection) ── */}
+      {/* ── SECTION 3: CONTACT FORM CARD SECTION (DEEP EMERALD CONTAINER) ── */}
       <section
         ref={el => (sectionRefs.current[3] = el)}
-        className="relative w-full bg-[#0a2617] py-16 sm:py-24 z-20"
+        className="relative w-full bg-[#0a2617] py-16 sm:py-24 z-20 border-b border-white/10"
       >
-        <div className="w-full bg-[#0a2617]">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full">
           <div
             id="contact-form-section"
-            className="relative w-full bg-[#f8fdf9] text-[#0a2617] rounded-[2.5rem] lg:rounded-[3.5rem] z-20 pt-10 pb-16 sm:pb-24 overflow-hidden border-2 border-[#0d5d3a]/15 shadow-2xl"
+            className="relative w-full bg-[#0d5d3a]/30 border-2 border-[#0d5d3a]/50 backdrop-blur-xl text-white rounded-[2.5rem] lg:rounded-[3.5rem] z-20 pt-10 pb-16 sm:pb-24 overflow-hidden shadow-2xl"
           >
             {/* Decorative Arrow Top Right */}
-            <div className="absolute top-6 right-6 sm:right-10 lg:right-12 text-[#0a2617]">
+            <div className="absolute top-6 right-6 sm:right-10 lg:right-12 text-[#d97706]">
               <ArrowDownLeft className="w-6 h-6 sm:w-8 sm:h-8 stroke-[1.5]" />
             </div>
 
@@ -462,14 +460,15 @@ export default function ContactPage({
               {/* Top Row: Heading + Subtitle */}
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10 sm:mb-14 md:mb-16">
                 <h2
-                  className="font-sans-main text-4xl sm:text-5xl md:text-6xl lg:text-[60px] xl:text-[70px] font-normal leading-[1.05] tracking-tight text-[#0a2617] -ml-1 mt-1 max-w-2xl text-left"
+                  className="font-sans-main text-4xl sm:text-5xl md:text-6xl lg:text-[60px] xl:text-[70px] font-normal leading-[1.05] tracking-tight text-white -ml-1 mt-1 max-w-2xl text-left"
                 >
-                  Let&apos;s Make Mental Health<br />Easier to Talk About.
+                  Let&apos;s Make Mental Health<br />
+                  <span className="text-[#d97706] font-bold">Easier to Talk About.</span>
                 </h2>
                 <p
-                  className="font-sans text-xs sm:text-sm md:text-base text-[#0a2617]/80 max-w-xs md:max-w-md text-left leading-relaxed"
+                  className="font-sans text-xs sm:text-sm md:text-base text-[#fffdf5]/80 max-w-xs md:max-w-md text-left leading-relaxed"
                 >
-                  Whether you&apos;re a college, mental-health professional, organization, or simply curious about Zeni — we&apos;d love to hear from you.
+                  Whether you&apos;re a college student, mental-health professional, organization, or simply curious about Zeni — we&apos;d love to hear from you.
                 </p>
               </div>
 
@@ -477,28 +476,24 @@ export default function ContactPage({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-start">
                 
                 {/* Left: Form Card */}
-                <div>
+                <div className="bg-white/5 border border-white/15 p-6 sm:p-8 rounded-3xl backdrop-blur-md">
                   {/* Star + Label */}
                   <div className="flex items-center gap-2 mb-6">
-                    <img
-                      src="/star-black.svg"
-                      alt=""
-                      className="w-3.5 h-3.5"
-                    />
-                    <p className="font-sans text-xs sm:text-sm tracking-[0.1em] uppercase font-medium text-[#0a2617]">
-                      Fill out the form
+                    <Sparkles className="w-4 h-4 text-[#d97706]" />
+                    <p className="font-sans text-xs sm:text-sm tracking-[0.1em] uppercase font-bold text-[#ffebc4]">
+                      Fill out the contact form
                     </p>
                   </div>
 
                   {/* Form Fields */}
-                  <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+                  <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     <input
                       type="text"
                       placeholder="Full Name*"
                       required
                       value={formData.name}
                       onChange={e => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full bg-[#0a2617]/[0.05] rounded-xl px-5 py-4 font-sans text-sm text-[#0a2617] placeholder:text-[#0a2617]/50 focus:outline-none focus:ring-1 focus:ring-[#0a2617]/20 transition-all border-0"
+                      className="w-full bg-white/10 rounded-xl px-5 py-4 font-sans text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[#d97706]/50 border border-white/15 transition-all"
                     />
                     <input
                       type="email"
@@ -506,19 +501,19 @@ export default function ContactPage({
                       required
                       value={formData.email}
                       onChange={e => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full bg-[#0a2617]/[0.05] rounded-xl px-5 py-4 font-sans text-sm text-[#0a2617] placeholder:text-[#0a2617]/50 focus:outline-none focus:ring-1 focus:ring-[#0a2617]/20 transition-all border-0"
+                      className="w-full bg-white/10 rounded-xl px-5 py-4 font-sans text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[#d97706]/50 border border-white/15 transition-all"
                     />
                     <input
                       type="tel"
                       placeholder="Mobile Number"
                       value={formData.phone}
                       onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full bg-[#0a2617]/[0.05] rounded-xl px-5 py-4 font-sans text-sm text-[#0a2617] placeholder:text-[#0a2617]/50 focus:outline-none focus:ring-1 focus:ring-[#0a2617]/20 transition-all border-0"
+                      className="w-full bg-white/10 rounded-xl px-5 py-4 font-sans text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[#d97706]/50 border border-white/15 transition-all"
                     />
                     <select
                       value={formData.subject}
                       onChange={e => setFormData({ ...formData, subject: e.target.value })}
-                      className="w-full bg-[#0a2617]/[0.05] rounded-xl px-5 py-4 font-sans text-sm text-[#0a2617] focus:outline-none focus:ring-1 focus:ring-[#0a2617]/20 transition-all border-0 cursor-pointer"
+                      className="w-full bg-[#0a2617] text-white rounded-xl px-5 py-4 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-[#d97706]/50 border border-white/15 transition-all cursor-pointer"
                     >
                       <option value="General Inquiry">General Inquiry</option>
                       <option value="Therapy Support">Therapy Support</option>
@@ -532,14 +527,14 @@ export default function ContactPage({
                       required
                       value={formData.message}
                       onChange={e => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full bg-[#0a2617]/[0.05] rounded-xl px-5 py-4 font-sans text-sm text-[#0a2617] placeholder:text-[#0a2617]/50 focus:outline-none focus:ring-1 focus:ring-[#0a2617]/20 transition-all min-h-[140px] md:min-h-[180px] resize-y border-0"
+                      className="w-full bg-white/10 rounded-xl px-5 py-4 font-sans text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[#d97706]/50 border border-white/15 transition-all min-h-[140px] resize-y"
                     />
                     <button
                       type="submit"
                       disabled={busy}
-                      className="mt-2 w-full bg-[#0a2617] text-[#fffdf5] font-sans text-xs sm:text-sm tracking-[0.15em] uppercase font-bold py-4 rounded-xl hover:bg-[#3a2e27] transition-colors duration-300 border-0 cursor-pointer disabled:opacity-50"
+                      className="mt-2 w-full bg-[#d97706] hover:bg-[#b45309] text-white font-sans text-xs sm:text-sm tracking-[0.15em] uppercase font-extrabold py-4 rounded-xl transition-all duration-300 border-0 cursor-pointer shadow-lg disabled:opacity-50"
                     >
-                      {submitted ? "Message Sent! ✓" : busy ? "Sending..." : "Start a Conversation →"}
+                      {submitted ? "Message Sent to Admin! ✓" : busy ? "Sending..." : "Start a Conversation →"}
                     </button>
                   </form>
                 </div>

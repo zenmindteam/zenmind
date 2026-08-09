@@ -79,9 +79,9 @@ export default function Footer({
                           className="text-white/70 hover:text-white transition-colors text-[11px] sm:text-sm block text-left break-words w-full leading-snug">
                           {link}
                         </button>
-                      ) : category === 'Support' && onSupportLinkClick ? (
-                        <button onClick={() => onSupportLinkClick(link)}
-                          className="text-white/70 hover:text-white transition-colors text-[11px] sm:text-sm block text-left break-words w-full leading-snug">
+                      ) : category === 'Support' && (onSupportLinkClick || onResourcesLinkClick) ? (
+                        <button onClick={() => (onSupportLinkClick || onResourcesLinkClick)?.(link)}
+                          className="text-white/70 hover:text-white transition-colors text-[11px] sm:text-sm block text-left break-words w-full leading-snug cursor-pointer">
                           {link}
                         </button>
                       ) : category === 'Company' && onCompanyLinkClick ? (
