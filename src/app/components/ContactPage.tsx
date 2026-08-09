@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { motion } from "motion/react";
-import { Send, Sparkles, Phone, Mail, ArrowDownLeft, ShieldCheck, Globe2, MapPin, ExternalLink, Building2, Compass, CheckCircle } from "lucide-react";
+import { Send, Sparkles, Phone, Mail, ArrowDownLeft, ShieldCheck, Globe2, MapPin, ExternalLink, Building2, Compass, CheckCircle, Clock } from "lucide-react";
 import Globe from "./ui/globe";
 import { Navbar as LandingNavbar } from "./landing/Navbar";
 import { Footer as LandingFooter } from "./landing/Footer";
