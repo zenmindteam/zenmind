@@ -102,22 +102,22 @@ export default function PostSessionModal({ onClose }: Props) {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 60, scale: 0.97 }}
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="w-full max-w-md bg-white dark:bg-[#111111] rounded-3xl border border-[#0d5d3a]/10 dark:border-white/10 shadow-2xl shadow-black/20 overflow-hidden"
+          className="w-full max-w-md bg-white rounded-[28px] border-2 border-[#0d5d3a]/15 shadow-2xl overflow-hidden"
           ref={confettiRef}
         >
           {/* Header */}
-          <div className="relative px-6 pt-6 pb-4 border-b border-[#0d5d3a]/08 dark:border-white/08">
-            <button onClick={close} className="absolute top-5 right-5 p-1.5 rounded-xl text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 transition">
+          <div className="relative px-6 pt-6 pb-4 border-b border-[#0d5d3a]/15 bg-[#f4faf7]">
+            <button onClick={close} className="absolute top-5 right-5 p-1.5 rounded-full text-[#0d5d3a] hover:bg-[#e6f4ea] transition">
               <X className="w-4 h-4" />
             </button>
             <div className="pr-8">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0d5d3a]/10 text-[#0d5d3a] dark:text-[#10b981] text-xs font-bold mb-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fef3c7] border border-[#fde68a] text-[#78350f] text-xs font-bold mb-2">
                  Session Complete
               </div>
-              <h2 className="text-xl font-black text-[#0a2617] dark:text-gray-100" style={{ fontFamily: 'Syne, sans-serif' }}>
+              <h2 className="text-xl font-extrabold text-[#0d5d3a]" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
                 How did it go?
               </h2>
-              <p className="text-xs text-[#4a7c5d] dark:text-gray-400 mt-0.5">
+              <p className="text-xs text-[#d97706] font-semibold mt-0.5">
                 Session with {session.therapistName} ·{' '}
                 {new Date(session.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
               </p>

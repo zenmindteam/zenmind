@@ -200,39 +200,41 @@ useEffect(() => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
             onClick={() => setShowLogoutConfirm(false)}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 16 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-              className="bg-white dark:bg-[#111] rounded-3xl shadow-2xl border border-[#0d5d3a]/10 dark:border-white/10 p-8 max-w-sm w-full text-center"
+              exit={{ opacity: 0, scale: 0.95, y: 16 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="bg-white rounded-[28px] shadow-2xl border-2 border-[#0d5d3a]/15 p-6 sm:p-8 max-w-sm w-full text-center relative overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
-              {/* Icon */}
-              <div className="w-16 h-16 rounded-2xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center mx-auto mb-5">
-                <LogOut className="w-8 h-8 text-red-500" />
+              {/* Icon Header */}
+              <div className="w-14 h-14 rounded-full bg-red-50 border border-red-200 text-red-600 flex items-center justify-center mx-auto mb-4 shadow-xs">
+                <LogOut className="w-6 h-6 stroke-[2.5]" />
               </div>
 
-              <h2 className="text-xl font-black text-[#0a2617] dark:text-white mb-2" style={{ fontFamily: 'Syne, sans-serif' }}>
+              <h2 className="text-xl font-extrabold text-[#0d5d3a] mb-2" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
                 Sign out of Admin Panel?
               </h2>
-              <p className="text-[#4a7c5d] dark:text-gray-400 text-sm leading-relaxed mb-7">
-                Are you sure you want to securely sign out of your session?
+              <p className="text-gray-600 text-xs font-semibold leading-relaxed mb-6">
+                Are you sure you want to securely sign out of your administration portal?
               </p>
 
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2.5">
                 <button
+                  type="button"
                   onClick={onLogout}
-                  className="w-full py-3.5 rounded-2xl bg-red-500 hover:bg-red-600 text-white font-black text-sm transition-colors shadow-lg shadow-red-500/20"
+                  className="w-full py-3 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm"
                 >
                   Yes, Sign Out
                 </button>
                 <button
+                  type="button"
                   onClick={() => setShowLogoutConfirm(false)}
-                  className="w-full py-3.5 rounded-2xl bg-[#f0fbf4] dark:bg-[#0d5d3a]/20 hover:bg-[#e8f5e9] dark:hover:bg-[#0d5d3a]/30 text-[#0d5d3a] dark:text-[#10b981] font-black text-sm transition-colors"
+                  className="w-full py-3 rounded-full bg-[#e6f4ea] hover:bg-[#d2ebd9] text-[#0d5d3a] font-bold text-xs uppercase tracking-wider transition-all"
                 >
                   Cancel
                 </button>
@@ -263,70 +265,54 @@ function NavItem({ icon: Icon, label, active, onClick, expanded }: any) {
 
 
 
-/* ── Custom Confirm Modal ── */
+/* ── Custom Google Material Confirm Modal ── */
 
 function ConfirmModal({ open, title, message, confirmLabel, danger, onConfirm, onCancel, busy }: {
-
   open: boolean; title: string; message: string; confirmLabel: string;
-
   danger?: boolean; onConfirm: () => void; onCancel: () => void; busy?: boolean;
-
 }) {
-
   if (!open) return null;
 
   return (
-
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-
-      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
-
-        <div className="flex items-start gap-3 mb-4">
-
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${danger ? 'bg-red-100' : 'bg-amber-100'}`}>
-
-            <AlertTriangle size={20} className={danger ? 'text-red-600' : 'text-amber-600'} />
-
-          </div>
-
-          <div>
-
-            <h3 className="font-bold text-[#0a2617] text-lg">{title}</h3>
-
-            <p className="text-sm text-[#4a7c5d] mt-1">{message}</p>
-
-          </div>
-
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 16 }}
+        className="bg-white rounded-[28px] shadow-2xl border-2 border-[#0d5d3a]/15 w-full max-w-md p-6 sm:p-8 text-center relative overflow-hidden"
+      >
+        <div className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xs ${danger ? 'bg-red-50 border border-red-200 text-red-600' : 'bg-[#fef3c7] border border-[#fde68a] text-[#d97706]'}`}>
+          <AlertTriangle className="w-6 h-6 stroke-[2.5]" />
         </div>
 
-        <div className="flex gap-3 justify-end mt-6">
+        <h3 className="font-extrabold text-[#0d5d3a] text-lg sm:text-xl mb-2" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
+          {title}
+        </h3>
+        <p className="text-xs font-semibold text-gray-600 leading-relaxed mb-6">
+          {message}
+        </p>
 
-          <button onClick={onCancel} disabled={busy}
-
-            className="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 transition disabled:opacity-50">
-
+        <div className="flex gap-3 justify-center">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={busy}
+            className="flex-1 py-3 rounded-full bg-[#e6f4ea] hover:bg-[#d2ebd9] text-[#0d5d3a] font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50"
+          >
             Cancel
-
           </button>
-
-          <button onClick={onConfirm} disabled={busy}
-
-            className={`px-5 py-2.5 rounded-xl text-white font-bold transition disabled:opacity-50 ${danger ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-500 hover:bg-amber-600'}`}>
-
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={busy}
+            className={`flex-1 py-3 rounded-full text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm disabled:opacity-50 ${danger ? 'bg-red-600 hover:bg-red-700' : 'bg-[#0d5d3a] hover:bg-[#084229]'}`}
+          >
             {busy ? 'Processing…' : confirmLabel}
-
           </button>
-
         </div>
-
       </motion.div>
-
     </div>
-
   );
-
 }
 
 

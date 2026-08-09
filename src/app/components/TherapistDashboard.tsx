@@ -850,34 +850,37 @@ export default function TherapistDashboard({ onLogout }: { onLogout: () => void 
             onClick={() => setShowLogoutConfirm(false)}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 16 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-              className="bg-white dark:bg-[#111] rounded-3xl shadow-2xl border border-[#0d5d3a]/10 dark:border-white/10 p-8 max-w-sm w-full text-center"
+              exit={{ opacity: 0, scale: 0.95, y: 16 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="bg-white rounded-[28px] shadow-2xl border-2 border-[#0d5d3a]/15 p-6 sm:p-8 max-w-sm w-full text-center relative overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
-              <div className="w-16 h-16 rounded-2xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center mx-auto mb-5">
-                <LogOut className="w-8 h-8 text-red-500" />
+              {/* Icon Header */}
+              <div className="w-14 h-14 rounded-full bg-red-50 border border-red-200 text-red-600 flex items-center justify-center mx-auto mb-4 shadow-xs">
+                <LogOut className="w-6 h-6 stroke-[2.5]" />
               </div>
 
-              <h2 className="text-xl font-black text-[#0a2617] dark:text-white mb-2" style={{ fontFamily: 'Syne, sans-serif' }}>
-                Sign out of ZenMind?
+              <h2 className="text-xl font-extrabold text-[#0d5d3a] mb-2" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
+                Sign out of Therapist Portal?
               </h2>
-              <p className="text-[#4a7c5d] dark:text-gray-400 text-sm leading-relaxed mb-7">
-                Are you sure you want to sign out of your therapist dashboard?
+              <p className="text-gray-600 text-xs font-semibold leading-relaxed mb-6">
+                Are you sure you want to sign out of your clinical therapist session?
               </p>
 
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2.5">
                 <button
+                  type="button"
                   onClick={onLogout}
-                  className="w-full py-3.5 rounded-2xl bg-red-500 hover:bg-red-600 text-white font-black text-sm transition-colors shadow-lg shadow-red-500/20"
+                  className="w-full py-3 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm"
                 >
                   Yes, Sign Out
                 </button>
                 <button
+                  type="button"
                   onClick={() => setShowLogoutConfirm(false)}
-                  className="w-full py-3.5 rounded-2xl bg-[#f0fbf4] dark:bg-[#0d5d3a]/20 hover:bg-[#e8f5e9] dark:hover:bg-[#0d5d3a]/30 text-[#0d5d3a] dark:text-[#10b981] font-black text-sm transition-colors"
+                  className="w-full py-3 rounded-full bg-[#e6f4ea] hover:bg-[#d2ebd9] text-[#0d5d3a] font-bold text-xs uppercase tracking-wider transition-all"
                 >
                   Stay Signed In
                 </button>
