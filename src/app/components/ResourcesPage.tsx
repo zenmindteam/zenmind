@@ -172,136 +172,134 @@ function ReportIssueForm() {
         </div>
       </section>
 
-      {/* Form Card Section (EXACT SAME UI AS GETINTOUCHSECTION CARD WITH ROUNDED TOP & BOTTOM BORDER) */}
-      <section className="relative w-full bg-[#0a2617] py-16 sm:py-24">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
-          <div className="relative w-full bg-[#f8fdf9] text-[#0a2617] rounded-[2.5rem] lg:rounded-[3.5rem] pt-[10px] pb-16 sm:pb-24 overflow-hidden border-2 border-[#0d5d3a]/15 shadow-2xl">
-            {/* Top Right Decorative Arrow */}
-            <div className="absolute top-[10px] right-[10px] sm:right-6 lg:right-10 text-[#0a2617]">
-              <ArrowDownLeft className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 stroke-[1.5]" />
-            </div>
+      {/* Form Card Section — FULL WIDTH w-full EXACTLY LIKE GETINTOUCHSECTION / CONTACT PAGE */}
+      <section
+        className="relative w-full bg-[#f8fdf9] text-[#0a2617] rounded-[2.5rem] lg:rounded-[3.5rem] z-20 pt-[10px] pb-16 sm:pb-24 overflow-hidden -mt-12 sm:-mt-16 border-2 border-[#0d5d3a]/15 shadow-2xl"
+      >
+        {/* Top Right Decorative Arrow */}
+        <div className="absolute top-[10px] right-[10px] sm:right-6 lg:right-10 text-[#0a2617]">
+          <ArrowDownLeft className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 stroke-[1.5]" />
+        </div>
 
-            <div className="w-full px-6 sm:px-10 md:px-14 lg:px-16">
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10 sm:mb-14 md:mb-16">
-                <h2 className="font-sans-main text-4xl sm:text-5xl md:text-6xl lg:text-[60px] font-extrabold leading-[1.05] tracking-tight text-[#0d5d3a] -ml-1 mt-1 max-w-2xl text-left" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
-                  Fill Out the Issue<br />Report Form.
-                </h2>
-                <p className="font-sans text-xs sm:text-sm md:text-base text-[#0a2617]/80 max-w-xs md:max-w-md text-left leading-relaxed font-semibold">
-                  Provide steps to reproduce or details regarding your report so our engineers can investigate immediately.
+        <div className="w-full px-6 sm:px-10 md:px-14 lg:px-16">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10 sm:mb-14 md:mb-16">
+            <h2 className="font-sans-main text-4xl sm:text-5xl md:text-6xl lg:text-[60px] font-extrabold leading-[1.05] tracking-tight text-[#0d5d3a] -ml-1 mt-1 max-w-2xl text-left" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
+              Fill Out the Issue<br />Report Form.
+            </h2>
+            <p className="font-sans text-xs sm:text-sm md:text-base text-[#0a2617]/80 max-w-xs md:max-w-md text-left leading-relaxed font-semibold">
+              Provide steps to reproduce or details regarding your report so our engineers can investigate immediately.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-start">
+            {/* Left Form Card */}
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-[#0d5d3a]/15 shadow-xl">
+              <div className="flex items-center gap-2 mb-6">
+                <AlertCircle className="w-4 h-4 text-[#d97706]" />
+                <p className="font-sans text-xs sm:text-sm tracking-[0.1em] uppercase font-bold text-[#0d5d3a]">
+                  Issue Ticket Details
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-start">
-                {/* Left Form Card */}
-                <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-[#0d5d3a]/15 shadow-xl">
-                  <div className="flex items-center gap-2 mb-6">
-                    <AlertCircle className="w-4 h-4 text-[#d97706]" />
-                    <p className="font-sans text-xs sm:text-sm tracking-[0.1em] uppercase font-bold text-[#0d5d3a]">
-                      Issue Ticket Details
-                    </p>
-                  </div>
-
-                  <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    <div>
-                      <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Your Name*</label>
-                      <input
-                        type="text"
-                        required
-                        value={formData.name}
-                        onChange={e => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="Aarav Sharma"
-                        className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] border-2 border-[#0d5d3a]/15 focus:border-[#d97706] focus:ring-2 focus:ring-[#d97706]/20 outline-none transition-all"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Email Address*</label>
-                        <input
-                          type="email"
-                          required
-                          value={formData.email}
-                          onChange={e => setFormData({ ...formData, email: e.target.value })}
-                          placeholder="name@example.com"
-                          className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] border-2 border-[#0d5d3a]/15 focus:border-[#d97706] focus:ring-2 focus:ring-[#d97706]/20 outline-none transition-all"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Issue Category</label>
-                        <select
-                          value={formData.issueType}
-                          onChange={e => setFormData({ ...formData, issueType: e.target.value })}
-                          className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] border-2 border-[#0d5d3a]/15 focus:border-[#d97706] outline-none cursor-pointer"
-                        >
-                          <option value="Bug Report">Technical Bug</option>
-                          <option value="Safety Concern">Safety / Content Flag</option>
-                          <option value="Account Issue">Account Access Issue</option>
-                          <option value="Abuse Report">Peer Circle Misconduct</option>
-                          <option value="Other">Other Concern</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Severity Level</label>
-                      <select
-                        value={formData.severity}
-                        onChange={e => setFormData({ ...formData, severity: e.target.value })}
-                        className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] border-2 border-[#0d5d3a]/15 focus:border-[#d97706] outline-none cursor-pointer"
-                      >
-                        <option value="Low">Low - Cosmetic / Minor</option>
-                        <option value="Medium">Medium - Feature Disrupted</option>
-                        <option value="High">High - Unable to Use Account</option>
-                        <option value="Critical">Critical - Safety Pipeline Signal</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Issue Details & Steps to Reproduce*</label>
-                      <textarea
-                        rows={4}
-                        required
-                        value={formData.description}
-                        onChange={e => setFormData({ ...formData, description: e.target.value })}
-                        placeholder="Describe what happened, error message seen, or details..."
-                        className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] border-2 border-[#0d5d3a]/15 focus:border-[#d97706] outline-none resize-y min-h-[120px]"
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={busy}
-                      className="mt-2 w-full bg-[#0d5d3a] hover:bg-[#084229] text-[#fffdf5] font-sans text-xs sm:text-sm tracking-[0.15em] uppercase font-extrabold py-4 rounded-full transition-all duration-300 shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                    >
-                      <Send className="w-4 h-4 text-[#fde68a]" />
-                      <span>{submitted ? "Issue Reported to Safety Team! ✓" : busy ? "Submitting..." : "Submit Issue Report →"}</span>
-                    </button>
-                  </form>
+              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Your Name*</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={e => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Aarav Sharma"
+                    className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] border-2 border-[#0d5d3a]/15 focus:border-[#d97706] focus:ring-2 focus:ring-[#d97706]/20 outline-none transition-all"
+                  />
                 </div>
 
-                {/* Right Glass Card */}
-                <div className="relative w-full aspect-[4/3] md:aspect-[690/520] rounded-3xl overflow-hidden shadow-2xl border-2 border-[#0d5d3a]/20">
-                  <img src="/peoples-image.webp" alt="Support Team" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a2617]/90 via-[#0a2617]/30 to-transparent p-6 sm:p-8 flex flex-col justify-end text-white">
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-2xl space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-[#d97706] text-white flex items-center justify-center font-bold">
-                          <Mail className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <div className="text-[10px] font-bold uppercase tracking-wider text-[#fde68a]">Direct Safety Email</div>
-                          <div className="text-sm font-bold text-white">safety@zenmind.in</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-[#0d5d3a] text-white flex items-center justify-center font-bold">
-                          <Phone className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <div className="text-[10px] font-bold uppercase tracking-wider text-[#fde68a]">Emergency Helpline</div>
-                          <div className="text-sm font-bold text-white">1800-599-0019 (24/7)</div>
-                        </div>
-                      </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Email Address*</label>
+                    <input
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={e => setFormData({ ...formData, email: e.target.value })}
+                      placeholder="name@example.com"
+                      className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] border-2 border-[#0d5d3a]/15 focus:border-[#d97706] focus:ring-2 focus:ring-[#d97706]/20 outline-none transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Issue Category</label>
+                    <select
+                      value={formData.issueType}
+                      onChange={e => setFormData({ ...formData, issueType: e.target.value })}
+                      className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] border-2 border-[#0d5d3a]/15 focus:border-[#d97706] outline-none cursor-pointer"
+                    >
+                      <option value="Bug Report">Technical Bug</option>
+                      <option value="Safety Concern">Safety / Content Flag</option>
+                      <option value="Account Issue">Account Access Issue</option>
+                      <option value="Abuse Report">Peer Circle Misconduct</option>
+                      <option value="Other">Other Concern</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Severity Level</label>
+                  <select
+                    value={formData.severity}
+                    onChange={e => setFormData({ ...formData, severity: e.target.value })}
+                    className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] border-2 border-[#0d5d3a]/15 focus:border-[#d97706] outline-none cursor-pointer"
+                  >
+                    <option value="Low">Low - Cosmetic / Minor</option>
+                    <option value="Medium">Medium - Feature Disrupted</option>
+                    <option value="High">High - Unable to Use Account</option>
+                    <option value="Critical">Critical - Safety Pipeline Signal</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Issue Details & Steps to Reproduce*</label>
+                  <textarea
+                    rows={4}
+                    required
+                    value={formData.description}
+                    onChange={e => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="Describe what happened, error message seen, or details..."
+                    className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] border-2 border-[#0d5d3a]/15 focus:border-[#d97706] outline-none resize-y min-h-[120px]"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={busy}
+                  className="mt-2 w-full bg-[#0d5d3a] hover:bg-[#084229] text-[#fffdf5] font-sans text-xs sm:text-sm tracking-[0.15em] uppercase font-extrabold py-4 rounded-full transition-all duration-300 shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <Send className="w-4 h-4 text-[#fde68a]" />
+                  <span>{submitted ? "Issue Reported to Safety Team! ✓" : busy ? "Submitting..." : "Submit Issue Report →"}</span>
+                </button>
+              </form>
+            </div>
+
+            {/* Right Glass Card */}
+            <div className="relative w-full aspect-[4/3] md:aspect-[690/520] rounded-3xl overflow-hidden shadow-2xl border-2 border-[#0d5d3a]/20">
+              <img src="/peoples-image.webp" alt="Support Team" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a2617]/90 via-[#0a2617]/30 to-transparent p-6 sm:p-8 flex flex-col justify-end text-white">
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-2xl space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-[#d97706] text-white flex items-center justify-center font-bold">
+                      <Mail className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-[#fde68a]">Direct Safety Email</div>
+                      <div className="text-sm font-bold text-white">safety@zenmind.in</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-[#0d5d3a] text-white flex items-center justify-center font-bold">
+                      <Phone className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-[#fde68a]">Emergency Helpline</div>
+                      <div className="text-sm font-bold text-white">1800-599-0019 (24/7)</div>
                     </div>
                   </div>
                 </div>
@@ -368,15 +366,16 @@ function FeedbackForm() {
         </div>
       </section>
 
-      {/* Form Card Section (EXACT SAME UI AS GETINTOUCHSECTION CARD WITH ROUNDED TOP & BOTTOM BORDER) */}
-      <section className="relative w-full bg-[#0a2617] py-16 sm:py-24">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
-          <div className="relative w-full bg-[#f8fdf9] text-[#0a2617] rounded-[2.5rem] lg:rounded-[3.5rem] pt-[10px] pb-16 sm:pb-24 overflow-hidden border-2 border-[#0d5d3a]/15 shadow-2xl">
-            <div className="absolute top-[10px] right-[10px] sm:right-6 lg:right-10 text-[#0a2617]">
-              <ArrowDownLeft className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 stroke-[1.5]" />
-            </div>
+      {/* Form Card Section — FULL WIDTH w-full EXACTLY LIKE GETINTOUCHSECTION / CONTACT PAGE */}
+      <section
+        className="relative w-full bg-[#f8fdf9] text-[#0a2617] rounded-[2.5rem] lg:rounded-[3.5rem] z-20 pt-[10px] pb-16 sm:pb-24 overflow-hidden -mt-12 sm:-mt-16 border-2 border-[#0d5d3a]/15 shadow-2xl"
+      >
+        {/* Top Right Decorative Arrow */}
+        <div className="absolute top-[10px] right-[10px] sm:right-6 lg:right-10 text-[#0a2617]">
+          <ArrowDownLeft className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 stroke-[1.5]" />
+        </div>
 
-            <div className="w-full px-6 sm:px-10 md:px-14 lg:px-16">
+        <div className="w-full px-6 sm:px-10 md:px-14 lg:px-16">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10 sm:mb-14 md:mb-16">
                 <h2 className="font-sans-main text-4xl sm:text-5xl md:text-6xl lg:text-[60px] font-extrabold leading-[1.05] tracking-tight text-[#0d5d3a] -ml-1 mt-1 max-w-2xl text-left" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
                   Share Product Feedback &<br />Feature Suggestions.
@@ -476,8 +475,6 @@ function FeedbackForm() {
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
