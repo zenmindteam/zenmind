@@ -140,18 +140,14 @@ export async function getUser(userId) {
   return User.findById(userId);
 }
 
-/** True when the user has at least one credit (or is platinum) */
+/** Everything is free — always has credits */
 export function hasCredits(user) {
-  if (user.subscriptionTier === 'platinum') return true;
-  return user.aiWeeklyCredits === -1 || user.aiWeeklyCredits > 0;
+  return true;
 }
 
-/** Deduct one credit after a successful AI response. No-op for platinum. */
+/** Everything is free — no credit deduction */
 export async function deductOneCredit(user) {
-  if (user.subscriptionTier === 'platinum' || user.aiWeeklyCredits === -1) return;
-  await mongoose.model('User').findByIdAndUpdate(user._id, {
-    $inc: { aiWeeklyCredits: -1 },
-  });
+  return;
 }
 
 // ── Tier-guard middleware ──────────────────────────────────────────────────
@@ -163,19 +159,15 @@ const TIER_ORDER = ['free', 'silver', 'gold', 'platinum'];
  */
 export function requireTier(minTier) {
   return async (req, res, next) => {
+    // Everything is free — always allow access
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ error: 'Unauthenticated' });
 
     const user = await getUser(userId);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    await handleCreditReset(user);
-
-    if (TIER_ORDER.indexOf(user.subscriptionTier) >= TIER_ORDER.indexOf(minTier)) {
-      req.userDoc = user; // attach full doc for downstream handlers
-      return next();
-    }
-    return res.status(403).json({ error: `${minTier} tier required` });
+    req.userDoc = user;
+    return next();
   };
 }
 

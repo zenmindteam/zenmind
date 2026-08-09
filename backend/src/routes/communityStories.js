@@ -53,9 +53,7 @@ router.post('/', requireAuth, async (req, res) => {
     const user = await User.findById(req.user.id).select('name subscriptionTier').lean();
     if (!user) return res.status(401).json({ error: 'Unauthorized' });
     
-    if (!user.subscriptionTier || user.subscriptionTier === 'free') {
-      return res.status(403).json({ error: 'Free tier users cannot post stories. Please upgrade to share your story.' });
-    }
+    // Everything is free — all users can post stories
 
     const authorName = user.name || 'ZenMind User';
 

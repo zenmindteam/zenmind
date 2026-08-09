@@ -393,21 +393,14 @@ function StoreCard({
 }) {
   const catStyle = getCategoryStyle(asset.category);
   const gradient = getCardGradient(asset.category);
-  const isFree   = asset.price === 0;
+  const isFree   = true;
   const isOwned  = asset.owned;
 
   // Calculate discount
-  const getDiscountedPrice = (price: number, tier: string) => {
-    if (price === 0) return 0;
-    let discountPercent = 0;
-    if (tier === 'silver') discountPercent = 0.10;
-    if (tier === 'gold') discountPercent = 0.20;
-    if (tier === 'platinum') discountPercent = 0.30;
-    return Math.floor(price * (1 - discountPercent));
-  };
+  const getDiscountedPrice = (price: number, tier: string) => 0;
 
-  const finalPrice = getDiscountedPrice(asset.price, userTier);
-  const hasDiscount = finalPrice < asset.price && finalPrice > 0;
+  const finalPrice = 0;
+  const hasDiscount = false;
 
   return (
     <motion.div

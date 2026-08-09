@@ -185,17 +185,7 @@ router.post('/:id/save', requireAuth, async (req, res) => {
       // User is trying to save it. Check limits.
       const User = (await import('../models/User.js')).default;
       const user = await User.findById(uid).select('subscriptionTier').lean();
-      const tier = user?.subscriptionTier || 'free';
-      
-      if (tier === 'free' || tier === 'silver') {
-         return res.status(403).json({ error: 'Reading lists require a Gold or Platinum subscription.' });
-      }
-      if (tier === 'gold') {
-         const savedCount = await ReadingList.countDocuments({ savedBy: uid });
-         if (savedCount >= 10) {
-            return res.status(403).json({ error: 'Gold tier allows saving up to 10 reading lists. Upgrade to Platinum for unlimited saves!' });
-         }
-      }
+      // Everything is free — no reading list restrictions
 
       list.savedBy.push(uid);
       list.saveCount += 1;

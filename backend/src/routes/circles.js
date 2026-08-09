@@ -49,15 +49,7 @@ router.post('/:id/join', requireAuth, async (req, res) => {
       const user = await User.findById(req.user.id);
       if (!user) return res.status(401).json({ error: 'Unauthorized' });
 
-      const tier = user.subscriptionTier || 'free';
-      const joinedCount = await CircleMember.countDocuments({ userId: req.user.id });
-      
-      if (tier === 'free' && joinedCount >= 1) {
-        return res.status(403).json({ error: 'Free tier limits you to 1 circle. Upgrade to join more!' });
-      }
-      if (tier === 'silver' && joinedCount >= 5) {
-        return res.status(403).json({ error: 'Silver tier limits you to 5 circles. Upgrade to Gold for unlimited access!' });
-      }
+      // Everything is free — no join limits
 
       // Join
       await CircleMember.create({ circleId: circle._id, userId: req.user.id });

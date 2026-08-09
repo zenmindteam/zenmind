@@ -211,7 +211,7 @@ export default function ZenChat({ onNavigateToTherapy, me, onUpgradeClick }: { o
   const handleSend = useCallback(async (text: string) => {
     const t = text.trim(); if (!t || loading) return;
 
-    if (me?.subscriptionTier !== 'platinum' && localCredits <= 0) {
+    if (false) {
       setError('You have run out of AI Chat credits. Please upgrade your plan to continue.');
       return;
     }
@@ -297,11 +297,7 @@ export default function ZenChat({ onNavigateToTherapy, me, onUpgradeClick }: { o
         <div className="flex items-center justify-between px-4 py-2 border-b border-[#0d5d3a]/10 dark:border-white/10 bg-gray-50/50 dark:bg-white/5">
           <div className="text-xs font-bold text-[#0a2617] dark:text-gray-300">Zeni Chat</div>
           <div className="flex items-center gap-2">
-            {me?.subscriptionTier !== 'platinum' && (
-              <div className="text-[10px] font-bold text-[#0d5d3a] dark:text-[#10b981] bg-[#e6f4ea] dark:bg-[#0d5d3a]/20 px-2 py-0.5 rounded-md flex items-center gap-1 border border-[#0d5d3a]/20 shadow-sm">
-                <Sparkles size={10} /> {localCredits} Credits
-              </div>
-            )}
+
             <div className="text-[10px] font-medium text-[#4a7c5d] dark:text-gray-400 bg-white dark:bg-black/20 px-2 py-0.5 rounded-md border border-[#0d5d3a]/10 dark:border-white/10 shadow-sm">{messages.length} msg{messages.length !== 1 ? 's' : ''}</div>
             <button onClick={clearChat} title="New chat" className="w-7 h-7 rounded-md flex items-center justify-center border border-[#0d5d3a]/15 dark:border-white/10 bg-white dark:bg-[#1a1a1a] text-[#4a7c5d] hover:bg-[#f0fbf4] transition">
               <RotateCcw className="w-3.5 h-3.5" />
@@ -335,11 +331,7 @@ export default function ZenChat({ onNavigateToTherapy, me, onUpgradeClick }: { o
             {error && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="rounded-2xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/20 px-4 py-4 text-sm text-red-600 dark:text-red-400 flex flex-col items-center justify-center text-center gap-3">
                 <div className="font-bold">{error}</div>
-                {error.includes('credits') && onUpgradeClick && (
-                  <button onClick={onUpgradeClick} className="px-5 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold rounded-xl shadow-md transition-all flex items-center gap-2">
-                    <Sparkles size={16} /> Upgrade Plan
-                  </button>
-                )}
+
               </motion.div>
             )}
           </AnimatePresence>

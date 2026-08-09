@@ -516,7 +516,7 @@ export default function TherapyHub({ onSessionBooked, onStartChat, userTier = 'f
             </div>
           )}
           {/* AI Match button */}
-          {(userTier === 'gold' || userTier === 'platinum') && (
+          {true && (
             <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={() => setShowQuiz(true)}
               style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 20, border: 'none', background: 'linear-gradient(135deg,#0d5d3a,#1a8a5a)', color: 'white', fontSize: 12, fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 8px rgba(13,93,58,0.3)', whiteSpace: 'nowrap' }}>
               <Brain size={13} />

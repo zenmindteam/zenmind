@@ -272,34 +272,7 @@ router.post('/:id/enroll', requireAuth, async (req, res) => {
     const existing = await ProgramEnrollment.findOne({ userId: req.user.id, programId: req.params.id });
     if (existing) return res.status(409).json({ error: 'Already enrolled.' });
 
-    // Check limits
-    const User = (await import('../models/User.js')).default;
-    const user = await User.findById(req.user.id).select('subscriptionTier').lean();
-    const tier = user?.subscriptionTier || 'free';
-    
-    // Custom program logic
-    if (program.isCustom) {
-      if (String(program.createdBy) === String(req.user.id)) {
-        // Owner can always enroll for free
-      } else if (program.visibility === 'public') {
-        if (tier === 'free') {
-          return res.status(403).json({ error: 'Free tier cannot enroll in public custom programs. Please upgrade to at least Silver!' });
-        }
-      }
-    } else {
-      // Official program logic
-      if (tier === 'free') {
-         return res.status(403).json({ error: 'Free tier does not include Wellness Programs. Please upgrade!' });
-      }
-      
-      const enrollmentCount = await ProgramEnrollment.countDocuments({ userId: req.user.id });
-      if (tier === 'silver' && enrollmentCount >= 2) {
-         return res.status(403).json({ error: 'Silver tier allows up to 2 programs. Upgrade to Gold for up to 10!' });
-      }
-      if (tier === 'gold' && enrollmentCount >= 10) {
-         return res.status(403).json({ error: 'Gold tier allows up to 10 programs. Upgrade to Platinum for unlimited!' });
-      }
-    }
+    // Everything is free — no enrollment restrictions
 
     const enrollment = await ProgramEnrollment.create({
       userId: req.user.id,

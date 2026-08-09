@@ -75,23 +75,11 @@ const NAV_ITEMS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
 ];
 
 const getAvatarRingClass = (tier?: string) => {
-  if (tier === 'silver') return 'ring-[3px] ring-[#C0C0C0] ring-offset-[1.5px] ring-offset-white dark:ring-offset-black shadow-sm';
-  if (tier === 'gold') return 'ring-[3px] ring-[#FFD700] ring-offset-[1.5px] ring-offset-white dark:ring-offset-black shadow-sm';
-  if (tier === 'platinum') return 'ring-[3px] ring-[#E5E4E2] ring-offset-[1.5px] ring-offset-white dark:ring-offset-black shadow-sm';
   return 'ring-[1.5px] ring-[#0d5d3a]/20 dark:ring-white/20';
 };
 
 const getTierBadge = (tier?: string) => {
-  switch (tier) {
-    case 'silver':
-      return <span className="inline-block px-1.5 py-0.5 text-[9px] font-bold rounded bg-[#C0C0C0]/15 text-[#6c7a89] dark:text-[#a6b1b9] border border-[#C0C0C0]/30 uppercase tracking-wider">Silver</span>;
-    case 'gold':
-      return <span className="inline-block px-1.5 py-0.5 text-[9px] font-bold rounded bg-[#FFD700]/15 text-[#b89714] dark:text-[#f3d03c] border border-[#FFD700]/30 uppercase tracking-wider">Gold</span>;
-    case 'platinum':
-      return <span className="inline-block px-1.5 py-0.5 text-[9px] font-bold rounded bg-[#E5E4E2]/15 text-[#7f8c8d] dark:text-[#e5e4e2] border border-[#E5E4E2]/30 uppercase tracking-wider">Platinum</span>;
-    default:
-      return <span className="inline-block px-1.5 py-0.5 text-[9px] font-bold rounded bg-[#0d5d3a]/10 text-[#0d5d3a] dark:text-[#10b981] border border-[#0d5d3a]/25 uppercase tracking-wider">Free</span>;
-  }
+  return null;
 };
 
 export default function Dashboard({ onLogout, prefetchedMe, initialTab }: DashboardProps) {
@@ -388,12 +376,7 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
 
           {tab === 'therapy' ? (
             <div className="flex flex-col h-full overflow-hidden">
-              <RequireTier 
-                userTier={me?.subscriptionTier || 'free'} 
-                minTier="free" 
-                fallbackMessage="Therapy Hub is available for Silver, Gold, and Platinum members. Upgrade to connect with professional therapists."
-                onUpgradeClick={() => { setUpgradeTarget('silver'); setShowPaymentModal(true); }}
-              >
+              
                 {/* Pre-session prep card — only shows when session < 24h */}
                 <div className="flex-shrink-0 px-4 sm:px-6 pt-4">
                   <SessionPrepCard />
@@ -405,16 +388,11 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
                     userTier={me?.subscriptionTier || 'free'}
                   />
                 </div>
-              </RequireTier>
+              
             </div>
           ) : tab === 'sessions' ? (
             <div className="flex flex-col h-full overflow-hidden">
-              <RequireTier 
-                userTier={me?.subscriptionTier || 'free'} 
-                minTier="silver" 
-                fallbackMessage="My Sessions is available for Silver, Gold, and Platinum members. Upgrade to view and schedule therapist sessions."
-                onUpgradeClick={() => { setUpgradeTarget('silver'); setShowPaymentModal(true); }}
-              >
+              
                 <div className="flex-1 overflow-y-auto">
                   {/* Pre-session prep card on sessions tab too */}
                   <div className="px-4 sm:px-6 pt-4">
@@ -422,7 +400,7 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
                   </div>
                   <MySessionsPanel />
                 </div>
-              </RequireTier>
+              
             </div>
           ) : tab === 'chat' && chatTherapist && me ? (
             <div className="flex-1 overflow-hidden">
@@ -438,16 +416,11 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
             </div>
           ) : tab === 'progress' ? (
             <div className="flex flex-col h-full overflow-hidden">
-              <RequireTier 
-                userTier={me?.subscriptionTier || 'free'} 
-                minTier="platinum" 
-                fallbackMessage="My Progress Dashboard is available for Platinum members only. Upgrade to access your progress insights."
-                onUpgradeClick={() => { setUpgradeTarget('platinum'); setShowPaymentModal(true); }}
-              >
+              
                 <div className="flex-1 overflow-hidden flex flex-col min-h-0">
                   <ZenProgressDashboard />
                 </div>
-              </RequireTier>
+              
             </div>
           ) : tab === 'community' ? (
             <div className="flex-1 overflow-hidden flex flex-col min-h-0">
@@ -462,16 +435,11 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
             </div>
           ) : tab === 'journal' ? (
             <div className="flex flex-col h-full overflow-hidden">
-              <RequireTier 
-                userTier={me?.subscriptionTier || 'free'} 
-                minTier="gold" 
-                fallbackMessage="Mood Journaling is available for Gold and Platinum members. Upgrade to track and analyze your moods."
-                onUpgradeClick={() => { setUpgradeTarget('gold'); setShowPaymentModal(true); }}
-              >
+              
                 <div className="flex-1 overflow-hidden flex flex-col min-h-0">
                   <MoodJournal />
                 </div>
-              </RequireTier>
+              
             </div>
           ) : tab === 'circles' ? (
             <div className="flex-1 overflow-hidden flex flex-col min-h-0">
@@ -483,25 +451,15 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
             </div>
           ) : tab === 'reading' ? (
             <div className="flex flex-col h-full overflow-hidden">
-              <RequireTier 
-                userTier={me?.subscriptionTier || 'free'} 
-                minTier="gold" 
-                fallbackMessage="Reading Lists are available for Gold and Platinum members. Upgrade to access curated reading lists."
-                onUpgradeClick={() => { setUpgradeTarget('gold'); setShowPaymentModal(true); }}
-              >
+              
                 <div className="flex-1 overflow-hidden flex flex-col min-h-0">
                   <ReadingListsUser />
                 </div>
-              </RequireTier>
+              
             </div>
           ) : tab === 'programs' ? (
             <div className="flex flex-col h-full overflow-hidden">
-              <RequireTier 
-                userTier={me?.subscriptionTier || 'free'} 
-                minTier="silver" 
-                fallbackMessage="Wellness Programs are available for Silver, Gold, and Platinum members. Upgrade to enroll in programs."
-                onUpgradeClick={() => { setUpgradeTarget('silver'); setShowPaymentModal(true); }}
-              >
+              
                 <div className="flex-1 overflow-hidden flex flex-col min-h-0">
                   <WellnessProgramsUser
                     onDetailOpen={() => {
@@ -512,23 +470,18 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
                     closeDetailSignal={closeProgramSignal}
                   />
                 </div>
-              </RequireTier>
+              
             </div>
           ) : tab === 'store' ? (
             <div className="flex flex-col h-full overflow-hidden">
-              <RequireTier 
-                userTier={me?.subscriptionTier || 'free'} 
-                minTier="silver" 
-                fallbackMessage="Wellness Store is available for Silver, Gold, and Platinum members. Upgrade to download resources."
-                onUpgradeClick={() => { setUpgradeTarget('silver'); setShowPaymentModal(true); }}
-              >
+              
                 <div className="flex-1 overflow-hidden flex flex-col min-h-0">
                   <WellnessStore 
                     userTier={me?.subscriptionTier || 'free'}
                     onUpgradeClick={() => { setUpgradeTarget('silver'); setShowPaymentModal(true); }}
                   />
                 </div>
-              </RequireTier>
+              
             </div>
           ) : tab === 'settings' ? (
             <div className="flex-1 overflow-y-auto">
@@ -596,16 +549,7 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
         )}
       </AnimatePresence>
 
-      {/* Payment Modal */}
-      <AnimatePresence>
-        {showPaymentModal && (
-          <FakePaymentModal
-            initialSelectedTier={upgradeTarget}
-            onClose={() => setShowPaymentModal(false)}
-            onSuccess={handlePaymentSuccess}
-          />
-        )}
-      </AnimatePresence>
+
     </div>
   );
 }
@@ -1560,3 +1504,4 @@ function MySessionsPanel() {
     </motion.div>
   );
 }
+
