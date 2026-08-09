@@ -235,12 +235,13 @@ export default function ContactPage({
         ))}
       </div>
 
-      {/* ── INTERACTIVE 3D SCROLL GLOBE (HIDES COMPLETELY IN FOOTER ACTIVE SECTION 4) ── */}
+      {/* ── INTERACTIVE 3D SCROLL GLOBE ── */}
       <div
-        className="fixed z-10 pointer-events-none transition-all duration-[1200ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
+        className="fixed pointer-events-none transition-all duration-[1200ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
         style={{
+          zIndex: 15,
           transform: globeTransform,
-          opacity: activeSection >= 4 ? 0 : activeSection === 3 ? 0.2 : 0.85,
+          opacity: activeSection >= 4 ? 0 : activeSection === 3 ? 0.15 : 0.7,
           visibility: activeSection >= 4 ? 'hidden' : 'visible'
         }}
       >
@@ -250,7 +251,7 @@ export default function ContactPage({
       {/* ── SECTION 0: HERO ── */}
       <section
         ref={el => (sectionRefs.current[0] = el)}
-        className="relative min-h-screen flex flex-col justify-center pt-32 sm:pt-40 md:pt-44 pb-20 bg-[#0a2617] overflow-hidden border-b border-white/10 z-20"
+        className="relative min-h-screen flex flex-col justify-center pt-32 sm:pt-40 md:pt-44 pb-20 bg-transparent overflow-hidden border-b border-white/10"
       >
         <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -296,9 +297,9 @@ export default function ContactPage({
       {/* ── SECTION 1: GLOBAL PRESENCE ── */}
       <section
         ref={el => (sectionRefs.current[1] = el)}
-        className="relative min-h-screen flex flex-col justify-center py-24 sm:py-32 bg-[#0a2617] border-b border-white/10 z-20"
+        className="relative min-h-screen flex flex-col justify-center py-24 sm:py-32 bg-transparent border-b border-white/10"
       >
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full relative z-20">
           <div className="max-w-3xl space-y-6">
             <span className="text-[#ffebc4] text-xs font-sans tracking-[0.2em] uppercase font-bold block">
               ✦ GLOBAL DIGITAL NETWORK
@@ -343,9 +344,9 @@ export default function ContactPage({
       {/* ── SECTION 2: HEADQUARTERS & INTERACTIVE MAP ── */}
       <section
         ref={el => (sectionRefs.current[2] = el)}
-        className="relative min-h-screen flex flex-col justify-center py-24 sm:py-32 bg-[#0a2617] border-b border-white/10 z-20"
+        className="relative min-h-screen flex flex-col justify-center py-24 sm:py-32 bg-transparent border-b border-white/10"
       >
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full relative z-20">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
             {/* Left Column: Campus HQ Info */}
@@ -443,124 +444,154 @@ export default function ContactPage({
         </div>
       </section>
 
-      {/* ── SECTION 3: CONTACT FORM CARD SECTION (DEEP EMERALD CONTAINER) ── */}
+      {/* ── SECTION 3: EXACT SAME CARD AS LANDING PAGE GetInTouchSection ── */}
       <section
         ref={el => (sectionRefs.current[3] = el)}
-        className="relative w-full bg-[#0a2617] py-16 sm:py-24 z-20 border-b border-white/10"
+        className="relative w-full bg-[#0a2617] z-20"
       >
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full">
-          <div
+        <div className="w-full bg-[#0a2617]">
+          <section
             id="contact-form-section"
-            className="relative w-full bg-[#0d5d3a]/30 border-2 border-[#0d5d3a]/50 backdrop-blur-xl text-white rounded-[2.5rem] lg:rounded-[3.5rem] z-20 pt-10 pb-16 sm:pb-24 overflow-hidden shadow-2xl"
+            className="relative w-full bg-[#f8fdf9] text-[#0a2617] rounded-[2.5rem] lg:rounded-[3.5rem] z-20 pt-[10px] pb-16 sm:pb-24 overflow-hidden border-2 border-[#0d5d3a]/15 shadow-2xl"
           >
             {/* Decorative Arrow Top Right */}
-            <div className="absolute top-6 right-6 sm:right-10 lg:right-12 text-[#d97706]">
-              <ArrowDownLeft className="w-6 h-6 sm:w-8 sm:h-8 stroke-[1.5]" />
+            <div className="absolute top-[10px] right-[10px] sm:right-6 lg:right-10 text-[#0a2617]">
+              <ArrowDownLeft className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 stroke-[1.5]" />
             </div>
 
             <div className="w-full px-6 sm:px-10 md:px-14 lg:px-16">
               {/* Top Row: Heading + Subtitle */}
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10 sm:mb-14 md:mb-16">
-                <h2
-                  className="font-sans-main text-4xl sm:text-5xl md:text-6xl lg:text-[60px] xl:text-[70px] font-normal leading-[1.05] tracking-tight text-white -ml-1 mt-1 max-w-2xl text-left"
+                <motion.h2
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  className="font-sans-main text-4xl sm:text-5xl md:text-6xl lg:text-[60px] xl:text-[70px] font-extrabold leading-[1.05] tracking-tight text-[#0d5d3a] -ml-1 mt-1 max-w-2xl text-left"
+                  style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}
                 >
-                  Let&apos;s Make Mental Health<br />
-                  <span className="text-[#d97706] font-bold">Easier to Talk About.</span>
-                </h2>
-                <p
-                  className="font-sans text-xs sm:text-sm md:text-base text-[#fffdf5]/80 max-w-xs md:max-w-md text-left leading-relaxed"
+                  Let&apos;s Make Mental Health<br />Easier to Talk About.
+                </motion.h2>
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                  className="font-sans text-xs sm:text-sm md:text-base text-[#0a2617]/80 max-w-xs md:max-w-md text-left leading-relaxed font-semibold"
                 >
-                  Whether you&apos;re a college student, mental-health professional, organization, or simply curious about Zeni — we&apos;d love to hear from you.
-                </p>
+                  Whether you&apos;re a college student, mental-health professional, organization, or simply curious about ZenMind — we&apos;d love to hear from you.
+                </motion.p>
               </div>
 
               {/* Form + Image Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-start">
-                
-                {/* Left: Form Card */}
-                <div className="bg-white/5 border border-white/15 p-6 sm:p-8 rounded-3xl backdrop-blur-md">
+                {/* Left: Form Card — EXACT SAME AS GetInTouchSection */}
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                  className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-[#0d5d3a]/15 shadow-xl"
+                >
                   {/* Star + Label */}
                   <div className="flex items-center gap-2 mb-6">
                     <Sparkles className="w-4 h-4 text-[#d97706]" />
-                    <p className="font-sans text-xs sm:text-sm tracking-[0.1em] uppercase font-bold text-[#ffebc4]">
+                    <p className="font-sans text-xs sm:text-sm tracking-[0.1em] uppercase font-bold text-[#0d5d3a]">
                       Fill out the contact form
                     </p>
                   </div>
 
                   {/* Form Fields */}
                   <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    <input
-                      type="text"
-                      placeholder="Full Name*"
-                      required
-                      value={formData.name}
-                      onChange={e => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full bg-white/10 rounded-xl px-5 py-4 font-sans text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[#d97706]/50 border border-white/15 transition-all"
-                    />
-                    <input
-                      type="email"
-                      placeholder="Email*"
-                      required
-                      value={formData.email}
-                      onChange={e => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full bg-white/10 rounded-xl px-5 py-4 font-sans text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[#d97706]/50 border border-white/15 transition-all"
-                    />
-                    <input
-                      type="tel"
-                      placeholder="Mobile Number"
-                      value={formData.phone}
-                      onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full bg-white/10 rounded-xl px-5 py-4 font-sans text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[#d97706]/50 border border-white/15 transition-all"
-                    />
-                    <select
-                      value={formData.subject}
-                      onChange={e => setFormData({ ...formData, subject: e.target.value })}
-                      className="w-full bg-[#0a2617] text-white rounded-xl px-5 py-4 font-sans text-sm focus:outline-none focus:ring-2 focus:ring-[#d97706]/50 border border-white/15 transition-all cursor-pointer"
-                    >
-                      <option value="General Inquiry">General Inquiry</option>
-                      <option value="Therapy Support">Therapy Support</option>
-                      <option value="Partnership Request">Partnership Request</option>
-                      <option value="Technical Issue">Technical Issue</option>
-                      <option value="Feedback">Feedback & Suggestions</option>
-                    </select>
-                    <textarea
-                      placeholder="Message*"
-                      rows={5}
-                      required
-                      value={formData.message}
-                      onChange={e => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full bg-white/10 rounded-xl px-5 py-4 font-sans text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[#d97706]/50 border border-white/15 transition-all min-h-[140px] resize-y"
-                    />
+                    <div>
+                      <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Full Name*</label>
+                      <input
+                        type="text"
+                        placeholder="Harshit Sharma"
+                        required
+                        value={formData.name}
+                        onChange={e => setFormData({ ...formData, name: e.target.value })}
+                        className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] placeholder:text-[#0d5d3a]/40 border-2 border-[#0d5d3a]/15 focus:border-[#d97706] focus:ring-2 focus:ring-[#d97706]/20 outline-none transition-all"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Email Address*</label>
+                        <input
+                          type="email"
+                          placeholder="name@example.com"
+                          required
+                          value={formData.email}
+                          onChange={e => setFormData({ ...formData, email: e.target.value })}
+                          className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] placeholder:text-[#0d5d3a]/40 border-2 border-[#0d5d3a]/15 focus:border-[#d97706] focus:ring-2 focus:ring-[#d97706]/20 outline-none transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Mobile Number</label>
+                        <input
+                          type="tel"
+                          placeholder="+91 98765 43210"
+                          value={formData.phone}
+                          onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                          className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] placeholder:text-[#0d5d3a]/40 border-2 border-[#0d5d3a]/15 focus:border-[#d97706] focus:ring-2 focus:ring-[#d97706]/20 outline-none transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Subject</label>
+                      <select
+                        value={formData.subject}
+                        onChange={e => setFormData({ ...formData, subject: e.target.value })}
+                        className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] border-2 border-[#0d5d3a]/15 focus:border-[#d97706] focus:ring-2 focus:ring-[#d97706]/20 outline-none cursor-pointer"
+                      >
+                        <option value="General Inquiry">General Inquiry</option>
+                        <option value="Therapy Support">Therapy Support</option>
+                        <option value="Partnership Request">Partnership Request</option>
+                        <option value="Technical Issue">Technical Issue</option>
+                        <option value="Feedback">Feedback & Suggestions</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Message*</label>
+                      <textarea
+                        placeholder="Tell us how we can assist you..."
+                        rows={4}
+                        required
+                        value={formData.message}
+                        onChange={e => setFormData({ ...formData, message: e.target.value })}
+                        className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3.5 font-sans text-sm font-semibold text-[#0a2617] placeholder:text-[#0d5d3a]/40 border-2 border-[#0d5d3a]/15 focus:border-[#d97706] focus:ring-2 focus:ring-[#d97706]/20 outline-none transition-all resize-y min-h-[120px]"
+                      />
+                    </div>
+
                     <button
                       type="submit"
                       disabled={busy}
-                      className="mt-2 w-full bg-[#d97706] hover:bg-[#b45309] text-white font-sans text-xs sm:text-sm tracking-[0.15em] uppercase font-extrabold py-4 rounded-xl transition-all duration-300 border-0 cursor-pointer shadow-lg disabled:opacity-50"
+                      className="mt-2 w-full bg-[#0d5d3a] hover:bg-[#084229] text-[#fffdf5] font-sans text-xs sm:text-sm tracking-[0.15em] uppercase font-extrabold py-4 rounded-full transition-all duration-300 shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                     >
-                      {submitted ? "Message Sent to Admin! ✓" : busy ? "Sending..." : "Start a Conversation →"}
+                      <Send className="w-4 h-4 text-[#fde68a]" />
+                      <span>{submitted ? "Message Sent to Admin! ✓" : busy ? "Sending..." : "Start a Conversation →"}</span>
                     </button>
                   </form>
-                </div>
+                </motion.div>
 
-                {/* Right: Glassmorphism Image Card */}
-                <div
-                  style={{
-                    backdropFilter: 'blur(15px)',
-                    WebkitBackdropFilter: 'blur(15px)',
-                    boxShadow: `
-                      inset 0 0 20px rgba(255, 255, 255, 0.18),
-                      inset 0 0 5px rgba(255, 255, 255, 0.28),
-                      0 12px 30px rgba(0, 0, 0, 0.45)
-                    `,
-                    border: '1px solid rgba(255, 255, 255, 0.16)',
-                  }}
-                  className="relative w-full aspect-[4/3] md:aspect-[690/520] rounded-2xl overflow-hidden shadow-2xl"
+                {/* Right: Glassmorphism Image Card — EXACT SAME AS GetInTouchSection */}
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                  className="relative w-full aspect-[4/3] md:aspect-[690/520] rounded-3xl overflow-hidden shadow-2xl border-2 border-[#0d5d3a]/20"
                 >
                   <img
                     src="/peoples-image.webp"
                     alt="Happy People"
                     className="w-full h-full object-cover"
+                    onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a2617]/90 via-[#0a2617]/40 to-transparent p-6 sm:p-8 flex flex-col justify-end text-white">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a2617]/90 via-[#0a2617]/30 to-transparent p-6 sm:p-8 flex flex-col justify-end text-white">
                     <div className="bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-2xl space-y-3">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-[#d97706] text-white flex items-center justify-center font-bold">
@@ -571,7 +602,6 @@ export default function ContactPage({
                           <div className="text-sm font-bold text-white">support@zenmind.in</div>
                         </div>
                       </div>
-
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-[#0d5d3a] text-white flex items-center justify-center font-bold">
                           <Phone className="w-5 h-5" />
@@ -583,11 +613,10 @@ export default function ContactPage({
                       </div>
                     </div>
                   </div>
-                </div>
-
+                </motion.div>
               </div>
             </div>
-          </div>
+          </section>
         </div>
       </section>
 
