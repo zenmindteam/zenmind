@@ -142,11 +142,11 @@ function NotifRow({
         </div>
       </div>
 
-      {/* Delete button — shown on hover */}
+      {/* Delete button — always visible and interactive */}
       <button
         onClick={e => { e.stopPropagation(); onDelete(notif._id); }}
-        className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 p-1 rounded-lg text-gray-300 dark:text-gray-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"
-        title="Dismiss"
+        className="absolute right-3 top-3 opacity-60 hover:opacity-100 group-hover:opacity-100 p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all cursor-pointer"
+        title="Dismiss notification"
       >
         <X className="w-3.5 h-3.5" />
       </button>
@@ -262,20 +262,24 @@ export default function NotificationCenter({ onNavigate }: Props) {
 
   /* ── Delete single ── */
   const deleteOne = async (id: string) => {
-    setNotifs(prev => prev.filter(n => n._id !== id));
+    setNotifs(prev => {
+      const next = prev.filter(n => n._id !== id);
+      setUnread(next.filter(n => !n.isRead).length);
+      return next;
+    });
     try {
       const r = await apiFetch<any>(`/notifications/${id}`, { method: 'DELETE' });
-      setUnread(r.unreadCount ?? 0);
+      if (r && typeof r.unreadCount === 'number') setUnread(r.unreadCount);
     } catch { /* silent */ }
   };
 
   /* ── Clear all ── */
   const clearAll = async () => {
     setClearing(true);
+    setNotifs([]);
+    setUnread(0);
     try {
       await apiFetch<any>('/notifications/clear-all', { method: 'DELETE' });
-      setNotifs([]);
-      setUnread(0);
     } catch { /* silent */ }
     finally { setClearing(false); }
   };
