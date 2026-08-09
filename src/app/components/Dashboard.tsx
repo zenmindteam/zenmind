@@ -167,29 +167,22 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
     return `data:${me.avatar.mime};base64,${me.avatar.data}`;
   }, [me?.avatar?.data, me?.avatar?.mime]);
 
-  const handlePaymentSuccess = async (tier: string) => {
-    setShowPaymentModal(false);
-    // Refresh user data to get new tier
-    const updated = await apiFetch<Me>('/me');
-    setMe(updated);
-  };
-
   const initials = me?.name
     ? me.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
     : 'ZM';
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex flex-col bg-[#f8fafd] dark:bg-[#0f172a] text-gray-800 dark:text-gray-100 font-sans">
+    <div className="h-screen w-screen overflow-hidden flex flex-col bg-[#f4faf7] text-[#0a2617] font-sans">
       
-      {/* ── GOOGLE WORKSPACE TOP HEADER BAR ── */}
-      <header className="h-16 flex-shrink-0 flex items-center justify-between px-4 bg-[#f8fafd] dark:bg-[#0f172a] border-b border-gray-200/60 dark:border-gray-800/60 z-20">
+      {/* ── GOOGLE WORKSPACE TOP HEADER BAR (GREEN, WHITE, GOLD) ── */}
+      <header className="h-16 flex-shrink-0 flex items-center justify-between px-4 bg-[#f4faf7] border-b border-[#0d5d3a]/15 z-20">
         
         {/* Left: Hamburger + Logo */}
         <div className="flex items-center gap-3 min-w-[220px]">
           <button
             type="button"
             onClick={() => setCollapsed(c => !c)}
-            className="p-2.5 rounded-full hover:bg-gray-200/70 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 transition-colors"
+            className="p-2.5 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a] transition-colors"
             title="Toggle Menu"
           >
             <Menu className="w-5 h-5" />
@@ -197,10 +190,10 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
 
           <div className="flex items-center gap-2 cursor-pointer select-none" onClick={() => navigateToTab('progress')}>
             <img src="/logo.png" alt="ZenMind" className="w-8 h-8 object-contain" />
-            <span className="font-bold text-xl tracking-tight text-gray-800 dark:text-white" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
+            <span className="font-bold text-xl tracking-tight text-[#0d5d3a]" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
               ZenMind
             </span>
-            <span className="hidden sm:inline-block text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/80 px-2 py-0.5 rounded-full">
+            <span className="hidden sm:inline-block text-xs font-extrabold text-[#78350f] bg-[#fef3c7] border border-[#fde68a] px-2.5 py-0.5 rounded-full">
               Sanctuary
             </span>
           </div>
@@ -208,14 +201,14 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
 
         {/* Center: Google Search Pill */}
         <div className="flex-1 max-w-2xl px-4 hidden md:block">
-          <div className="relative flex items-center w-full bg-[#edf2fc] dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800 focus-within:bg-white dark:focus-within:bg-gray-800 focus-within:shadow-md border border-transparent focus-within:border-emerald-500/50 rounded-full px-4 py-2 transition-all duration-200">
-            <Search className="w-4 h-4 text-gray-500 dark:text-gray-400 mr-3 flex-shrink-0" />
+          <div className="relative flex items-center w-full bg-white hover:bg-[#fef8ec] focus-within:bg-white border-2 border-[#0d5d3a]/15 focus-within:border-[#d97706] focus-within:ring-2 focus-within:ring-[#d97706]/20 rounded-full px-4 py-2 shadow-xs transition-all duration-200">
+            <Search className="w-4 h-4 text-[#0d5d3a] mr-3 flex-shrink-0" />
             <input
               type="text"
               placeholder="Search in ZenMind resources, therapy, goals, or community..."
-              className="w-full bg-transparent text-sm text-gray-800 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none"
+              className="w-full bg-transparent text-sm text-[#0a2617] placeholder:text-[#0d5d3a]/50 font-medium focus:outline-none"
             />
-            <button type="button" className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400">
+            <button type="button" className="p-1 rounded-full hover:bg-[#fef3c7] text-[#d97706]">
               <SlidersHorizontal className="w-4 h-4" />
             </button>
           </div>
@@ -223,13 +216,12 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
 
         {/* Right: Quick Action Controls */}
         <div className="flex items-center gap-1.5 sm:gap-3">
-          <ThemeToggle />
 
           {/* Google 9-Dots Grid Launcher */}
           <button
             type="button"
             onClick={() => navigateToTab('resources')}
-            className="p-2.5 rounded-full hover:bg-gray-200/70 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors hidden sm:flex items-center justify-center"
+            className="p-2.5 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a] transition-colors hidden sm:flex items-center justify-center"
             title="ZenMind Apps"
           >
             <Grid className="w-5 h-5" />
@@ -239,7 +231,7 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
           <button
             type="button"
             onClick={() => navigateToTab('resources')}
-            className="p-2.5 rounded-full hover:bg-gray-200/70 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors hidden sm:flex items-center justify-center"
+            className="p-2.5 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a] transition-colors hidden sm:flex items-center justify-center"
             title="Help & Support"
           >
             <HelpCircle className="w-5 h-5" />
@@ -249,7 +241,7 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
           <button
             type="button"
             onClick={() => navigateToTab('settings')}
-            className="p-2.5 rounded-full hover:bg-gray-200/70 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors hidden sm:flex items-center justify-center"
+            className="p-2.5 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a] transition-colors hidden sm:flex items-center justify-center"
             title="Settings"
           >
             <Settings className="w-5 h-5" />
@@ -258,7 +250,7 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
           {/* Notifications */}
           <NotificationCenter onNavigate={(t) => navigateToTab(t as TabKey)} />
 
-          {/* User Profile Avatar Circle */}
+          {/* User Profile Avatar Circle with Gold Border */}
           <div className="relative ml-1">
             <button
               type="button"
@@ -270,10 +262,10 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
                 <img
                   src={avatarUrl}
                   alt="Profile"
-                  className="w-9 h-9 rounded-full object-cover ring-2 ring-emerald-500/40 shadow-xs"
+                  className="w-9 h-9 rounded-full object-cover ring-2 ring-[#d97706] shadow-xs"
                 />
               ) : (
-                <div className="w-9 h-9 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-xs ring-2 ring-emerald-500/40">
+                <div className="w-9 h-9 rounded-full bg-[#0d5d3a] text-white font-bold text-xs flex items-center justify-center shadow-xs ring-2 ring-[#d97706]">
                   {initials}
                 </div>
               )}
@@ -298,25 +290,25 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className="fixed left-0 top-0 h-full w-64 z-40 md:hidden shadow-2xl flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800"
+              className="fixed left-0 top-0 h-full w-64 z-40 md:hidden shadow-2xl flex flex-col bg-white border-r border-[#0d5d3a]/15"
             >
-              <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
+              <div className="flex items-center justify-between p-4 border-b border-[#0d5d3a]/15">
                 <div className="flex items-center gap-2">
                   <img src="/logo.png" alt="ZM" className="w-7 h-7 object-contain" />
-                  <span className="font-bold text-lg text-gray-800 dark:text-white">ZenMind</span>
+                  <span className="font-bold text-lg text-[#0d5d3a]">ZenMind</span>
                 </div>
-                <button type="button" onClick={() => setMobileOpen(false)} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-                  <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <button type="button" onClick={() => setMobileOpen(false)} className="p-1.5 rounded-full hover:bg-[#e6f4ea]">
+                  <X className="w-5 h-5 text-[#0d5d3a]" />
                 </button>
               </div>
               <div className="flex-1 p-3 overflow-y-auto">
                 <SidebarNav tab={tab} navigateToTab={navigateToTab} collapsed={collapsed} setCollapsed={setCollapsed} />
               </div>
-              <div className="p-3 border-t border-gray-200 dark:border-gray-800">
+              <div className="p-3 border-t border-[#0d5d3a]/15">
                 <button
                   type="button"
                   onClick={() => setShowLogoutConfirm(true)}
-                  className="w-full flex items-center gap-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl px-4 py-2.5 transition"
+                  className="w-full flex items-center gap-2.5 text-sm font-bold text-red-600 hover:bg-red-50 rounded-xl px-4 py-2.5 transition"
                 >
                   <LogOut className="w-4 h-4" />
                   <span>Sign out</span>
@@ -328,7 +320,7 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
 
         {/* Desktop Left Google Sidebar */}
         <aside
-          className="hidden md:flex flex-col flex-shrink-0 bg-[#f8fafd] dark:bg-[#0f172a] p-3 transition-all duration-300 overflow-y-auto"
+          className="hidden md:flex flex-col flex-shrink-0 bg-[#f4faf7] p-3 transition-all duration-300 overflow-y-auto border-r border-[#0d5d3a]/10"
           style={{ width: collapsed ? 72 : 256 }}
         >
           <SidebarNav tab={tab} navigateToTab={navigateToTab} collapsed={collapsed} setCollapsed={setCollapsed} />
@@ -338,7 +330,7 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
               type="button"
               onClick={() => setShowLogoutConfirm(true)}
               title={collapsed ? "Sign out" : undefined}
-              className={`flex items-center gap-3 text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-full transition-all ${
+              className={`flex items-center gap-3 text-xs font-bold text-red-600 hover:bg-red-50 rounded-full transition-all ${
                 collapsed ? 'w-10 h-10 justify-center p-0 mx-auto' : 'w-full px-4 py-2.5'
               }`}
             >
@@ -348,15 +340,15 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
           </div>
         </aside>
 
-        {/* ── GOOGLE MAIN CANVAS CONTAINER (ROUNDED CARD CANVAS) ── */}
-        <main className="flex-1 flex flex-col min-w-0 bg-white dark:bg-gray-900 rounded-3xl border border-gray-200/80 dark:border-gray-800 shadow-sm overflow-hidden m-2 sm:m-3 transition-all duration-200">
+        {/* ── GOOGLE MAIN CANVAS CONTAINER (PURE WHITE CARD CANVAS WITH GOLD & EMERALD ACCENTS) ── */}
+        <main className="flex-1 flex flex-col min-w-0 bg-white rounded-3xl border-2 border-[#0d5d3a]/15 shadow-sm overflow-hidden m-2 sm:m-3 transition-all duration-200">
           
           {/* Canvas Header */}
-          <div className="px-5 py-3.5 border-b border-gray-100 dark:border-gray-800/80 flex items-center justify-between flex-shrink-0 bg-white dark:bg-gray-900">
+          <div className="px-5 py-3.5 border-b border-[#0d5d3a]/10 flex items-center justify-between flex-shrink-0 bg-white">
             <div className="flex items-center gap-3 min-w-0">
               <span className="text-xl leading-none">{TAB_ICONS[tab] || '🌿'}</span>
               <div className="min-w-0">
-                <h1 className="text-lg font-bold text-gray-900 dark:text-white truncate tracking-tight">
+                <h1 className="text-lg font-extrabold text-[#0d5d3a] truncate tracking-tight">
                   {tab === 'sessions'  ? 'My Sessions' :
                    tab === 'therapy'   ? 'Therapy Hub' :
                    tab === 'chat'      ? 'Chat' :
@@ -373,7 +365,7 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
                    tab === 'settings'  ? 'Settings' :
                    loading ? 'Loading…' : `Welcome, ${me?.name?.split(' ')[0] || 'there'}!`}
                 </h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400 truncate hidden sm:block">
+                <p className="text-xs font-medium text-[#d97706] truncate hidden sm:block">
                   {tab === 'sessions'  ? 'Manage your therapy appointments' :
                    tab === 'therapy'   ? 'Connect with verified professionals' :
                    tab === 'chat'      ? 'Real-time messaging with your therapist' :
@@ -397,7 +389,7 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
               <button
                 type="button"
                 onClick={() => setMobileOpen(true)}
-                className="md:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200"
+                className="md:hidden p-2 rounded-full hover:bg-[#e6f4ea] text-[#0d5d3a]"
               >
                 <Menu className="w-5 h-5" />
               </button>
@@ -405,13 +397,11 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
           </div>
 
           {/* Active Tab Panel Canvas */}
-          <div className="flex-1 overflow-hidden flex flex-col min-h-0 bg-white dark:bg-gray-900">
+          <div className="flex-1 overflow-hidden flex flex-col min-h-0 bg-white">
             <PostSessionModal />
 
           {tab === 'therapy' ? (
             <div className="flex flex-col h-full overflow-hidden">
-              
-                {/* Pre-session prep card — only shows when session < 24h */}
                 <div className="flex-shrink-0 px-4 sm:px-6 pt-4">
                   <SessionPrepCard />
                 </div>
@@ -422,19 +412,15 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
                     userTier={me?.subscriptionTier || 'free'}
                   />
                 </div>
-              
             </div>
           ) : tab === 'sessions' ? (
             <div className="flex flex-col h-full overflow-hidden">
-              
                 <div className="flex-1 overflow-y-auto">
-                  {/* Pre-session prep card on sessions tab too */}
                   <div className="px-4 sm:px-6 pt-4">
                     <SessionPrepCard />
                   </div>
                   <MySessionsPanel />
                 </div>
-              
             </div>
           ) : tab === 'chat' && chatTherapist && me ? (
             <div className="flex-1 overflow-hidden">
@@ -442,7 +428,7 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
             </div>
           ) : tab === 'aichat' ? (
             <div className="flex-1 overflow-hidden flex flex-col min-h-0 px-4 sm:px-6 py-4">
-              <AiChatPanel 
+              <ZenChat 
                 onNavigateToTherapy={() => setTab('therapy')} 
                 me={me}
                 onUpgradeClick={() => { setUpgradeTarget('silver'); setShowPaymentModal(true); }}
@@ -450,72 +436,41 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
             </div>
           ) : tab === 'progress' ? (
             <div className="flex flex-col h-full overflow-hidden">
-              
                 <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-                  <ZenProgressDashboard />
+                  <ZenProgressDashboard me={me} />
                 </div>
-              
             </div>
           ) : tab === 'community' ? (
-            <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-              <CommunityWall 
-                userTier={me?.subscriptionTier || 'free'} 
-                onUpgradeClick={() => { setUpgradeTarget('silver'); setShowPaymentModal(true); }}
-              />
+            <div className="flex-1 overflow-hidden">
+              <CommunityWall me={me} />
             </div>
           ) : tab === 'resources' ? (
-            <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-              <ResourceHub />
+            <div className="flex-1 overflow-hidden">
+              <ResourceHub me={me} />
             </div>
           ) : tab === 'journal' ? (
-            <div className="flex flex-col h-full overflow-hidden">
-              
-                <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-                  <MoodJournal />
-                </div>
-              
+            <div className="flex-1 overflow-hidden">
+              <MoodJournal me={me} />
             </div>
           ) : tab === 'circles' ? (
-            <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-              <PeerCircles userId={me?.id} />
+            <div className="flex-1 overflow-hidden">
+              <PeerCircles me={me} />
             </div>
           ) : tab === 'goals' ? (
-            <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-              <WellnessGoalTracker />
+            <div className="flex-1 overflow-hidden">
+              <WellnessGoalTracker me={me} />
             </div>
           ) : tab === 'reading' ? (
-            <div className="flex flex-col h-full overflow-hidden">
-              
-                <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-                  <ReadingListsUser />
-                </div>
-              
+            <div className="flex-1 overflow-hidden">
+              <ReadingListsUser me={me} />
             </div>
           ) : tab === 'programs' ? (
-            <div className="flex flex-col h-full overflow-hidden">
-              
-                <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-                  <WellnessProgramsUser
-                    onDetailOpen={() => {
-                      history.pushState({ zmDash: true }, '');
-                      setProgramDetailOpen(true);
-                    }}
-                    onDetailClose={() => setProgramDetailOpen(false)}
-                    closeDetailSignal={closeProgramSignal}
-                  />
-                </div>
-              
+            <div className="flex-1 overflow-hidden">
+              <WellnessProgramsUser me={me} />
             </div>
           ) : tab === 'store' ? (
-            <div className="flex flex-col h-full overflow-hidden">
-              
-                <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-                  <WellnessStore 
-                    userTier={me?.subscriptionTier || 'free'}
-                    onUpgradeClick={() => { setUpgradeTarget('silver'); setShowPaymentModal(true); }}
-                  />
-                </div>
-              
+            <div className="flex-1 overflow-hidden">
+              <WellnessStore me={me} />
             </div>
           ) : tab === 'settings' ? (
             <div className="flex-1 overflow-y-auto">
@@ -528,7 +483,7 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
             </div>
           ) : (
             <div className="flex-1 overflow-y-auto">
-              <div className="flex items-center justify-center h-full text-[#4a7c5d] dark:text-gray-400 text-sm">
+              <div className="flex items-center justify-center h-full text-[#0d5d3a] text-sm font-semibold">
                 Page not found
               </div>
             </div>
@@ -536,15 +491,15 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
           </div>
         </main>
 
-        {/* ── GOOGLE WORKSPACE RIGHT COMPANION TOOLBAR ── */}
-        <aside className="hidden lg:flex flex-col items-center gap-4 py-4 w-14 flex-shrink-0 bg-[#f8fafd] dark:bg-[#0f172a] border-l border-gray-200/50 dark:border-gray-800/50">
+        {/* ── GOOGLE WORKSPACE RIGHT COMPANION TOOLBAR (EMERALD & GOLD) ── */}
+        <aside className="hidden lg:flex flex-col items-center gap-4 py-4 w-14 flex-shrink-0 bg-[#f4faf7] border-l border-[#0d5d3a]/15">
           <button
             type="button"
             onClick={() => navigateToTab('aichat')}
             className={`p-3 rounded-2xl transition-all duration-200 ${
               tab === 'aichat'
-                ? 'bg-emerald-500 text-white shadow-md'
-                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200/70 dark:hover:bg-gray-800'
+                ? 'bg-[#0d5d3a] text-white shadow-md border-r-2 border-[#d97706]'
+                : 'text-[#0d5d3a] hover:bg-[#e6f4ea]'
             }`}
             title="Quick AI Assistant"
           >
@@ -556,8 +511,8 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
             onClick={() => navigateToTab('journal')}
             className={`p-3 rounded-2xl transition-all duration-200 ${
               tab === 'journal'
-                ? 'bg-emerald-500 text-white shadow-md'
-                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200/70 dark:hover:bg-gray-800'
+                ? 'bg-[#d97706] text-white shadow-md'
+                : 'text-[#d97706] hover:bg-[#fef3c7]'
             }`}
             title="Quick Mood Check"
           >
@@ -569,8 +524,8 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
             onClick={() => navigateToTab('therapy')}
             className={`p-3 rounded-2xl transition-all duration-200 ${
               tab === 'therapy'
-                ? 'bg-emerald-500 text-white shadow-md'
-                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200/70 dark:hover:bg-gray-800'
+                ? 'bg-[#0d5d3a] text-white shadow-md border-r-2 border-[#d97706]'
+                : 'text-[#0d5d3a] hover:bg-[#e6f4ea]'
             }`}
             title="Therapy Desk"
           >
@@ -582,8 +537,8 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
             onClick={() => navigateToTab('goals')}
             className={`p-3 rounded-2xl transition-all duration-200 ${
               tab === 'goals'
-                ? 'bg-emerald-500 text-white shadow-md'
-                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200/70 dark:hover:bg-gray-800'
+                ? 'bg-[#d97706] text-white shadow-md'
+                : 'text-[#d97706] hover:bg-[#fef3c7]'
             }`}
             title="Goals & Habits"
           >
@@ -595,8 +550,8 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
             onClick={() => navigateToTab('progress')}
             className={`p-3 rounded-2xl transition-all duration-200 ${
               tab === 'progress'
-                ? 'bg-emerald-500 text-white shadow-md'
-                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200/70 dark:hover:bg-gray-800'
+                ? 'bg-[#0d5d3a] text-white shadow-md border-r-2 border-[#d97706]'
+                : 'text-[#0d5d3a] hover:bg-[#e6f4ea]'
             }`}
             title="My Progress"
           >
