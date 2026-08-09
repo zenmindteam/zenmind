@@ -85,6 +85,46 @@ export default function App() {
     setter(value);
   };
 
+  // Handle URL hash and direct routes (e.g. #contact, #about, #features, #careers)
+  useEffect(() => {
+    const handleRoute = () => {
+      const hash = window.location.hash.toLowerCase().replace('#', '');
+      const path = window.location.pathname.toLowerCase().replace('/', '');
+      const route = hash || path;
+
+      if (route === 'contact' || route === 'contact-us' || route === 'contactus') {
+        setActiveCompanyPage(null);
+        setActiveFooterPage(null);
+        setActiveResourcesPage('Contact Us');
+      } else if (route === 'about' || route === 'about-us' || route === 'aboutus') {
+        setActiveFooterPage(null);
+        setActiveResourcesPage(null);
+        setActiveCompanyPage('About Us');
+      } else if (route === 'careers' || route === 'career') {
+        setActiveFooterPage(null);
+        setActiveResourcesPage(null);
+        setActiveCompanyPage('Careers');
+      } else if (route === 'features' || route === 'pricing' || route === 'faq' || route === 'therapy' || route === 'ai-chatbot') {
+        const pageName = route === 'ai-chatbot' ? 'AI Chatbot' : route.charAt(0).toUpperCase() + route.slice(1);
+        setActiveCompanyPage(null);
+        setActiveResourcesPage(null);
+        setActiveFooterPage(pageName);
+      } else if (route === 'privacy' || route === 'privacy-policy') {
+        setActiveCompanyPage(null);
+        setActiveFooterPage(null);
+        setActiveResourcesPage('Privacy Policy');
+      } else if (route === 'terms' || route === 'terms-of-service') {
+        setActiveCompanyPage(null);
+        setActiveFooterPage(null);
+        setActiveResourcesPage('Terms of Service');
+      }
+    };
+
+    handleRoute();
+    window.addEventListener('hashchange', handleRoute);
+    return () => window.removeEventListener('hashchange', handleRoute);
+  }, []);
+
   // Back button listener — close whichever overlay is open
   useEffect(() => {
     const handlePop = () => {

@@ -123,7 +123,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { label: "ABOUT", onClick: () => onCompanyLinkClick?.('About Us') },
     { label: "FEATURES", onClick: () => onProductLinkClick?.('Features') },
     { label: "THERAPISTS", href: "#professionals" },
-    { label: "CONTACT", href: "#contact" },
+    { label: "CONTACT", onClick: () => onResourcesLinkClick?.('Contact Us') },
   ];
 
   return (
@@ -226,6 +226,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                   className="font-sans text-xs md:text-sm tracking-[0.1em] text-white/80 hover:text-white uppercase transition-colors text-left bg-transparent border-0 p-0 cursor-pointer"
                 >
                   ABOUT US
+                </button>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); onResourcesLinkClick?.('Contact Us'); }}
+                  className="font-sans text-xs md:text-sm tracking-[0.1em] text-white/80 hover:text-white uppercase transition-colors text-left bg-transparent border-0 p-0 cursor-pointer"
+                >
+                  CONTACT US
                 </button>
                 <button
                   onClick={() => { setMobileMenuOpen(false); onCompanyLinkClick?.('Careers'); }}
