@@ -12,7 +12,7 @@ import ThemeToggle from './ThemeToggle';
 import VideoRoom from './VideoRoom';
 import CancellationPolicy from './CancellationPolicy';
 import UserChat from './UserChat';
-import ZenAvatarChat from './ZenAvatarChat';
+import ZenChat from './ZenChat';
 import ZenProgressDashboard from './ZenProgressDashboard';
 import CommunityWall from './CommunityWall';
 import ResourceHub from './ResourceHub';
@@ -614,7 +614,7 @@ export default function Dashboard({ onLogout, prefetchedMe, initialTab }: Dashbo
 function AiChatPanel({ onNavigateToTherapy, me, onUpgradeClick }: { onNavigateToTherapy?: () => void, me: any, onUpgradeClick?: () => void }) {
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="h-full">
-      <ZenAvatarChat onNavigateToTherapy={onNavigateToTherapy} me={me} onUpgradeClick={onUpgradeClick} />
+      <ZenChat onNavigateToTherapy={onNavigateToTherapy} me={me} onUpgradeClick={onUpgradeClick} />
     </motion.div>
   );
 }
