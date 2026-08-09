@@ -75,16 +75,18 @@ useEffect(() => {
     return (
       <>
         {/* Floating Google "+ Action" Button */}
-        <div className="p-3 mb-1">
+        <div className="p-2 mb-1 flex justify-center">
           <button
             type="button"
             onClick={() => { setActiveTab('content'); if (mobile) setMobileOpen(false); }}
-            className={`flex items-center gap-3 bg-white text-[#0d5d3a] hover:bg-[#fef8ec] shadow-md hover:shadow-lg border-2 border-[#d97706]/40 rounded-2xl transition-all duration-200 ${
-              wide ? 'px-5 py-3.5 w-full' : 'w-12 h-12 justify-center p-0 mx-auto'
+            className={`flex items-center transition-all duration-200 ${
+              wide
+                ? 'gap-3 px-5 py-3.5 w-full bg-white text-[#0d5d3a] hover:bg-[#fef8ec] shadow-md hover:shadow-lg border-2 border-[#d97706]/40 rounded-2xl'
+                : 'w-11 h-11 justify-center bg-[#d97706] text-white hover:bg-[#b45309] shadow-md rounded-full p-0 mx-auto'
             }`}
             title="Create Content / Entry"
           >
-            <div className="w-6 h-6 rounded-full bg-[#d97706] text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+            <div className={`${wide ? 'w-6 h-6 rounded-full bg-[#d97706] text-white flex items-center justify-center flex-shrink-0 shadow-xs' : 'flex items-center justify-center'}`}>
               <Plus className="w-4 h-4 stroke-[3]" />
             </div>
             {wide && (
@@ -96,7 +98,7 @@ useEffect(() => {
         </div>
 
         {/* Navigation Items */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-1 flex flex-col gap-1.5 custom-scrollbar bg-[#f4faf7]">
+        <div className={`flex-1 overflow-y-auto overflow-x-hidden ${wide ? 'px-3' : 'px-1'} py-1 flex flex-col gap-1 custom-scrollbar bg-[#f4faf7]`}>
           <AdminSidebarNav
             tab={activeTab}
             navigateToTab={navTo}
@@ -120,8 +122,14 @@ useEffect(() => {
           </div>
         )}
 
-        <div className="p-3 border-t border-[#0d5d3a]/15 shrink-0 bg-[#f4faf7]">
-          <button onClick={() => setShowLogoutConfirm(true)} className={`w-full flex items-center ${wide ? 'gap-3 px-4' : 'justify-center px-0'} py-2.5 rounded-full text-red-600 hover:bg-red-50 font-bold text-xs transition-colors`}>
+        <div className="p-2 border-t border-[#0d5d3a]/15 shrink-0 bg-[#f4faf7] flex justify-center">
+          <button
+            onClick={() => setShowLogoutConfirm(true)}
+            className={`flex items-center transition-colors text-red-600 hover:bg-red-50 font-bold text-xs ${
+              wide ? 'w-full gap-3 px-4 py-2.5 rounded-full' : 'w-10 h-10 rounded-full justify-center p-0 mx-auto'
+            }`}
+            title="Sign Out"
+          >
             <LogOut size={16} className="shrink-0" />
             {wide && <span>Sign Out</span>}
           </button>
