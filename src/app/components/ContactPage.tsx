@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { motion } from "motion/react";
-import { X, Send, Sparkles, Phone, Mail, ArrowDownLeft, ShieldCheck, Globe2, Clock, CheckCircle } from "lucide-react";
+import { Send, Sparkles, Phone, Mail, ArrowDownLeft, ShieldCheck, Globe2, MapPin, ExternalLink, Building2, Compass, CheckCircle } from "lucide-react";
 import Globe from "./ui/globe";
 import { Navbar as LandingNavbar } from "./landing/Navbar";
 import { Footer as LandingFooter } from "./landing/Footer";
@@ -17,9 +17,9 @@ interface ContactPageProps {
 
 const defaultGlobeConfig = {
   positions: [
-    { top: "45%", left: "75%", scale: 1.3 },   // Hero: Right side
-    { top: "50%", left: "50%", scale: 1.1 },   // Form section: Center backdrop
-    { top: "50%", left: "25%", scale: 1.5 },   // Crisis section: Left side
+    { top: "45%", left: "75%", scale: 1.3 },   // Section 0 (Hero): Right side, rotating
+    { top: "50%", left: "50%", scale: 1.1 },   // Section 1 (Form): Center frozen backdrop
+    { top: "50%", left: "25%", scale: 1.4 },   // Section 2 (Crisis): Left side
   ]
 };
 
@@ -85,6 +85,7 @@ export default function ContactPage({
       }
     });
 
+    // When the active section is 1 (the contact form card), lock the globe in position
     const currentPos = calculatedPositions[newActiveSection] || calculatedPositions[0];
     const transform = `translate3d(${currentPos.left}vw, ${currentPos.top}vh, 0) translate3d(-50%, -50%, 0) scale3d(${currentPos.scale}, ${currentPos.scale}, 1)`;
     
@@ -171,6 +172,8 @@ export default function ContactPage({
     }
   };
 
+  const mapsUrl = "https://www.google.com/maps?sca_esv=11c71c9d54d57fde&rlz=1C1JJTC_enIN1106IN1107&output=search&q=klecet+chikodi&source=lnms&fbs=ABfTbFVyMZGZf1hfvX9uKjN_-G8c4u0nXx4bEIpwm1lnNH832VTJOOCxW_fyN-Q_ezyf8gKmVML23HcLQCydI7S-9bmoaQbnQjvqWqR3ZVfluTIt6owk8QYspgn5r-j5WWyEi-hRYfKKV6-Z2UFQx_cMNv1QVOi6V_Cn6Lcx_7pf9YGrQg46tAz-MPZRqLovPAxny-Ewux8rMCZOFWRCQaKr_EbZbQFsjw&entry=mc&ved=1t:200715&ictx=111";
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -192,101 +195,124 @@ export default function ContactPage({
         onProductLinkClick={onProductLinkClick}
       />
 
-      {/* Floating Close Button top right */}
-      <button
-        type="button"
-        onClick={onClose}
-        className="fixed top-5 right-6 z-[210] flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg cursor-pointer"
-        title="Close Contact Page"
-      >
-        <X className="w-4 h-4 text-[#ffebc4]" />
-        <span>Close</span>
-      </button>
-
-      {/* ── INTERACTIVE 3D SCROLL GLOBE ── */}
+      {/* ── INTERACTIVE 3D SCROLL GLOBE (STOPS & FREEZES AT INPUT CARD) ── */}
       <div
         className="fixed z-10 pointer-events-none transition-all duration-[1200ms] ease-[cubic-bezier(0.23,1,0.32,1)]"
         style={{
           transform: globeTransform,
-          filter: `opacity(${activeSection === 2 ? 0.3 : 0.75})`,
+          filter: `opacity(${activeSection === 1 ? 0.22 : 0.75})`,
         }}
       >
         <Globe />
       </div>
 
-      {/* ── HERO SECTION: Editorial Header ── */}
+      {/* ── HERO SECTION: HEADQUARTERS & INTERACTIVE MAP CARD ── */}
       <section
         ref={el => (sectionRefs.current[0] = el)}
-        className="relative pt-32 sm:pt-40 md:pt-48 pb-20 sm:pb-28 bg-[#0a2617] overflow-hidden border-b border-white/10 z-20"
+        className="relative pt-32 sm:pt-40 md:pt-44 pb-20 sm:pb-28 bg-[#0a2617] overflow-hidden border-b border-white/10 z-20"
       >
         <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
-            {/* Left Headline */}
+            {/* Left Column: Headquarters Details */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-7"
+              className="lg:col-span-6 space-y-6"
             >
-              <span className="text-[#ffebc4] text-xs font-sans tracking-[0.2em] uppercase font-bold block mb-4">
-                ✦ CONTACT ZENMIND SANCTUARY
+              <span className="text-[#ffebc4] text-xs font-sans tracking-[0.2em] uppercase font-bold block">
+                ✦ ZENMIND MAIN HEADQUARTERS
               </span>
-              <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[76px] text-[#fffdf5] font-normal leading-[0.98] tracking-tight mb-8">
-                Let&apos;s Make Mental Health<br />
-                <span className="text-[#d97706] font-bold">Easier to Talk About.</span>
+              
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl text-[#fffdf5] font-normal leading-[0.98] tracking-tight">
+                Rooted in<br />
+                <span className="text-[#d97706] font-bold">KLECET Chikodi.</span>
               </h1>
-              <p className="text-lg sm:text-xl text-[#fffdf5]/85 font-normal leading-relaxed max-w-2xl mb-8">
-                Whether you&apos;re a college student, mental-health professional, organization, or simply curious about ZenMind — we&apos;d love to hear from you.
+              
+              <p className="text-base sm:text-lg text-[#fffdf5]/85 font-normal leading-relaxed">
+                ZenMind is proudly engineered at KLE College of Engineering and Technology (KLECET), Chikodi. Serving students, therapists, and institutions across Karnataka, India, and global communities.
               </p>
-              <div className="flex flex-wrap gap-4">
+
+              {/* Address Badge Card */}
+              <div className="bg-white/5 border border-white/15 p-6 rounded-3xl backdrop-blur-md space-y-4">
+                <div className="flex items-start gap-3">
+                  <Building2 className="w-5 h-5 text-[#d97706] shrink-0 mt-1" />
+                  <div>
+                    <div className="text-xs font-bold text-[#ffebc4] uppercase tracking-wider">Main Campus & HQ</div>
+                    <div className="text-base font-bold text-white">KLE College of Engineering and Technology (KLECET)</div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-[#10b981] shrink-0 mt-1" />
+                  <div>
+                    <div className="text-xs font-bold text-[#ffebc4] uppercase tracking-wider">Location & Region</div>
+                    <div className="text-sm font-semibold text-white/90">
+                      Chikodi, District Belagavi, State Karnataka, India 🇮🇳
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-white/10 flex flex-wrap gap-4 text-xs text-[#ffebc4] font-semibold">
+                  <div className="flex items-center gap-1.5">
+                    <Mail className="w-4 h-4 text-[#d97706]" />
+                    <span>support@zenmind.in</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Phone className="w-4 h-4 text-[#10b981]" />
+                    <span>1800-599-0019 (24/7 Helpline)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2">
                 <button
                   type="button"
                   onClick={() => sectionRefs.current[1]?.scrollIntoView({ behavior: 'smooth' })}
                   className="px-8 py-4 rounded-full bg-[#d97706] hover:bg-[#b45309] text-white font-extrabold text-xs uppercase tracking-wider shadow-lg transition-all cursor-pointer"
                 >
-                  Fill Contact Form ↓
-                </button>
-                <button
-                  type="button"
-                  onClick={() => sectionRefs.current[2]?.scrollIntoView({ behavior: 'smooth' })}
-                  className="px-8 py-4 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 text-white font-extrabold text-xs uppercase tracking-wider transition-all cursor-pointer"
-                >
-                  24/7 Crisis Helplines
+                  Send Direct Query ↓
                 </button>
               </div>
             </motion.div>
 
-            {/* Right Card */}
+            {/* Right Column: Embedded Google Maps Location Card */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="lg:col-span-5 bg-white/5 border border-white/15 p-8 rounded-3xl backdrop-blur-md space-y-6"
+              className="lg:col-span-6 bg-white/5 border border-white/15 p-4 sm:p-6 rounded-3xl backdrop-blur-md shadow-2xl relative"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#d97706] flex items-center justify-center text-white font-bold">
-                  <Globe2 className="w-5 h-5 text-[#fde68a]" />
+              <div className="flex items-center justify-between mb-4 px-2">
+                <div className="flex items-center gap-2">
+                  <Compass className="w-5 h-5 text-[#d97706]" />
+                  <span className="text-xs font-bold text-white uppercase tracking-wider">Interactive Campus Map</span>
                 </div>
-                <div>
-                  <div className="text-xs font-bold text-[#ffebc4] uppercase tracking-wider">Global Reach</div>
-                  <div className="text-base font-bold text-white">24/7 Digital Sanctuary</div>
-                </div>
+                <a
+                  href={mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#ffebc4] hover:text-white transition-colors"
+                >
+                  <span>Open Maps</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
               </div>
 
-              <p className="text-sm text-[#fffdf5]/80 leading-relaxed font-normal">
-                Our platform operates round-the-clock across India and international digital communities, routing inquiries directly to our Super Admin desk.
-              </p>
-
-              <div className="pt-4 border-t border-white/10 flex flex-col gap-3 text-xs text-[#ffebc4] font-semibold">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-[#10b981]" />
-                  <span>Real-time Admin Dashboard Integration</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-[#10b981]" />
-                  <span>End-to-End Encrypted Communications</span>
-                </div>
+              {/* Embedded Google Maps Frame */}
+              <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 shadow-lg relative bg-[#071a0e]">
+                <iframe
+                  title="KLECET Chikodi Location Map"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3830.4354228941784!2d74.59371077590885!3d16.146973684542277!2m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bf76d03d36b8a8b%3A0x8e8749a4f3b772c5!2sKLE%20College%20of%20Engineering%20and%20Technology%20Chikodi!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen={false}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="w-full h-full filter contrast-[1.05] brightness-[0.95]"
+                />
               </div>
             </motion.div>
 
