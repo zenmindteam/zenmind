@@ -109,14 +109,24 @@ export default function App() {
         setActiveCompanyPage(null);
         setActiveResourcesPage(null);
         setActiveFooterPage(pageName);
-      } else if (route === 'privacy' || route === 'privacy-policy') {
-        setActiveCompanyPage(null);
-        setActiveFooterPage(null);
-        setActiveResourcesPage('Privacy Policy');
-      } else if (route === 'terms' || route === 'terms-of-service') {
-        setActiveCompanyPage(null);
-        setActiveFooterPage(null);
-        setActiveResourcesPage('Terms of Service');
+      } else if (route === 'blog') {
+        setActiveFooterPage(null); setActiveResourcesPage(null); setActiveCompanyPage('Blog');
+      } else if (route === 'press') {
+        setActiveFooterPage(null); setActiveResourcesPage(null); setActiveCompanyPage('Press');
+      } else if (route === 'partners' || route === 'partner') {
+        setActiveFooterPage(null); setActiveResourcesPage(null); setActiveCompanyPage('Partners');
+      } else if (route === 'help' || route === 'help-center' || route === 'helpcenter') {
+        setActiveCompanyPage(null); setActiveFooterPage(null); setActiveResourcesPage('Help Center');
+      } else if (route === 'crisis' || route === 'crisis-support') {
+        setActiveCompanyPage(null); setActiveFooterPage(null); setActiveResourcesPage('Crisis Support');
+      } else if (route === 'community') {
+        setActiveCompanyPage(null); setActiveFooterPage(null); setActiveResourcesPage('Community');
+      } else if (route === 'safety' || route === 'safety-guidelines') {
+        setActiveCompanyPage(null); setActiveFooterPage(null); setActiveResourcesPage('Safety Guidelines');
+      } else if (route === 'report' || route === 'report-issue' || route === 'reportissue') {
+        setActiveCompanyPage(null); setActiveFooterPage(null); setActiveResourcesPage('Report Issue');
+      } else if (route === 'feedback') {
+        setActiveCompanyPage(null); setActiveFooterPage(null); setActiveResourcesPage('Feedback');
       }
     };
 
@@ -353,9 +363,34 @@ export default function App() {
                 }}
               />
             )}
-            {activeCompanyPage === 'Careers' && <CareersPage onClose={() => setActiveCompanyPage(null)} />}
+            {activeCompanyPage === 'Careers' && (
+              <CareersPage
+                onClose={() => setActiveCompanyPage(null)}
+                onGetStarted={() => { setActiveCompanyPage(null); setLoginIntent('progress'); setShowAuth(true); }}
+                onAdminLoginTrigger={() => setShowAdminLogin(true)}
+                onTherapistLoginTrigger={() => setShowTherapistLogin(true)}
+                onCompanyLinkClick={(link) => openOverlay(setActiveCompanyPage, link)}
+                onResourcesLinkClick={(link) => openOverlay(setActiveResourcesPage, link)}
+                onProductLinkClick={(link) => {
+                  setActiveCompanyPage(null);
+                  openOverlay(setActiveFooterPage, link);
+                }}
+              />
+            )}
             {(activeCompanyPage === 'Blog' || activeCompanyPage === 'Press' || activeCompanyPage === 'Partners') && (
-              <ComingSoonPage page={activeCompanyPage} onClose={() => setActiveCompanyPage(null)} />
+              <ComingSoonPage
+                page={activeCompanyPage}
+                onClose={() => setActiveCompanyPage(null)}
+                onGetStarted={() => { setActiveCompanyPage(null); setLoginIntent('progress'); setShowAuth(true); }}
+                onAdminLoginTrigger={() => setShowAdminLogin(true)}
+                onTherapistLoginTrigger={() => setShowTherapistLogin(true)}
+                onCompanyLinkClick={(link) => openOverlay(setActiveCompanyPage, link)}
+                onResourcesLinkClick={(link) => openOverlay(setActiveResourcesPage, link)}
+                onProductLinkClick={(link) => {
+                  setActiveCompanyPage(null);
+                  openOverlay(setActiveFooterPage, link);
+                }}
+              />
             )}
           </AnimatePresence>
 
@@ -376,7 +411,19 @@ export default function App() {
                   }}
                 />
               ) : (
-                <ResourcesPage page={activeResourcesPage} onClose={() => setActiveResourcesPage(null)} />
+                <ResourcesPage
+                  page={activeResourcesPage}
+                  onClose={() => setActiveResourcesPage(null)}
+                  onGetStarted={() => { setActiveResourcesPage(null); setLoginIntent('progress'); setShowAuth(true); }}
+                  onAdminLoginTrigger={() => setShowAdminLogin(true)}
+                  onTherapistLoginTrigger={() => setShowTherapistLogin(true)}
+                  onCompanyLinkClick={(link) => openOverlay(setActiveCompanyPage, link)}
+                  onResourcesLinkClick={(link) => openOverlay(setActiveResourcesPage, link)}
+                  onProductLinkClick={(link) => {
+                    setActiveResourcesPage(null);
+                    openOverlay(setActiveFooterPage, link);
+                  }}
+                />
               )
             )}
           </AnimatePresence>

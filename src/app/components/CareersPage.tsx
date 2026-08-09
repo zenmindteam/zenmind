@@ -1,25 +1,43 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, MapPin, Clock, Briefcase, ChevronRight, Search, ArrowLeft, Star, Send, Upload, CheckCircle } from 'lucide-react';
+import { MapPin, Clock, Briefcase, ChevronRight, Search, Star, Send, Upload, CheckCircle, Sparkles, Building2 } from 'lucide-react';
 import { apiFetch } from '../api/client';
+import { Navbar as LandingNavbar } from './landing/Navbar';
+import { Footer as LandingFooter } from './landing/Footer';
 
-const DEPT_COLORS: Record<string, string> = {
-  Engineering: '#0d5d3a', Design: '#7c3aed', Marketing: '#b45309',
-  HR: '#0369a1', Operations: '#065f46', Finance: '#be123c', Default: '#374151',
-};
+interface CareersPageProps {
+  onClose: () => void;
+  onGetStarted?: () => void;
+  onAdminLoginTrigger?: () => void;
+  onTherapistLoginTrigger?: () => void;
+  onCompanyLinkClick?: (link: string) => void;
+  onResourcesLinkClick?: (link: string) => void;
+  onProductLinkClick?: (link: string) => void;
+}
 
-function getColor(dept: string) { return DEPT_COLORS[dept] || DEPT_COLORS.Default; }
-
-export default function CareersPage({ onClose }: { onClose: () => void }) {
+export default function CareersPage({
+  onClose,
+  onGetStarted,
+  onAdminLoginTrigger,
+  onTherapistLoginTrigger,
+  onCompanyLinkClick,
+  onResourcesLinkClick,
+  onProductLinkClick,
+}: CareersPageProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('All');
-  const [selected, setSelected] = useState<any>(null);
-  const [applying, setApplying] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<any>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', portfolio: '', coverLetter: '' });
 
   useEffect(() => {
-    apiFetch<any>('/jobs').then(r => setJobs(r.jobs || [])).catch(() => {}).finally(() => setLoading(false));
+    apiFetch<any>('/jobs')
+      .then(r => setJobs(r.jobs || []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const depts = ['All', ...Array.from(new Set(jobs.map(j => j.department).filter(Boolean)))];
@@ -29,274 +47,251 @@ export default function CareersPage({ onClose }: { onClose: () => void }) {
     const matchF = filter === 'All' || j.department === filter;
     return matchQ && matchF;
   });
-  const featured = filtered.filter(j => j.featured);
-  const regular  = filtered.filter(j => !j.featured);
 
-  return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[200] bg-white dark:bg-[#050505] overflow-y-auto">
-      {/* Floating close button */}
-      <button onClick={onClose} className="fixed top-4 right-4 z-[210] w-10 h-10 rounded-full bg-white dark:bg-[#1a1a1a] shadow-lg border border-[#0d5d3a]/20 dark:border-white/10 flex items-center justify-center text-[#0a2617] dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition">
-        <X size={18} />
-      </button>
-
-      <AnimatePresence mode="wait">
-        {selected ? (
-          <JobDetail key="detail" job={selected} onBack={() => setSelected(null)} applying={applying} setApplying={setApplying} />
-        ) : (
-          <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            {/* Hero */}
-            <section className="bg-gradient-to-br from-[#f8fdf9] via-[#e8f5e9] to-[#c8e6c9] dark:from-[#050505] dark:via-[#071d13] dark:to-[#0a2617] py-16 sm:py-24 text-center px-4">
-              <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-                <span className="inline-block px-4 py-1.5 rounded-full bg-[#0d5d3a]/10 dark:bg-[#10b981]/10 text-[#0d5d3a] dark:text-[#10b981] text-xs font-black uppercase tracking-widest mb-6">We're Hiring</span>
-                <h1 className="text-4xl sm:text-6xl font-black text-[#0a2617] dark:text-white mb-5 leading-tight" style={{ fontFamily: 'Syne, sans-serif' }}>
-                  Build the future of<br />
-                  <span className="bg-gradient-to-r from-[#0d5d3a] to-[#10b981] bg-clip-text text-transparent">mental healthcare</span>
-                </h1>
-                <p className="text-lg text-[#4a7c5d] dark:text-gray-400 max-w-xl mx-auto">Join our mission to make adolescent mental wellness accessible to every student in India.</p>
-              </motion.div>
-            </section>
-
-            {/* Filters */}
-            <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8 relative">
-              <div className="sticky top-0 z-20 bg-white/90 dark:bg-[#050505]/90 backdrop-blur-md flex flex-col sm:flex-row gap-4 mb-8 py-4 -mx-4 px-4 sm:-mx-6 sm:px-6 border-b border-[#0d5d3a]/10 dark:border-white/5">
-                <div className="relative flex-1">
-                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4a7c5d] dark:text-gray-400" />
-                  <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search roles, locations..."
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl border border-[#0d5d3a]/20 dark:border-white/10 bg-white dark:bg-[#111111] text-[#0a2617] dark:text-white outline-none focus:ring-2 focus:ring-[#0d5d3a]/30 text-sm shadow-sm" />
-                </div>
-                <div className="flex gap-2 flex-wrap">
-                  {depts.map(d => (
-                    <button key={d} onClick={() => setFilter(d)}
-                      className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm ${filter === d ? 'bg-[#0d5d3a] text-white shadow-md' : 'bg-white dark:bg-[#111111] border border-[#0d5d3a]/20 dark:border-white/10 text-[#4a7c5d] dark:text-gray-400 hover:border-[#0d5d3a]/40'}`}>
-                      {d}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {loading ? (
-                <div className="text-center py-20 text-[#4a7c5d] dark:text-gray-400 font-semibold">Loading positions...</div>
-              ) : filtered.length === 0 ? (
-                <div className="text-center py-20">
-                  <div className="text-5xl mb-4"></div>
-                  <div className="text-xl font-black text-[#0a2617] dark:text-white mb-2" style={{ fontFamily: 'Syne, sans-serif' }}>No open positions</div>
-                  <p className="text-[#4a7c5d] dark:text-gray-400">Check back soon — we're always growing!</p>
-                </div>
-              ) : (
-                <>
-                  {featured.length > 0 && (
-                    <div className="mb-10">
-                      <div className="flex items-center gap-2 mb-4">
-                        <Star size={16} className="text-amber-500 fill-amber-500" />
-                        <span className="text-sm font-black text-[#0a2617] dark:text-white uppercase tracking-wider">Featured Roles</span>
-                      </div>
-                      <div className="grid gap-4">
-                        {featured.map((job, i) => <JobCard key={job._id} job={job} index={i} featured onClick={() => setSelected(job)} />)}
-                      </div>
-                    </div>
-                  )}
-                  {regular.length > 0 && (
-                    <div>
-                      {featured.length > 0 && <div className="text-sm font-black text-[#0a2617] dark:text-white uppercase tracking-wider mb-4">All Openings</div>}
-                      <div className="grid gap-4">
-                        {regular.map((job, i) => <JobCard key={job._id} job={job} index={i} onClick={() => setSelected(job)} />)}
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-            </section>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
-
-function JobCard({ job, index, featured, onClick }: { job: any; index: number; featured?: boolean; onClick: () => void }) {
-  const color = getColor(job.department);
-  return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.06 }}
-      onClick={onClick} whileHover={{ y: -3, boxShadow: '0 12px 32px rgba(13,93,58,0.12)' }}
-      className={`cursor-pointer bg-white dark:bg-[#111111] rounded-2xl sm:rounded-3xl border-2 p-5 sm:p-6 transition-all ${featured ? 'border-amber-300 dark:border-amber-500/40' : 'border-[#0d5d3a] dark:border-[#10b981] hover:border-[#0d5d3a]/70'}`}>
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-2 mb-2">
-            {job.department && (
-              <span className="text-xs font-black px-2.5 py-0.5 rounded-full text-white" style={{ background: color }}>{job.department}</span>
-            )}
-            {featured && <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400"> Featured</span>}
-            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${job.status === 'active' ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400' : 'bg-gray-100 dark:bg-white/10 text-gray-500'}`}>
-              {job.status === 'active' ? 'Open' : 'Closed'}
-            </span>
-          </div>
-          <h3 className="text-lg font-black text-[#0d5d3a] dark:text-[#10b981] mb-1" style={{ fontFamily: 'Syne, sans-serif' }}>{job.title}</h3>
-          <div className="flex flex-wrap gap-3 text-xs text-[#4a7c5d] dark:text-gray-400 font-semibold mb-3">
-            {job.location && <span className="flex items-center gap-1"><MapPin size={11} />{job.location}</span>}
-            {job.employmentType && <span className="flex items-center gap-1"><Briefcase size={11} />{job.employmentType}</span>}
-            {job.experience && <span className="flex items-center gap-1"><Clock size={11} />{job.experience}</span>}
-          </div>
-          {job.shortDescription && <p className="text-sm text-[#4a7c5d] dark:text-gray-400 leading-relaxed line-clamp-2">{job.shortDescription}</p>}
-          <div className="flex flex-wrap gap-2 mt-3">
-            {(job.skills || []).slice(0, 4).map((s: string) => (
-              <span key={s} className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#f0fbf4] dark:bg-[#0d5d3a]/20 text-[#0d5d3a] dark:text-[#10b981]">{s}</span>
-            ))}
-          </div>
-        </div>
-        <div className="shrink-0 w-10 h-10 rounded-xl bg-[#f0fbf4] dark:bg-[#0d5d3a]/20 flex items-center justify-center text-[#0d5d3a] dark:text-[#10b981]">
-          <ChevronRight size={18} />
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-function JobDetail({ job, onBack, applying, setApplying }: { job: any; onBack: () => void; applying: boolean; setApplying: (v: boolean) => void }) {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', portfolioUrl: '', coverLetter: '' });
-  const [resumeB64, setResumeB64] = useState('');
-  const [resumeMime, setResumeMime] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [done, setDone] = useState(false);
-  const [err, setErr] = useState('');
-
-  const handleResume = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0]; if (!f) return;
-    const reader = new FileReader();
-    reader.onload = () => { setResumeB64(String(reader.result).split(',')[1]); setResumeMime(f.type); };
-    reader.readAsDataURL(f);
+  const handleApplySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+    setTimeout(() => {
+      setSubmitted(false);
+      setSelectedJob(null);
+      setFormData({ name: '', email: '', phone: '', portfolio: '', coverLetter: '' });
+    }, 4000);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); setErr(''); setSubmitting(true);
-    try {
-      await apiFetch(`/jobs/${job._id}/apply`, { method: 'POST', body: JSON.stringify({ ...form, resumeBase64: resumeB64, resumeMime }) });
-      setDone(true);
-    } catch (e: any) { setErr(e.message || 'Failed to submit'); }
-    finally { setSubmitting(false); }
-  };
-
-  const color = getColor(job.department);
-
   return (
-    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="max-w-4xl mx-auto px-4 sm:px-6 py-8 pb-24">
-      <button onClick={onBack} className="flex items-center gap-2 text-[#0d5d3a] dark:text-[#10b981] font-bold text-sm hover:opacity-75 transition mb-6">
-        <ArrowLeft size={16} /> All Positions
-      </button>
+    <div
+      ref={containerRef}
+      data-lenis-prevent
+      className="fixed inset-0 z-[200] bg-[#f8fdf9] text-[#0a2617] overflow-y-auto font-sans-main scrollbar-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+    >
+      <LandingNavbar
+        scrollContainerRef={containerRef}
+        delayReappearMs={1500}
+        onGetStarted={onGetStarted}
+        onAdminLoginTrigger={onAdminLoginTrigger}
+        onTherapistLoginTrigger={onTherapistLoginTrigger}
+        onCompanyLinkClick={onCompanyLinkClick}
+        onResourcesLinkClick={onResourcesLinkClick}
+        onProductLinkClick={onProductLinkClick}
+      />
 
-      {/* Job Header */}
-      <div className="rounded-3xl p-6 sm:p-8 text-white mb-6 relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}>
-        <div className="absolute inset-0 opacity-10 text-[200px] flex items-center justify-end pr-8 leading-none"></div>
-        <div className="relative z-10">
-          {job.department && <span className="text-xs font-black uppercase tracking-widest bg-white/20 px-3 py-1 rounded-full">{job.department}</span>}
-          <h1 className="text-2xl sm:text-3xl font-black mt-3 mb-2" style={{ fontFamily: 'Syne, sans-serif' }}>{job.title}</h1>
-          <div className="flex flex-wrap gap-4 text-sm font-bold text-white/90">
-            {job.location && <span className="flex items-center gap-1"><MapPin size={13} />{job.location}</span>}
-            {job.employmentType && <span className="flex items-center gap-1"><Briefcase size={13} />{job.employmentType}</span>}
-            {job.experience && <span className="flex items-center gap-1"><Clock size={13} />{job.experience}</span>}
-            {job.salary && <span> {job.salary}</span>}
+      {/* Hero */}
+      <section className="relative pt-32 sm:pt-40 md:pt-48 pb-20 bg-[#0a2617] text-center text-white">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-[#ffebc4] text-xs font-sans tracking-[0.2em] uppercase font-bold mb-6">
+            <Briefcase className="w-3.5 h-3.5" />
+            <span>JOIN THE ZENMIND TEAM</span>
           </div>
-        </div>
-      </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          {job.shortDescription && (
-            <Section title="About this Role"><p className="text-[#4a7c5d] dark:text-gray-400 leading-relaxed text-sm">{job.shortDescription}</p></Section>
-          )}
-          {job.description && (
-            <Section title="Full Description"><p className="text-[#4a7c5d] dark:text-gray-400 leading-relaxed text-sm whitespace-pre-line">{job.description}</p></Section>
-          )}
-          {(job.responsibilities || []).length > 0 && (
-            <Section title="Responsibilities"><ul className="space-y-2">{job.responsibilities.map((r: string, i: number) => <li key={i} className="flex items-start gap-2 text-sm text-[#4a7c5d] dark:text-gray-400"><span className="text-[#0d5d3a] dark:text-[#10b981] mt-0.5">•</span>{r}</li>)}</ul></Section>
-          )}
-          {(job.requirements || []).length > 0 && (
-            <Section title="Requirements"><ul className="space-y-2">{job.requirements.map((r: string, i: number) => <li key={i} className="flex items-start gap-2 text-sm text-[#4a7c5d] dark:text-gray-400"><span className="text-[#0d5d3a] dark:text-[#10b981] mt-0.5">•</span>{r}</li>)}</ul></Section>
-          )}
-          {(job.benefits || []).length > 0 && (
-            <Section title="Benefits"><ul className="space-y-2">{job.benefits.map((b: string, i: number) => <li key={i} className="flex items-start gap-2 text-sm text-[#4a7c5d] dark:text-gray-400"><span className="text-green-500 mt-0.5"></span>{b}</li>)}</ul></Section>
-          )}
-        </div>
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold leading-[0.98] mb-6 max-w-4xl mx-auto" style={{ fontFamily: 'Google Sans, Inter, sans-serif' }}>
+            Build the Future of <span className="text-[#ffebc4] italic font-normal">Adolescent Healthcare.</span>
+          </h1>
 
-        {/* Sidebar */}
-        <div className="space-y-4">
-          {/* Skills */}
-          {(job.skills || []).length > 0 && (
-            <div className="bg-white dark:bg-[#111111] rounded-2xl p-5 border border-[#0d5d3a]/10 dark:border-white/10">
-              <h4 className="font-black text-[#0a2617] dark:text-white text-sm mb-3" style={{ fontFamily: 'Syne, sans-serif' }}>Skills Required</h4>
-              <div className="flex flex-wrap gap-2">{job.skills.map((s: string) => <span key={s} className="text-xs font-bold px-2.5 py-1 rounded-lg bg-[#f0fbf4] dark:bg-[#0d5d3a]/20 text-[#0d5d3a] dark:text-[#10b981]">{s}</span>)}</div>
+          <p className="text-lg sm:text-xl text-white/80 font-normal max-w-2xl mx-auto leading-relaxed">
+            Join engineers, designers, psychotherapists, and clinical researchers in making mental wellness accessible to every student in India.
+          </p>
+        </div>
+      </section>
+
+      {/* Careers Content */}
+      <section className="py-20 bg-[#f8fdf9] min-h-[50vh]">
+        <div className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-16">
+          
+          {/* Search & Filter Bar */}
+          <div className="bg-white rounded-3xl p-4 sm:p-6 border-2 border-[#0d5d3a]/15 shadow-xl mb-12 flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div className="relative w-full sm:w-80">
+              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#0d5d3a]/60" />
+              <input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search roles or locations..."
+                className="w-full pl-11 pr-4 py-3 rounded-2xl border-2 border-[#0d5d3a]/15 bg-[#f4faf7] text-sm text-[#0a2617] outline-none focus:border-[#d97706]"
+              />
+            </div>
+
+            <div className="flex gap-2 flex-wrap w-full sm:w-auto">
+              {depts.map(d => (
+                <button
+                  key={d}
+                  onClick={() => setFilter(d)}
+                  className={`px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all border cursor-pointer ${
+                    filter === d
+                      ? 'bg-[#0d5d3a] text-white border-[#0d5d3a]'
+                      : 'bg-[#f4faf7] text-[#0a2617]/70 border-[#0d5d3a]/15 hover:bg-[#0d5d3a]/10'
+                  }`}
+                >
+                  {d}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Job List */}
+          {loading ? (
+            <div className="text-center py-16 text-[#0d5d3a] font-bold">Loading open positions...</div>
+          ) : filtered.length === 0 ? (
+            <div className="text-center py-16 bg-white rounded-3xl border-2 border-[#0d5d3a]/15 p-8">
+              <h3 className="text-2xl font-bold text-[#0a2617] mb-2">No Open Roles in this Department</h3>
+              <p className="text-sm text-[#0a2617]/70 max-w-md mx-auto mb-6">Send us a general application — we are always looking for passionate builders and clinicians!</p>
+              <button
+                onClick={() => onResourcesLinkClick?.('Contact Us')}
+                className="px-6 py-3 rounded-full bg-[#0d5d3a] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#084229]"
+              >
+                Send Open Application →
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {filtered.map((job) => (
+                <div
+                  key={job._id || job.title}
+                  className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-[#0d5d3a]/15 shadow-xl flex flex-col justify-between hover:border-[#d97706] transition-all"
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-4">
+                      <span className="px-3.5 py-1 rounded-full bg-[#0d5d3a]/10 text-[#0d5d3a] text-xs font-bold uppercase tracking-wider">
+                        {job.department || 'General'}
+                      </span>
+                      <span className="text-xs font-bold text-[#d97706]">{job.type || 'Full-time'}</span>
+                    </div>
+
+                    <h3 className="text-2xl font-bold text-[#0a2617] mb-2">{job.title}</h3>
+                    <p className="text-xs text-[#0a2617]/60 flex items-center gap-2 mb-4">
+                      <MapPin size={14} className="text-[#0d5d3a]" />
+                      <span>{job.location || 'Chikodi, Karnataka / Remote'}</span>
+                    </p>
+
+                    <p className="text-sm text-[#0a2617]/80 leading-relaxed mb-6">
+                      {job.description || 'Help build scalable mental health tools and infrastructure for adolescent care.'}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => setSelectedJob(job)}
+                    className="w-full py-3.5 rounded-full bg-[#0d5d3a] text-white font-bold text-xs uppercase tracking-wider hover:bg-[#084229] transition-all cursor-pointer shadow-md"
+                  >
+                    View Role & Apply →
+                  </button>
+                </div>
+              ))}
             </div>
           )}
+        </div>
+      </section>
 
-          {/* Apply box */}
-          {job.applyUrl ? (
-            <a href={job.applyUrl} target="_blank" rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-black text-white shadow-lg text-base transition hover:opacity-90"
-              style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}>
-              Apply Now <ChevronRight size={16} />
-            </a>
-          ) : (
-            <button onClick={() => setApplying(!applying)}
-              className="w-full py-4 rounded-2xl font-black text-white shadow-lg text-base transition hover:opacity-90"
-              style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}>
-              {applying ? 'Hide Application' : 'Apply Now'}
-            </button>
-          )}
+      {/* Application Drawer Modal */}
+      <AnimatePresence>
+        {selectedJob && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[300] bg-black/80 backdrop-blur-md p-6 flex items-center justify-center overflow-y-auto"
+          >
+            <div className="w-full max-w-2xl bg-white border-2 border-[#0d5d3a]/20 rounded-[2.5rem] p-8 overflow-y-auto relative shadow-2xl text-[#0a2617]">
+              <div className="flex items-center justify-between pb-6 border-b border-[#0d5d3a]/15 mb-6">
+                <div>
+                  <span className="text-xs font-bold text-[#d97706] uppercase tracking-wider">{selectedJob.department}</span>
+                  <h3 className="text-2xl font-bold text-[#0d5d3a]">{selectedJob.title}</h3>
+                </div>
+                <button
+                  onClick={() => setSelectedJob(null)}
+                  className="px-4 py-2 rounded-full bg-[#0d5d3a]/10 text-[#0d5d3a] text-xs font-bold uppercase hover:bg-[#0d5d3a] hover:text-white transition-all cursor-pointer"
+                >
+                  Close ✕
+                </button>
+              </div>
 
-          {/* Internal Apply Form */}
-          {applying && !job.applyUrl && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-[#111111] rounded-2xl p-5 border border-[#0d5d3a]/15 dark:border-white/10">
-              {done ? (
-                <div className="text-center py-4">
-                  <CheckCircle size={40} className="text-[#0d5d3a] dark:text-[#10b981] mx-auto mb-3" />
-                  <p className="font-black text-[#0a2617] dark:text-white text-base mb-1">Application Submitted!</p>
-                  <p className="text-xs text-[#4a7c5d] dark:text-gray-400">We'll review your application and get back to you shortly.</p>
+              {submitted ? (
+                <div className="py-12 text-center space-y-4">
+                  <CheckCircle size={48} className="text-[#10b981] mx-auto" />
+                  <h4 className="text-2xl font-bold text-[#0d5d3a]">Application Submitted!</h4>
+                  <p className="text-sm text-[#0a2617]/70 max-w-md mx-auto">Our talent team will review your portfolio and reach out within 3 business days.</p>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-3">
-                  <h4 className="font-black text-[#0a2617] dark:text-white text-sm mb-1" style={{ fontFamily: 'Syne, sans-serif' }}>Your Application</h4>
-                  {err && <div className="text-xs text-red-600 dark:text-red-400 font-semibold bg-red-50 dark:bg-red-500/10 px-3 py-2 rounded-xl">{err}</div>}
-                  {[['Full Name*', 'name', 'text'], ['Email*', 'email', 'email'], ['Phone', 'phone', 'tel'], ['Portfolio / LinkedIn', 'portfolioUrl', 'url']].map(([label, key, type]) => (
-                    <label key={key} className="block">
-                      <span className="text-xs font-bold text-[#4a7c5d] dark:text-gray-400 mb-1 block">{label}</span>
-                      <input type={type} required={label.includes('*')} value={(form as any)[key]} onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
-                        className="w-full px-3 py-2.5 rounded-xl border border-[#0d5d3a]/20 dark:border-white/10 bg-[#f8fdf9] dark:bg-[#1a1a1a] text-sm text-[#0a2617] dark:text-white outline-none focus:ring-2 focus:ring-[#0d5d3a]/30" />
-                    </label>
-                  ))}
-                  <label className="block">
-                    <span className="text-xs font-bold text-[#4a7c5d] dark:text-gray-400 mb-1 block">Cover Letter</span>
-                    <textarea rows={3} value={form.coverLetter} onChange={e => setForm(p => ({ ...p, coverLetter: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-[#0d5d3a]/20 dark:border-white/10 bg-[#f8fdf9] dark:bg-[#1a1a1a] text-sm text-[#0a2617] dark:text-white outline-none focus:ring-2 focus:ring-[#0d5d3a]/30 resize-none" />
-                  </label>
-                  <label className="block">
-                    <span className="text-xs font-bold text-[#4a7c5d] dark:text-gray-400 mb-1 block">Resume (PDF/Doc)</span>
-                    <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-dashed border-[#0d5d3a]/30 dark:border-white/20 cursor-pointer hover:border-[#0d5d3a] transition">
-                      <Upload size={14} className="text-[#0d5d3a] dark:text-[#10b981]" />
-                      <span className="text-xs text-[#4a7c5d] dark:text-gray-400">{resumeB64 ? 'File attached ' : 'Upload resume'}</span>
-                      <input type="file" accept=".pdf,.doc,.docx" onChange={handleResume} className="hidden" />
+                <form onSubmit={handleApplySubmit} className="flex flex-col gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Full Name*</label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.name}
+                      onChange={e => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="Aarav Sharma"
+                      className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3 font-sans text-sm font-semibold border-2 border-[#0d5d3a]/15 outline-none focus:border-[#d97706]"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Email*</label>
+                      <input
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={e => setFormData({ ...formData, email: e.target.value })}
+                        placeholder="aarav@example.com"
+                        className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3 font-sans text-sm font-semibold border-2 border-[#0d5d3a]/15 outline-none focus:border-[#d97706]"
+                      />
                     </div>
-                  </label>
-                  <button type="submit" disabled={submitting}
-                    className="w-full py-3 rounded-xl font-black text-white text-sm flex items-center justify-center gap-2 disabled:opacity-60 transition"
-                    style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}>
-                    <Send size={14} /> {submitting ? 'Submitting...' : 'Submit Application'}
+                    <div>
+                      <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Mobile Number</label>
+                      <input
+                        type="tel"
+                        value={formData.phone}
+                        onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                        placeholder="+91 98765 43210"
+                        className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3 font-sans text-sm font-semibold border-2 border-[#0d5d3a]/15 outline-none focus:border-[#d97706]"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Portfolio / GitHub / Resume Link*</label>
+                    <input
+                      type="url"
+                      required
+                      value={formData.portfolio}
+                      onChange={e => setFormData({ ...formData, portfolio: e.target.value })}
+                      placeholder="https://github.com/username or LinkedIn"
+                      className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3 font-sans text-sm font-semibold border-2 border-[#0d5d3a]/15 outline-none focus:border-[#d97706]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-[#0d5d3a] mb-1 uppercase tracking-wider">Why do you want to join ZenMind?*</label>
+                    <textarea
+                      rows={4}
+                      required
+                      value={formData.coverLetter}
+                      onChange={e => setFormData({ ...formData, coverLetter: e.target.value })}
+                      placeholder="Tell us about your background and passion for mental healthcare..."
+                      className="w-full bg-[#f4faf7] rounded-2xl px-5 py-3 font-sans text-sm font-semibold border-2 border-[#0d5d3a]/15 outline-none focus:border-[#d97706] resize-y"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-4 rounded-full bg-[#0d5d3a] hover:bg-[#084229] text-white font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-lg mt-2"
+                  >
+                    Submit Application →
                   </button>
                 </form>
               )}
-            </motion.div>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="bg-white dark:bg-[#111111] rounded-2xl p-5 sm:p-6 border border-[#0d5d3a]/10 dark:border-white/10">
-      <h3 className="font-black text-[#0a2617] dark:text-white text-base mb-3" style={{ fontFamily: 'Syne, sans-serif' }}>{title}</h3>
-      {children}
+      <div className="bg-[#0a2617]">
+        <LandingFooter
+          onGetStarted={onGetStarted}
+          onTherapistLoginTrigger={onTherapistLoginTrigger}
+          onCompanyLinkClick={onCompanyLinkClick}
+          onResourcesLinkClick={onResourcesLinkClick}
+          onProductLinkClick={onProductLinkClick}
+        />
+      </div>
     </div>
   );
 }
