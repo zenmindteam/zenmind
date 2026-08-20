@@ -56,6 +56,27 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    chunkSizeWarningLimit: 1200,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('chart.js') || id.includes('react-chartjs-2') || id.includes('recharts')) {
+              return 'vendor-charts';
+            }
+            if (id.includes('gsap') || id.includes('motion') || id.includes('lenis')) {
+              return 'vendor-motion';
+            }
+            if (id.includes('lucide-react')) {
+              return 'vendor-icons';
+            }
+            if (id.includes('@radix-ui') || id.includes('@popperjs')) {
+              return 'vendor-radix';
+            }
+          }
+        }
+      }
+    }
   },
 
   optimizeDeps: {

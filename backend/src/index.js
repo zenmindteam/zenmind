@@ -143,6 +143,28 @@ import storeRoute from './routes/store.js';
 app.use('/api/store', storeRoute);
 import { Job } from './models/Job.js';
 
+// 404 Handler for undefined API routes
+app.use('/api/*', (_req, res) => {
+  res.status(404).json({ error: 'Endpoint not found or method not allowed' });
+});
+
+// Global Centralized Error Handling Middleware
+app.use((err, _req, res, _next) => {
+  const statusCode = err.status || err.statusCode || 500;
+  const message = process.env.NODE_ENV === 'production' && statusCode === 500
+    ? 'Internal server error. Please try again later.'
+    : err.message || 'An unexpected error occurred';
+
+  if (statusCode >= 500) {
+    console.error(`[Unhandled Error] ${err.name || 'Error'}: ${err.message}\n`, err.stack || '');
+  }
+
+  res.status(statusCode).json({
+    error: message,
+    ...(process.env.NODE_ENV !== 'production' && { stack: err.stack })
+  });
+});
+
 
 
 
@@ -727,3 +749,21 @@ server.on('error', (err) => {
     throw err;
   }
 });
+
+// Graceful shutdown on SIGINT / SIGTERM
+const handleShutdown = async (signal) => {
+  console.log(`\n[Server] Received ${signal}. Starting graceful shutdown...`);
+  server.close(async () => {
+    console.log('[Server] HTTP and Socket.IO server closed.');
+    try {
+      await mongoose.connection.close(false);
+      console.log('[Database] MongoDB connection cleanly closed.');
+    } catch (e) {
+      console.error('[Database] Error closing MongoDB connection:', e);
+    }
+    process.exit(0);
+  });
+};
+
+process.on('SIGINT', () => handleShutdown('SIGINT'));
+process.on('SIGTERM', () => handleShutdown('SIGTERM'));

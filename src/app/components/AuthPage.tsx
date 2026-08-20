@@ -2,6 +2,7 @@ import React, { useEffect, useState, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, Lock, Mail, Phone, User, Eye, EyeOff, Sparkles, CheckCircle2, ShieldCheck, Download, Smartphone } from 'lucide-react';
 import logo from '../../../asset/logo.png';
+import { apiFetch } from '../api/client';
 
 type AuthPageProps = { onBackHome: () => void; onAuthSuccess: () => void; };
 
@@ -132,7 +133,6 @@ export default function AuthPage({ onBackHome, onAuthSuccess }: AuthPageProps) {
                         onClick={async () => {
                           setBusy(true); setFpMsg(null);
                           try {
-                            const { apiFetch } = await import('../api/client');
                             await apiFetch('/auth/forgot-password', { method:'POST', body:JSON.stringify({ phone:fp.phone }), timeoutMs:30000 });
                             setOtpSeconds(120); setFp(p => ({...p, step:'verify'})); setFpMsg({ text:'OTP sent successfully', ok:true });
                           } catch(e:any) { setFpMsg({ text:e.message||'Failed to send OTP', ok:false }); }
@@ -172,7 +172,6 @@ export default function AuthPage({ onBackHome, onAuthSuccess }: AuthPageProps) {
                         onClick={async () => {
                           setBusy(true); setFpMsg(null);
                           try {
-                            const { apiFetch } = await import('../api/client');
                             await apiFetch('/auth/verify-otp', { method:'POST', body:JSON.stringify({ phone:fp.phone, code:fp.code }), timeoutMs:30000 });
                             setFp(p => ({...p, step:'reset'})); setFpMsg({ text:'OTP Verified', ok:true });
                           } catch(e:any) { setFpMsg({ text:e.message||'Invalid OTP code', ok:false }); }
@@ -197,7 +196,6 @@ export default function AuthPage({ onBackHome, onAuthSuccess }: AuthPageProps) {
                         onClick={async () => {
                           setBusy(true); setFpMsg(null);
                           try {
-                            const { apiFetch } = await import('../api/client');
                             await apiFetch('/auth/reset-password', { method:'POST', body:JSON.stringify({ phone:fp.phone, code:fp.code, newPassword:fp.newPassword }), timeoutMs:30000 });
                             resetFp();
                           } catch(e:any) { setFpMsg({ text:e.message||'Failed to reset password', ok:false }); }
@@ -228,10 +226,9 @@ export default function AuthPage({ onBackHome, onAuthSuccess }: AuthPageProps) {
                     e.preventDefault();
                     setBusy(true); setError(null);
                     try {
-                      const { apiFetch } = await import('../api/client');
                       await apiFetch('/auth/login', {
                         method:'POST',
-                        body:JSON.stringify({ identifier: loginData.identifier, password: loginData.password }),
+                        body:JSON.stringify({ identifier: loginData.identifier.trim(), password: loginData.password }),
                         noReloadOnSuspend:true,
                         timeoutMs:30000
                       });
@@ -297,7 +294,6 @@ export default function AuthPage({ onBackHome, onAuthSuccess }: AuthPageProps) {
                     e.preventDefault();
                     setBusy(true); setError(null);
                     try {
-                      const { apiFetch } = await import('../api/client');
                       await apiFetch('/auth/register', {
                         method:'POST',
                         body:JSON.stringify({

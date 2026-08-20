@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "motion/react";
 import { ArrowDownLeft, Send, Sparkles, Phone, Mail, MessageSquare } from "lucide-react";
+import { apiFetch } from "../../api/client";
 
 export const GetInTouchSection: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -32,7 +33,6 @@ export const GetInTouchSection: React.FC = () => {
     };
 
     try {
-      const { apiFetch } = await import('../../api/client');
       await apiFetch('/support/contact', {
         method: 'POST',
         body: JSON.stringify(newQuery)

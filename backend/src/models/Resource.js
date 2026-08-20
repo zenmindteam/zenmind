@@ -22,12 +22,14 @@ const resourceSchema = new mongoose.Schema(
     youtubeVideoId: { type: String, default: '' },
 
     // Categorisation
-    tags: [{ type: String }],
+    tags: [{ type: String, index: true }],
 
     // Engagement
     views: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
+
+resourceSchema.index({ type: 1, createdAt: -1 });
 
 export default mongoose.model('Resource', resourceSchema);

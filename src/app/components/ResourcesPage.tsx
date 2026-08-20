@@ -4,6 +4,7 @@ import { Phone, Mail, Shield, FileText, Users, HeartHandshake, BookOpen, AlertTr
 import ContactPage from './ContactPage';
 import { Navbar as LandingNavbar } from './landing/Navbar';
 import { Footer as LandingFooter } from './landing/Footer';
+import { apiFetch } from '../api/client';
 
 const CRISIS_LINES = [
   { name: 'iCall – Tata Institute', number: '9152987821', desc: 'Mon–Sat, 8am–10pm · Free counselling & therapy', tag: 'Counselling' },
@@ -123,7 +124,6 @@ function ReportIssueForm() {
     };
 
     try {
-      const { apiFetch } = await import('../api/client');
       await apiFetch('/support/contact', { method: 'POST', body: JSON.stringify(newQuery) });
     } catch {}
 
@@ -338,7 +338,6 @@ function FeedbackForm() {
     };
 
     try {
-      const { apiFetch } = await import('../api/client');
       await apiFetch('/support/contact', { method: 'POST', body: JSON.stringify(newQuery) });
     } catch {}
 

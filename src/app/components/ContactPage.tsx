@@ -4,6 +4,7 @@ import { Send, Sparkles, Phone, Mail, ArrowDownLeft, ShieldCheck, Globe2, MapPin
 import Globe from "./ui/globe";
 import { Navbar as LandingNavbar } from "./landing/Navbar";
 import { Footer as LandingFooter } from "./landing/Footer";
+import { apiFetch } from "../api/client";
 
 interface ContactPageProps {
   onClose: () => void;
@@ -153,7 +154,6 @@ export default function ContactPage({
     };
 
     try {
-      const { apiFetch } = await import('../api/client');
       await apiFetch('/support/contact', {
         method: 'POST',
         body: JSON.stringify(newQuery)

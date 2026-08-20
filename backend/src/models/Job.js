@@ -16,12 +16,13 @@ const jobSchema = new mongoose.Schema({
   openings:        { type: Number, default: 1 },
   applyUrl:        { type: String, default: '' },   // external apply link
   applyEmail:      { type: String, default: '' },   // or email
-  lastDate:        { type: Date },
-  status:          { type: String, default: 'active', enum: ['active', 'closed'] },
-  featured:        { type: Boolean, default: false },
+  status:          { type: String, default: 'active', enum: ['active', 'closed'], index: true },
+  featured:        { type: Boolean, default: false, index: true },
   slug:            { type: String, unique: true, sparse: true },
   postedDate:      { type: Date, default: Date.now },
 }, { timestamps: true });
+
+jobSchema.index({ department: 1, status: 1 });
 
 // Auto-generate slug from title
 jobSchema.pre('save', function (next) {

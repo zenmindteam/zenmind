@@ -582,14 +582,14 @@ export default function TherapyHub({ onSessionBooked, onStartChat, userTier = 'f
 
                     {/* Specializations Pills */}
                     <div className="flex flex-wrap justify-center gap-2 mt-4 w-full">
-                      <span className="px-3 py-1 bg-[#e6f4ea] dark:bg-[#0d5d3a]/20 text-[#0d5d3a] dark:text-[#10b981] rounded-full text-[10px] font-bold">
-                        <span className="text-xs font-bold text-[#0a2617] dark:text-white">{t.specialization ?? ''}</span>
+                      <span className="px-3 py-1.5 bg-[#e6f4ea] dark:bg-[#0d5d3a]/20 text-[#0d5d3a] dark:text-[#10b981] rounded-xl text-xs font-bold border border-[#0d5d3a]/15 text-center">
+                        {t.specialization || 'Clinical Specialist'}
                       </span>
-                      {['Anxiety', 'Depression'].map(tag => (
-                        <span key={tag} className="px-3 py-1.5 bg-[#e6f4ea] dark:bg-[#0d5d3a]/10 text-[#0d5d3a] dark:text-[#10b981] rounded-lg text-xs font-bold border border-[#0d5d3a]/20">
-                          {tag}
+                      {t.sessionType && (
+                        <span className="px-2.5 py-1 bg-[#f0fbf4] dark:bg-white/5 text-[#4a7c5d] dark:text-gray-300 rounded-lg text-[11px] font-semibold capitalize border border-gray-100 dark:border-white/5">
+                          {t.sessionType}
                         </span>
-                      ))}
+                      )}
                     </div>
 
                     <div className="mt-auto pt-4">

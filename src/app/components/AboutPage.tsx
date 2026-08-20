@@ -50,9 +50,45 @@ export default function AboutPage({
 
   useEffect(() => {
     apiFetch<any>('/team')
-      .then(res => setMembers(res.members || []))
+      .then(res => {
+        const list = res.members || [];
+        setMembers(list);
+
+        // Inject AboutPage & Person Schema for E-E-A-T & LLMO
+        const schema = {
+          "@context": "https://schema.org",
+          "@type": "AboutPage",
+          "mainEntity": {
+            "@type": "MedicalOrganization",
+            "name": "ZenMind",
+            "url": "https://zenmind.in",
+            "knowsAbout": ["Mental Health", "Adolescent Psychology", "Cognitive Behavioral Therapy (CBT)", "AI in Healthcare"],
+            "founder": list.map((m: any) => ({
+              "@type": "Person",
+              "name": m.name,
+              "jobTitle": m.role,
+              "description": m.bio,
+              "image": m.image
+            }))
+          }
+        };
+
+        let script = document.getElementById('zenmind-about-schema') as HTMLScriptElement | null;
+        if (!script) {
+          script = document.createElement('script');
+          script.id = 'zenmind-about-schema';
+          script.type = 'application/ld+json';
+          document.head.appendChild(script);
+        }
+        script.textContent = JSON.stringify(schema);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
+
+    return () => {
+      const el = document.getElementById('zenmind-about-schema');
+      if (el) el.remove();
+    };
   }, []);
 
   const handleCompanyNavigation = (link: string) => {

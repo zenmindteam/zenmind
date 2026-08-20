@@ -401,6 +401,36 @@ function FAQPage({
   const containerRef = useRef<HTMLDivElement>(null);
   const [openId, setOpenId] = useState<string | null>("01");
 
+  // Inject FAQPage Schema for AEO, Perplexity, and Google AI Overviews
+  useEffect(() => {
+    const faqSchema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqItems.map(item => ({
+        "@type": "Question",
+        "name": item.title,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `${item.content} (Related services: ${item.services})`
+        }
+      }))
+    };
+
+    let script = document.getElementById('zenmind-faq-schema') as HTMLScriptElement | null;
+    if (!script) {
+      script = document.createElement('script');
+      script.id = 'zenmind-faq-schema';
+      script.type = 'application/ld+json';
+      document.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify(faqSchema);
+
+    return () => {
+      const el = document.getElementById('zenmind-faq-schema');
+      if (el) el.remove();
+    };
+  }, []);
+
   return (
     <div ref={containerRef} data-lenis-prevent className="fixed inset-0 z-[200] bg-[#f8fdf9] text-[#0a2617] overflow-y-auto font-sans-main scrollbar-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       <LandingNavbar
